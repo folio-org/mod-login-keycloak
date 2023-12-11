@@ -1,0 +1,590 @@
+openapi: 3.0.0
+
+info:
+  title: Mod Login Keycloak API
+  version: v1
+  description: Mod Login Keycloak API
+
+servers:
+  - url: http://localhost:8081
+    description: Locally deployed server
+
+paths:
+  /authn/loginAttempts/{userId}:
+    get:
+      description: Get login attempts for a single user
+      operationId: getLoginAttempts
+      tags:
+        - loginAttempts
+      parameters:
+        - $ref: '#/components/parameters/pathUserId'
+      responses:
+        '200':
+          description: Number of login attempts for user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/loginAttempts'
+        '404':
+          $ref: '#/components/responses/entityNotFoundResponse'
+        '500':
+          $ref: '#/components/responses/internalServerErrorResponse'
+
+  /authn/login:
+    post:
+      description: Get a new login token
+      operationId: login
+      tags:
+        - login
+      parameters:
+        - $ref: '#/components/parameters/userAgentHeader'
+        - $ref: '#/components/parameters/xForwardedForHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/loginCredentials'
+      responses:
+        '201':
+          description: Login response body with access/refresh tokens
+          headers:
+            x-okapi-token:
+              required: true
+              description: An X-Okapi-Token header
+              schema:
+                type: string
+            refreshtoken:
+              required: true
+              description: A refresh token
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/loginResponse'
+        '400':
+          $ref: '#/components/responses/badRequestResponse'
+        '422':
+          $ref: '#/components/responses/unprocessableEntityResponse'
+        '500':
+          $ref: '#/components/responses/internalServerErrorResponse'
+  /authn/login-with-expiry:
+    post:
+      description: Get an expiring refresh and access token
+      operationId: loginWithExpiry
+      tags:
+        - login
+      parameters:
+        - $ref: '#/components/parameters/userAgentHeader'
+        - $ref: '#/components/parameters/xForwardedForHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/loginCredentials'
+      responses:
+        '201':
+          description: Login response body with access/refresh tokens
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/loginResponseWithExpiry'
+        '400':
+          $ref: '#/components/responses/badRequestResponse'
+        '422':
+          $ref: '#/components/responses/unprocessableEntityResponse'
+        '500':
+          $ref: '#/components/responses/internalServerErrorResponse'
+  /authn/refresh:
+    post:
+      description: Get a new refresh and access token
+      operationId: refreshToken
+      tags:
+        - login
+      parameters:
+        - $ref: '#/components/parameters/folioRefreshTokenRequired'
+      responses:
+        '201':
+          description: Refresh response body with access/refresh tokens
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/loginResponseWithExpiry'
+        '400':
+          $ref: '#/components/responses/badRequestResponse'
+        '422':
+          $ref: '#/components/responses/unprocessableEntityResponse'
+        '500':
+          $ref: '#/components/responses/internalServerErrorResponse'
+  /authn/logout:
+    post:
+      description: Logs the user out on their current device
+      operationId: logout
+      tags:
+        - login
+      parameters:
+        - $ref: '#/components/parameters/folioRefreshToken'
+      responses:
+        '204':
+          description: The user has been logged out from their current devices.
+        '400':
+          $ref: '#/components/responses/badRequestResponse'
+        '422':
+          $ref: '#/components/responses/unprocessableEntityResponse'
+        '500':
+          $ref: '#/components/responses/internalServerErrorResponse'
+  /authn/logout-all:
+    post:
+      description: Logs the user out on all of their devices
+      operationId: logoutAll
+      tags:
+        - login
+      responses:
+        '204':
+          description: The user has been logged out from all their devices.
+        '400':
+          $ref: '#/components/responses/badRequestResponse'
+        '422':
+          $ref: '#/components/responses/unprocessableEntityResponse'
+        '500':
+          $ref: '#/components/responses/internalServerErrorResponse'
+  /authn/token:
+    get:
+      description: Get a new login token from the authorization code
+      operationId: token
+      tags:
+        - login
+      parameters:
+        - $ref: '#/components/parameters/userAgentHeader'
+        - $ref: '#/components/parameters/xForwardedForHeader'
+        - $ref: '#/components/parameters/code'
+        - $ref: '#/components/parameters/redirect-uri'
+      responses:
+        '201':
+          description: Login response body with access token
+          headers:
+            x-okapi-token:
+              required: true
+              description: An X-Okapi-Token header
+              schema:
+                type: string
+            refreshtoken:
+              required: true
+              description: A refresh token
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/loginResponse'
+        '400':
+          $ref: '#/components/responses/badRequestResponse'
+        '422':
+          $ref: '#/components/responses/unprocessableEntityResponse'
+        '500':
+          $ref: '#/components/responses/internalServerErrorResponse'
+
+  /authn/update:
+    post:
+      description: Self-update existing credentials.
+      operationId: updateCredentials
+      tags:
+        - credentials
+      parameters:
+        - $ref: '#/components/parameters/userAgentHeader'
+        - $ref: '#/components/parameters/xForwardedForHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/updateCredentials'
+      responses:
+        '204':
+          description: Self-update existing credentials.
+        '400':
+          $ref: '#/components/responses/badRequestResponse'
+        '401':
+          $ref: '#/components/responses/unauthorizedResponse'
+        '422':
+          $ref: '#/components/responses/unprocessableEntityResponse'
+        '500':
+          $ref: '#/components/responses/internalServerErrorResponse'
+
+  /authn/credentials:
+    post:
+      description: Add a new login to the system.
+      operationId: createCredentials
+      tags:
+        - credentials
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/loginCredentials'
+      responses:
+        '201':
+          description: Success string message
+        '400':
+          $ref: '#/components/responses/badRequestResponse'
+        '422':
+          $ref: '#/components/responses/unprocessableEntityResponse'
+        '500':
+          $ref: '#/components/responses/internalServerErrorResponse'
+    delete:
+      description: Delete credentials for user
+      operationId: deleteCredentials
+      tags:
+        - credentials
+      parameters:
+        - $ref: '#/components/parameters/userId'
+      responses:
+        '204':
+          description: Credentials removed successfully
+        '404':
+          $ref: '#/components/responses/badRequestResponse'
+        '500':
+          $ref: '#/components/responses/internalServerErrorResponse'
+
+
+  /authn/password/repeatable:
+    post:
+      description: Validate password for repeatability
+      operationId: validatePasswordRepeatability
+      tags:
+        - password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/password'
+      responses:
+        '200':
+          description: Password validation result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/validPasswordResponse'
+        '500':
+          $ref: '#/components/responses/internalServerErrorResponse'
+
+  /authn/reset-password:
+    post:
+      description: Resets password for user in record and deletes action record
+      operationId: resetPassword
+      tags:
+        - password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/passwordResetAction'
+      responses:
+        '201':
+          description: Login response body with access/refresh tokens
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/responseResetAction'
+        '400':
+          $ref: '#/components/responses/badRequestResponse'
+        '500':
+          $ref: '#/components/responses/internalServerErrorResponse'
+
+  /authn/password-reset-action:
+    post:
+      description: Saves password reset action to storage
+      operationId: createResetPasswordAction
+      tags:
+        - password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/passwordCreateAction'
+      responses:
+        '201':
+          description: Response to create a new password change action
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/responseCreateAction'
+        '400':
+          $ref: '#/components/responses/badRequestResponse'
+        '500':
+          $ref: '#/components/responses/internalServerErrorResponse'
+
+  /authn/password-reset-action/{actionId}:
+    get:
+      description: Retrieves action record by id
+      operationId: getPasswordActionById
+      parameters:
+        - $ref: '#/components/parameters/actionId'
+      tags:
+        - password
+      responses:
+        '200':
+          description: Number of login attempts for user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/passwordCreateAction'
+        '400':
+          $ref: '#/components/responses/badRequestResponse'
+        '404':
+          $ref: '#/components/responses/entityNotFoundResponse'
+        '500':
+          $ref: '#/components/responses/internalServerErrorResponse'
+
+  /authn/log/events:
+    get:
+      description: Returns a list of events retrieved from storage
+      operationId: getLogEvents
+      tags:
+        - logEvents
+      parameters:
+        - $ref: '#/components/parameters/length'
+        - $ref: '#/components/parameters/start'
+        - $ref: '#/components/parameters/query'
+      responses:
+        '200':
+          description: Log events
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/logEventCollection'
+        '400':
+          $ref: '#/components/responses/badRequestResponse'
+        '404':
+          $ref: '#/components/responses/entityNotFoundResponse'
+        '500':
+          $ref: '#/components/responses/internalServerErrorResponse'
+
+    post:
+      description: Saves received event into the storage
+      operationId: saveLogEvent
+      tags:
+        - logEvents
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/logEvent'
+      responses:
+        '201':
+          description: Saved Log event
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/logResponse'
+        '400':
+          $ref: '#/components/responses/badRequestResponse'
+        '500':
+          $ref: '#/components/responses/internalServerErrorResponse'
+
+  /authn/log/events/{eventId}:
+    delete:
+      description: Saves received event into the storage
+      operationId: deleteLogEvent
+      tags:
+        - logEvents
+      parameters:
+        - $ref: '#/components/parameters/eventId'
+      responses:
+        '204':
+          description: No content response
+        '404':
+          $ref: '#/components/responses/entityNotFoundResponse'
+        '500':
+          $ref: '#/components/responses/internalServerErrorResponse'
+
+  /authn/credentials-existence:
+    get:
+      description: Returns single property 'credentialsExist' with true, if user has local password
+      operationId: checkCredentialsExistence
+      tags:
+        - credentials
+      parameters:
+        - $ref: '#/components/parameters/userId'
+      responses:
+        '200':
+          description: Credentials existence response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/credentialsExistence'
+        '500':
+          $ref: '#/components/responses/internalServerErrorResponse'
+
+components:
+  schemas:
+    loginAttempts:
+      $ref: schemas/loginAttempts.json
+    loginCredentials:
+      $ref: schemas/loginCredentials.json
+    loginResponse:
+      $ref: schemas/loginResponse.json
+    loginResponseWithExpiry:
+      $ref: schemas/loginResponseWithExpiry.json
+    updateCredentials:
+      $ref: schemas/updateCredentials.json
+    password:
+      $ref: schemas/password.json
+    passwordCreateAction:
+      $ref: schemas/passwordCreateAction.json
+    passwordResetAction:
+      $ref: schemas/passwordResetAction.json
+    responseCreateAction:
+      $ref: schemas/responseCreateAction.json
+    responseResetAction:
+      $ref: schemas/responseResetAction.json
+    validPasswordResponse:
+      $ref: schemas/validPassword.json
+    logEvent:
+      $ref: schemas/logEvent.json
+    logEventCollection:
+      $ref: schemas/logEventCollection.json
+    logResponse:
+      $ref: schemas/logResponse.json
+    credentialsExistence:
+      $ref: schemas/credentialsExistence.json
+    errorResponse:
+      $ref: schemas/errors.json
+
+  responses:
+    badRequestResponse:
+      description: Error response in JSON format for validation errors.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/errorResponse'
+    unauthorizedResponse:
+      description: Error response in JSON format if user is not authorized to perform operation.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/errorResponse'
+    entityNotFoundResponse:
+      description: Error response if entity is not found by id (in json format)
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/errorResponse'
+    unprocessableEntityResponse:
+      description: Error response in JSON format for unprocessable entity.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/errorResponse'
+    internalServerErrorResponse:
+      description: Error response for unhandled or critical server exceptions, e.g. NullPointerException.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/errorResponse'
+
+  parameters:
+    actionId:
+      in: path
+      required: true
+      name: actionId
+      description: Action Identifier
+      schema:
+        type: string
+    userId:
+      in: query
+      required: true
+      name: userId
+      description: User identifier
+      schema:
+        type: string
+    eventId:
+      in: path
+      required: true
+      name: eventId
+      description: Event Identifier
+      schema:
+        type: string
+    pathUserId:
+      in: path
+      required: true
+      name: userId
+      description: User identifier
+      schema:
+        type: string
+    userAgentHeader:
+      in: header
+      required: false
+      name: userAgent
+      description: Used to identify the Operating System and Browser of the web-server
+      schema:
+        type: string
+    xForwardedForHeader:
+      in: header
+      required: false
+      name: forwardedFor
+      description: -<
+        HTTP header field is a common method for identifying the originating IP address
+        of a client connecting to a web server through an HTTP proxy or load balancer
+      schema:
+        type: string
+    folioRefreshToken:
+      in: cookie
+      required: false
+      name: folioRefreshToken
+      description: Refresh token cookie
+      schema:
+        type: string
+    folioRefreshTokenRequired:
+      in: cookie
+      required: true
+      name: folioRefreshToken
+      description: Refresh token cookie
+      schema:
+        type: string
+    length:
+      in: query
+      name: length
+      description: The maximum number of results to return.
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        default: 10
+      example: 10
+    start:
+      in: query
+      name: start
+      description: The starting index in a list of results (starts at one).
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+    query:
+      in: query
+      name: query
+      description: A query string to filter users based on matching criteria in fields.
+      required: false
+      schema:
+        type: string
+      example: 10
+    code:
+      in: query
+      required: true
+      name: code
+      description: temporary authentication code
+      schema:
+        type: string
+    redirect-uri:
+      in: query
+      required: true
+      name: redirect-uri
+      description: initial uri that was used as redirect uri for getting authentication code
+      schema:
+        type: string

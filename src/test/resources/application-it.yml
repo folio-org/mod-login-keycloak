@@ -1,0 +1,23 @@
+spring:
+  datasource:
+    username: ebsco_admin
+    password: qwerty123
+
+server.port: 8081
+
+application:
+  environment: it-test
+  keycloak:
+    client-suffix: -login-application
+    admin:
+      username: admin
+      password: admin
+      client_id: admin-cli
+      realm: master
+  secret-store:
+    type: EPHEMERAL
+    ephemeral:
+      content:
+        it-test_test_test-login-application: kc-client-password
+  x-okapi-token:
+    enabled: false

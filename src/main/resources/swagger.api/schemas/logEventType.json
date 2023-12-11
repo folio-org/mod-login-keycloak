@@ -1,0 +1,15 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "logEventType.json",
+  "title": "Log Event Type Schema",
+  "description": "Log event type",
+  "type": "string",
+  "enum": [
+    "PASSWORD_RESET",
+    "PASSWORD_CREATE",
+    "PASSWORD_CHANGE",
+    "SUCCESSFUL_LOGIN_ATTEMPT",
+    "FAILED_LOGIN_ATTEMPT",
+    "USER_BLOCK"
+  ]
+}

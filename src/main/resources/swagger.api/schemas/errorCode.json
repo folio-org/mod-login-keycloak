@@ -1,0 +1,17 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "errorCode.json",
+  "title": "Error Code Schema",
+  "description": "Error message code",
+  "type": "string",
+  "enum": [
+    "unknown_error",
+    "service_error",
+    "validation_error",
+    "not_found_error",
+    "found_error",
+    "token.parse.failure",
+    "token.refresh.unprocessable",
+    "token.logout.unprocessable"
+  ]
+}

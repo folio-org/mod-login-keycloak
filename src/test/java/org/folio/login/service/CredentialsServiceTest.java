@@ -1,0 +1,55 @@
+package org.folio.login.service;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.folio.login.support.TestConstants.USER_ID;
+import static org.folio.login.support.TestValues.loginCredentials;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import org.folio.login.domain.dto.CredentialsExistence;
+import org.folio.test.types.UnitTest;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+@UnitTest
+@ExtendWith(MockitoExtension.class)
+class CredentialsServiceTest {
+
+  @Mock private KeycloakService keycloakService;
+  @InjectMocks private CredentialsService credentialsService;
+
+  @Test
+  void createCredentials_positive() {
+    doNothing().when(keycloakService).createAuthCredentials(loginCredentials());
+    credentialsService.createAuthCredentials(loginCredentials());
+    verify(keycloakService).createAuthCredentials(loginCredentials());
+  }
+
+  @Test
+  void deleteCredentials_positive() {
+    doNothing().when(keycloakService).deleteAuthCredentials(USER_ID);
+    credentialsService.deleteAuthCredentials(USER_ID);
+    verify(keycloakService).deleteAuthCredentials(USER_ID);
+  }
+
+  @Test
+  void checkCredentials_positive() {
+    checkCredentials(true);
+  }
+
+  @Test
+  void checkCredentials_negative() {
+    checkCredentials(false);
+  }
+
+  void checkCredentials(boolean value) {
+    var credentialsExistence = new CredentialsExistence().credentialsExist(value);
+    when(keycloakService.checkCredentialExistence(USER_ID)).thenReturn(credentialsExistence);
+    var result = credentialsService.checkCredentialsExistence(USER_ID);
+    assertThat(result).isEqualTo(credentialsExistence);
+  }
+}

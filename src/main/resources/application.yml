@@ -1,0 +1,73 @@
+spring:
+  cache:
+    type: caffeine
+  application:
+    name: mod-login-keycloak
+  jackson:
+    default-property-inclusion: non_null
+    deserialization:
+      fail-on-unknown-properties: false
+      accept-single-value-as-array: true
+  datasource:
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:postgres}
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_DATABASE:postgres}
+  liquibase:
+    change-log: classpath:changelog/changelog-master.xml
+  jpa:
+    open-in-view: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+  cloud:
+    openfeign:
+      okhttp:
+        enabled: true
+
+folio:
+  jpa:
+    repository:
+      base-packages: org.folio.login.domain
+
+server.port: 8081
+
+management:
+  endpoints.web:
+    base-path: /admin
+    exposure.include: info,health,liquibase,threaddump,heapdump,httptrace,loggers
+
+coffee-boots:
+  cache:
+    spec:
+      keycloak-configuration: maximumSize=500,expireAfterWrite=${KC_CONFIG_TTL:3600s}
+      token: maximumSize=500,expireAfterWrite=${KC_ADMIN_TOKEN_TTL:410s}
+
+application:
+  environment: ${ENV:folio}
+  keycloak:
+    client-suffix: ${KC_LOGIN_CLIENT_SUFFIX:-login-application}
+    url: ${KC_URL:http://keycloak:8080}
+    admin:
+      username: admin
+      password: ${KC_ADMIN_PASSWORD}
+      client_id: admin-cli
+      realm: master
+  secret-store:
+    type: ${SECRET_STORE_TYPE}
+    aws-ssm:
+      region: ${SECRET_STORE_AWS_SSM_REGION:}
+      use-iam: ${SECRET_STORE_AWS_SSM_USE_IAM:true}
+      ecs-credentials-endpoint: ${SECRET_STORE_AWS_SSM_ECS_CREDENTIALS_ENDPOINT:}
+      ecs-credentials-path: ${SECRET_STORE_AWS_SSM_ECS_CREDENTIALS_PATH:}
+    vault:
+      token: ${SECRET_STORE_VAULT_TOKEN:}
+      address: ${SECRET_STORE_VAULT_ADDRESS:}
+      enable-ssl: ${SECRET_STORE_VAULT_ENABLE_SSL:false}
+      pem-file-path: ${SECRET_STORE_VAULT_PEM_FILE_PATH:}
+      keystore-password: ${SECRET_STORE_VAULT_KEYSTORE_PASSWORD:}
+      keystore-file-path: ${SECRET_STORE_VAULT_KEYSTORE_FILE_PATH:}
+      truststore-file-path: ${SECRET_STORE_VAULT_TRUSTSTORE_FILE_PATH:}
+  x-okapi-token:
+    enabled: ${X_OKAPI_TOKEN_HEADER_ENABLED:false}
+  cookies:
+    same-site: ${LOGIN_COOKIE_SAMESITE:${login.cookie.samesite:NONE}}
