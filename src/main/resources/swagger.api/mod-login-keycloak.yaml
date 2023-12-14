@@ -573,7 +573,7 @@ components:
       required: false
       schema:
         type: string
-      example: 10
+      example: "10"
     code:
       in: query
       required: true
