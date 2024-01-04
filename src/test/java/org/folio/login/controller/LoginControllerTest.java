@@ -117,7 +117,7 @@ class LoginControllerTest {
   @Test
   void token_positive() throws Exception {
     var tokenContainer = tokenContainer();
-    var loginResponse = loginResponse();
+    var loginResponse = loginResponseWithExpiry();
     var code = "secret_code";
     var redirect = "localhost";
 
@@ -139,7 +139,7 @@ class LoginControllerTest {
   @Test
   void token_positive_withoutTokenHeader() throws Exception {
     var tokenContainer = tokenContainer();
-    var loginResponse = loginResponse();
+    var loginResponse = loginResponseWithExpiry();
 
     var code = "secret_code";
     var redirect = "localhost";
