@@ -14,9 +14,11 @@
       "description": "Error message type"
     },
     "code": {
+      "description": "Error message code",
       "$ref": "errorCode.json"
     },
     "parameters": {
+      "description": "List of key/value parameters of an error",
       "$ref": "parameters.json"
     }
   }
