@@ -178,7 +178,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/loginResponse'
+                $ref: '#/components/schemas/loginResponseWithExpiry'
         '400':
           $ref: '#/components/responses/badRequestResponse'
         '422':

@@ -10,6 +10,7 @@
       "description": "The system assigned unique ID of the instance record; UUID"
     },
     "eventType": {
+      "description": "Log event type",
       "$ref": "logEventType.json"
     },
     "tenant": {

@@ -1,5 +1,6 @@
 package org.folio.login.support.base;
 
+import static org.folio.login.support.TestUtils.cleanUpCaches;
 import static org.folio.test.TestUtils.asJsonString;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -12,8 +13,11 @@ import lombok.extern.log4j.Log4j2;
 import org.folio.test.base.BaseBackendIntegrationTest;
 import org.folio.test.extensions.EnableKeycloak;
 import org.folio.test.extensions.EnablePostgres;
+import org.junit.jupiter.api.BeforeEach;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.cache.CacheManager;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
@@ -25,6 +29,14 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 @ActiveProfiles("it")
 @AutoConfigureMockMvc
 public abstract class BaseIntegrationTest extends BaseBackendIntegrationTest {
+
+  @Autowired
+  private CacheManager cacheManager;
+
+  @BeforeEach
+  void setUp() {
+    cleanUpCaches(cacheManager);
+  }
 
   public static ResultActions attemptGet(String uri, Object... args) throws Exception {
     return mockMvc.perform(get(uri, args).contentType(APPLICATION_JSON));
