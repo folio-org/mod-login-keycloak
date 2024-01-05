@@ -62,10 +62,11 @@ public class LoginController implements LoginApi {
   }
 
   @Override
-  public ResponseEntity<LoginResponse> token(String code, String redirectUri, String userAgent, String forwardedFor) {
+  public ResponseEntity<LoginResponseWithExpiry> token(String code, String redirectUri, String userAgent,
+    String forwardedFor) {
     var tokenContainer = loginService.token(code, redirectUri, userAgent, forwardedFor);
     var cookieHeaders = tokenCookieHeaderManager.createAuthorizationCookieHeader(tokenContainer);
-    var loginResponse = buildLoginResponse(tokenContainer);
+    var loginResponse = buildLoginWithExpiryResponse(tokenContainer);
     return ResponseEntity.status(CREATED)
       .headers(cookieHeaders)
       .headers(createTokenHeaderIfNeeds(tokenContainer.getAccessToken().getJwt()))

@@ -1,11 +1,11 @@
 package org.folio.login.it;
 
 import static java.time.Duration.ofMillis;
-import static java.util.Objects.requireNonNull;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.login.support.TestConstants.KEYCLOAK_CONFIG_CACHE;
 import static org.folio.login.support.TestConstants.TOKEN_CACHE;
+import static org.folio.login.support.TestUtils.cleanUpCaches;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -89,9 +89,5 @@ class CacheConfigIT extends BaseIntegrationTest {
       assertNull(cache.get("key1"));
       assertNull(cache.get("key2"));
     });
-  }
-
-  public static void cleanUpCaches(CacheManager cacheManager) {
-    cacheManager.getCacheNames().forEach(name -> requireNonNull(cacheManager.getCache(name)).clear());
   }
 }
