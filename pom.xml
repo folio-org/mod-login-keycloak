@@ -28,7 +28,6 @@
 
   <properties>
     <java.version>17</java.version>
-    <lombok.version>1.18.30</lombok.version>
     <swagger-annotations.version>2.2.8</swagger-annotations.version>
     <openapi-tools.jackson-databind-nullable.version>0.2.6</openapi-tools.jackson-databind-nullable.version>
     <folio-spring-support.version>7.3.0-SNAPSHOT</folio-spring-support.version>
