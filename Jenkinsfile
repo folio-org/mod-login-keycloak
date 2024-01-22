@@ -1,5 +1,5 @@
 buildMvn {
-  publishModDescriptor = true
+  publishModDescriptor = false
   mvnDeploy = true
   buildNode = 'jenkins-agent-java17-bigmem'
 }
