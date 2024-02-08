@@ -19,7 +19,7 @@ public class TokenCookieHeaderManager {
   public static final String FOLIO_REFRESH_TOKEN = "folioRefreshToken";
 
   private static final String ACCESS_TOKEN_PATH = "/";
-  private static final String FOLIO_REFRESH_PATH = "/authn";
+  private static final String FOLIO_REFRESH_PATH = "/authn"; //NOSONAR
 
   private final CookieProperties cookieProperties;
 
@@ -28,9 +28,9 @@ public class TokenCookieHeaderManager {
     var refreshToken = tokenContainer.getRefreshToken();
 
     var headers = new HttpHeaders();
-    headers.add(SET_COOKIE, createHeader(FOLIO_ACCESS_TOKEN, accessToken.getJwt(), accessToken.getExpiresIn(), 
+    headers.add(SET_COOKIE, createHeader(FOLIO_ACCESS_TOKEN, accessToken.getJwt(), accessToken.getExpiresIn(),
       ACCESS_TOKEN_PATH));
-    headers.add(SET_COOKIE, createHeader(FOLIO_REFRESH_TOKEN, refreshToken.getJwt(), refreshToken.getExpiresIn(), 
+    headers.add(SET_COOKIE, createHeader(FOLIO_REFRESH_TOKEN, refreshToken.getJwt(), refreshToken.getExpiresIn(),
       FOLIO_REFRESH_PATH));
     return headers;
   }
