@@ -18,6 +18,9 @@ public class TokenCookieHeaderManager {
   public static final String FOLIO_ACCESS_TOKEN = "folioAccessToken";
   public static final String FOLIO_REFRESH_TOKEN = "folioRefreshToken";
 
+  private static final String ACCESS_TOKEN_PATH = "/";
+  private static final String FOLIO_REFRESH_PATH = "/authn";
+
   private final CookieProperties cookieProperties;
 
   public HttpHeaders createAuthorizationCookieHeader(TokenContainer tokenContainer) {
@@ -25,16 +28,18 @@ public class TokenCookieHeaderManager {
     var refreshToken = tokenContainer.getRefreshToken();
 
     var headers = new HttpHeaders();
-    headers.add(SET_COOKIE, createHeader(FOLIO_ACCESS_TOKEN, accessToken.getJwt(), accessToken.getExpiresIn()));
-    headers.add(SET_COOKIE, createHeader(FOLIO_REFRESH_TOKEN, refreshToken.getJwt(), refreshToken.getExpiresIn()));
+    headers.add(SET_COOKIE, createHeader(FOLIO_ACCESS_TOKEN, accessToken.getJwt(), accessToken.getExpiresIn(), 
+      ACCESS_TOKEN_PATH));
+    headers.add(SET_COOKIE, createHeader(FOLIO_REFRESH_TOKEN, refreshToken.getJwt(), refreshToken.getExpiresIn(), 
+      FOLIO_REFRESH_PATH));
     return headers;
   }
 
-  private String createHeader(String name, String value, Long maxAge) {
+  private String createHeader(String name, String value, Long maxAge, String path) {
     return ResponseCookie.from(name, value)
       .httpOnly(true)
       .secure(true)
-      .path("/")
+      .path(path)
       .maxAge(maxAge)
       .sameSite(cookieProperties.getSameSiteValue())
       .build()
