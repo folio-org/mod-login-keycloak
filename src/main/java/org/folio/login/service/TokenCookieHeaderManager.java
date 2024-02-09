@@ -25,16 +25,18 @@ public class TokenCookieHeaderManager {
     var refreshToken = tokenContainer.getRefreshToken();
 
     var headers = new HttpHeaders();
-    headers.add(SET_COOKIE, createHeader(FOLIO_ACCESS_TOKEN, accessToken.getJwt(), accessToken.getExpiresIn()));
-    headers.add(SET_COOKIE, createHeader(FOLIO_REFRESH_TOKEN, refreshToken.getJwt(), refreshToken.getExpiresIn()));
+    headers.add(SET_COOKIE, createHeader(FOLIO_ACCESS_TOKEN, accessToken.getJwt(), accessToken.getExpiresIn(),
+      "/"));
+    headers.add(SET_COOKIE, createHeader(FOLIO_REFRESH_TOKEN, refreshToken.getJwt(), refreshToken.getExpiresIn(),
+      "/authn"));
     return headers;
   }
 
-  private String createHeader(String name, String value, Long maxAge) {
+  private String createHeader(String name, String value, Long maxAge, String path) {
     return ResponseCookie.from(name, value)
       .httpOnly(true)
       .secure(true)
-      .path("/")
+      .path(path)
       .maxAge(maxAge)
       .sameSite(cookieProperties.getSameSiteValue())
       .build()

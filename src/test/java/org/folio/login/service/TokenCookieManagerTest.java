@@ -38,7 +38,7 @@ class TokenCookieManagerTest {
         String.format("Max-Age=%s;", EXPIRES_IN),
         "Secure;", "HttpOnly;", String.format("SameSite=%s", properties.getSameSiteValue()));
     assertThat(result.get(SET_COOKIE).get(1).split(" "))
-      .contains(String.format("folioRefreshToken=%s;", REFRESH_TOKEN), "Path=/;",
+      .contains(String.format("folioRefreshToken=%s;", REFRESH_TOKEN), "Path=/authn;",
         String.format("Max-Age=%s;", REFRESH_EXPIRES_IN),
         "Secure;", "HttpOnly;", String.format("SameSite=%s", properties.getSameSiteValue()));
   }
