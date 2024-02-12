@@ -42,7 +42,7 @@
     <maven-checkstyle-plugin.version>3.3.1</maven-checkstyle-plugin.version>
     <copy-rename-maven-plugin.version>1.0.1</copy-rename-maven-plugin.version>
     <maven-release-plugin.version>3.0.1</maven-release-plugin.version>
-    <openapi-generator.version>7.2.0</openapi-generator.version>
+    <openapi-generator.version>7.3.0</openapi-generator.version>
     <mapstruct-plugin.version>1.5.5.Final</mapstruct-plugin.version>
   </properties>
 
