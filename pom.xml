@@ -34,7 +34,7 @@
     </mod-login-keycloak.yaml-file>
 
     <!-- Test dependencies versions -->
-    <testcontainer.version>1.19.5</testcontainer.version>
+    <testcontainer.version>1.19.6</testcontainer.version>
     <folio-backend-testing.version>1.2.0</folio-backend-testing.version>
 
     <!-- Plugins versions -->
