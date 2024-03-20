@@ -52,13 +52,17 @@ public class LoginController implements LoginApi {
   @Override
   public ResponseEntity<Void> logout(String folioRefreshTokenRequired) {
     loginService.logout(folioRefreshTokenRequired);
-    return ResponseEntity.noContent().build();
+    return ResponseEntity.noContent()
+      .headers(tokenCookieHeaderManager.createAuthorizationCookieHeader(TokenContainer.empty()))
+      .build();
   }
 
   @Override
   public ResponseEntity<Void> logoutAll() {
     loginService.logoutAll();
-    return ResponseEntity.noContent().build();
+    return ResponseEntity.noContent()
+      .headers(tokenCookieHeaderManager.createAuthorizationCookieHeader(TokenContainer.empty()))
+      .build();
   }
 
   @Override

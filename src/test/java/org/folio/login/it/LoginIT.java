@@ -113,7 +113,9 @@ class LoginIT extends BaseIntegrationTest {
         .header(XOkapiHeaders.USER_ID, USER_ID)
         .header(XOkapiHeaders.URL, OKAPI_URL)
         .header(XOkapiHeaders.TENANT, TENANT))
-      .andExpect(status().isNoContent());
+      .andExpect(status().isNoContent())
+      .andExpect(cookie().httpOnly(FOLIO_ACCESS_TOKEN, true))
+      .andExpect(cookie().httpOnly(FOLIO_REFRESH_TOKEN, true));
 
     assertThat(loadKcUserSessions()).isEmpty();
     verify(keycloakService).logoutAll();
@@ -131,7 +133,9 @@ class LoginIT extends BaseIntegrationTest {
         .header(XOkapiHeaders.USER_ID, USER_ID)
         .header(XOkapiHeaders.URL, OKAPI_URL)
         .header(XOkapiHeaders.TENANT, TENANT))
-      .andExpect(status().isNoContent());
+      .andExpect(status().isNoContent())
+      .andExpect(cookie().httpOnly(FOLIO_ACCESS_TOKEN, true))
+      .andExpect(cookie().httpOnly(FOLIO_REFRESH_TOKEN, true));
 
     assertThat(loadKcUserSessions()).isEmpty();
   }
@@ -171,7 +175,9 @@ class LoginIT extends BaseIntegrationTest {
         .header(XOkapiHeaders.TENANT, TENANT)
         .cookie(new Cookie(FOLIO_ACCESS_TOKEN, tokens.getOkapiToken()),
           new Cookie(FOLIO_REFRESH_TOKEN, tokens.getRefreshToken())))
-      .andExpect(status().isNoContent());
+      .andExpect(status().isNoContent())
+      .andExpect(cookie().httpOnly(FOLIO_ACCESS_TOKEN, true))
+      .andExpect(cookie().httpOnly(FOLIO_REFRESH_TOKEN, true));
   }
 
   private static ResultActions doPost(String endpoint, Object payload) throws Exception {
