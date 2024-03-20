@@ -23,4 +23,13 @@ public class TokenContainer {
     }
     return refreshToken.getExpirationDate();
   }
+
+  /**
+   * Creates a {@link TokenContainer} with null access and refresh tokens.
+   *
+   * @return empty {@link TokenContainer} object
+   */
+  public static TokenContainer empty() {
+    return new TokenContainer(null, null);
+  }
 }
