@@ -11,8 +11,8 @@ import static org.mockito.Mockito.when;
 import java.util.Map;
 import java.util.Optional;
 import org.folio.common.configuration.properties.FolioEnvironment;
-import org.folio.login.configuration.KeycloakConfigurationProperties;
 import org.folio.login.domain.model.KeycloakRealmConfiguration;
+import org.folio.login.integration.keycloak.config.KeycloakProperties;
 import org.folio.login.service.RealmConfigurationProviderTest.TestContextConfiguration;
 import org.folio.spring.DefaultFolioExecutionContext;
 import org.folio.spring.FolioExecutionContext;
@@ -44,7 +44,7 @@ class RealmConfigurationProviderTest {
   @Autowired private CacheManager cacheManager;
   @MockBean private SecureStore secureStore;
   @MockBean private FolioEnvironment folioEnvironment;
-  @MockBean private KeycloakConfigurationProperties keycloakConfigurationProperties;
+  @MockBean private KeycloakProperties keycloakProperties;
 
   @AfterEach
   void tearDown() {
@@ -52,8 +52,8 @@ class RealmConfigurationProviderTest {
   }
 
   @Test
-  void getRealmConfiguration_positive() throws Exception {
-    when(keycloakConfigurationProperties.getClientSuffix()).thenReturn("-app");
+  void getRealmConfiguration_positive() {
+    when(keycloakProperties.getClientSuffix()).thenReturn("-app");
     when(folioEnvironment.getEnvironment()).thenReturn("test");
     when(secureStore.get(KEY)).thenReturn(SECRET);
 
@@ -68,8 +68,8 @@ class RealmConfigurationProviderTest {
   }
 
   @Test
-  void getRealmConfiguration_clientSecretNotFound() throws Exception {
-    when(keycloakConfigurationProperties.getClientSuffix()).thenReturn("-app");
+  void getRealmConfiguration_clientSecretNotFound() {
+    when(keycloakProperties.getClientSuffix()).thenReturn("-app");
     when(folioEnvironment.getEnvironment()).thenReturn("test");
     when(secureStore.get(KEY)).thenThrow(new NotFoundException("not found"));
 

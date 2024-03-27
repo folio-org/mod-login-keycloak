@@ -7,7 +7,7 @@ import static org.springframework.util.CollectionUtils.isEmpty;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.folio.login.domain.model.KeycloakUser;
-import org.folio.login.integration.KeycloakUserClient;
+import org.folio.login.integration.keycloak.KeycloakUserClient;
 import org.folio.spring.FolioExecutionContext;
 import org.folio.spring.exception.NotFoundException;
 import org.springframework.stereotype.Service;

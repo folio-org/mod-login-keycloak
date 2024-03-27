@@ -2,8 +2,8 @@ package org.folio.login.service;
 
 import lombok.RequiredArgsConstructor;
 import org.folio.common.configuration.properties.FolioEnvironment;
-import org.folio.login.configuration.KeycloakConfigurationProperties;
 import org.folio.login.domain.model.KeycloakRealmConfiguration;
+import org.folio.login.integration.keycloak.config.KeycloakProperties;
 import org.folio.spring.FolioExecutionContext;
 import org.folio.tools.store.SecureStore;
 import org.folio.tools.store.exception.NotFoundException;
@@ -17,7 +17,7 @@ public class RealmConfigurationProvider {
   private final SecureStore secureStore;
   private final FolioEnvironment folioEnvironment;
   private final FolioExecutionContext folioExecutionContext;
-  private final KeycloakConfigurationProperties keycloakConfigurationProperties;
+  private final KeycloakProperties keycloakProperties;
 
   /**
    * Provides realm configuration using {@link FolioExecutionContext} object.
@@ -27,7 +27,7 @@ public class RealmConfigurationProvider {
   @Cacheable(cacheNames = "keycloak-configuration", key = "@folioExecutionContext.tenantId")
   public KeycloakRealmConfiguration getRealmConfiguration() {
     var tenantId = folioExecutionContext.getTenantId();
-    var clientId = tenantId + keycloakConfigurationProperties.getClientSuffix();
+    var clientId = tenantId + keycloakProperties.getClientSuffix();
     return new KeycloakRealmConfiguration()
       .clientId(clientId)
       .clientSecret(retrieveKcClientSecret(tenantId, clientId));

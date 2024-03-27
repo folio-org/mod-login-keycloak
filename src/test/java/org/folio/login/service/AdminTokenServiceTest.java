@@ -14,8 +14,9 @@ import static org.mockito.Mockito.when;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.NONE;
 
 import java.util.Optional;
-import org.folio.login.configuration.KeycloakConfigurationProperties;
-import org.folio.login.integration.KeycloakClient;
+import org.folio.login.integration.keycloak.KeycloakClient;
+import org.folio.login.integration.keycloak.config.KeycloakAdminProperties;
+import org.folio.login.integration.keycloak.config.KeycloakProperties;
 import org.folio.test.types.UnitTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -37,7 +38,8 @@ class AdminTokenServiceTest {
 
   @Autowired private AdminTokenService adminTokenService;
   @Autowired private CacheManager cacheManager;
-  @MockBean private KeycloakConfigurationProperties.Admin adminProperties;
+  @MockBean private KeycloakProperties keycloakProperties;
+  @MockBean private KeycloakAdminProperties adminProperties;
   @MockBean private KeycloakClient keycloakClient;
 
   @BeforeEach
@@ -49,6 +51,7 @@ class AdminTokenServiceTest {
   void issueAdminToken_positive() {
     var keycloakAuth = keycloakAuthentication();
 
+    when(keycloakProperties.getAdmin()).thenReturn(adminProperties);
     when(adminProperties.getClientId()).thenReturn(CLIENT_ID);
     when(adminProperties.getPassword()).thenReturn(PASSWORD);
     when(adminProperties.getUsername()).thenReturn(USERNAME);

@@ -1,11 +1,11 @@
-package org.folio.login.integration;
+package org.folio.login.integration.keycloak;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 import java.util.List;
-import org.folio.login.configuration.KeycloakFeignConfiguration;
 import org.folio.login.domain.model.KeycloakUser;
+import org.folio.login.integration.keycloak.config.KeycloakFeignConfiguration;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;

@@ -14,7 +14,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.List;
 import org.folio.login.domain.model.KeycloakUser;
-import org.folio.login.integration.KeycloakUserClient;
+import org.folio.login.integration.keycloak.KeycloakUserClient;
 import org.folio.spring.FolioExecutionContext;
 import org.folio.spring.exception.NotFoundException;
 import org.folio.test.types.UnitTest;

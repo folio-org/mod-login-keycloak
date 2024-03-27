@@ -47,7 +47,7 @@ import org.folio.login.domain.model.KeycloakUser;
 import org.folio.login.domain.model.UserCredentials;
 import org.folio.login.exception.RequestValidationException;
 import org.folio.login.exception.ServiceException;
-import org.folio.login.integration.KeycloakClient;
+import org.folio.login.integration.keycloak.KeycloakClient;
 import org.folio.login.support.TestConstants;
 import org.folio.spring.FolioExecutionContext;
 import org.folio.test.types.UnitTest;

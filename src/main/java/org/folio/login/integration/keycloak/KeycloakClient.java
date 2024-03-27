@@ -1,4 +1,4 @@
-package org.folio.login.integration;
+package org.folio.login.integration.keycloak;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpHeaders.USER_AGENT;
@@ -8,10 +8,10 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import feign.Headers;
 import java.util.List;
 import java.util.Map;
-import org.folio.login.configuration.KeycloakFeignConfiguration;
 import org.folio.login.domain.model.KeycloakAuthentication;
 import org.folio.login.domain.model.PasswordCredential;
 import org.folio.login.domain.model.UserCredentials;
+import org.folio.login.integration.keycloak.config.KeycloakFeignConfiguration;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
