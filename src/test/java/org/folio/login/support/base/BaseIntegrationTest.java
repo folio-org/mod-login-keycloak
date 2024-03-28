@@ -11,7 +11,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import lombok.extern.log4j.Log4j2;
 import org.folio.test.base.BaseBackendIntegrationTest;
-import org.folio.test.extensions.EnableKeycloak;
+import org.folio.test.extensions.EnableKeycloakTlsMode;
 import org.folio.test.extensions.EnablePostgres;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +25,7 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 @Log4j2
 @EnablePostgres
 @SpringBootTest
-@EnableKeycloak
+@EnableKeycloakTlsMode
 @ActiveProfiles("it")
 @AutoConfigureMockMvc
 public abstract class BaseIntegrationTest extends BaseBackendIntegrationTest {

@@ -52,6 +52,10 @@ application:
       password: ${KC_ADMIN_PASSWORD}
       client_id: admin-cli
       realm: master
+    tls:
+      enabled: ${KC_CLIENT_TLS_ENABLED:false}
+      trust-store-path: ${KC_CLIENT_TLS_TRUSTSTORE_PATH:}
+      trust-store-password: ${KC_CLIENT_TLS_TRUSTSTORE_PASSWORD:}
   secret-store:
     type: ${SECRET_STORE_TYPE}
     aws-ssm:

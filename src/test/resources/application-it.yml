@@ -14,6 +14,10 @@ application:
       password: admin
       client_id: admin-cli
       realm: master
+    tls:
+      enabled: true
+      trust-store-path: classpath:certificates/test.truststore.jks
+      trust-store-password: secretpassword
   secret-store:
     type: EPHEMERAL
     ephemeral:

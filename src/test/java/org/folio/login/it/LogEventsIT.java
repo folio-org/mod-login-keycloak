@@ -26,7 +26,7 @@ import org.folio.login.domain.dto.LogEventCollection;
 import org.folio.login.domain.dto.LogEventType;
 import org.folio.spring.integration.XOkapiHeaders;
 import org.folio.test.base.BaseBackendIntegrationTest;
-import org.folio.test.extensions.EnableKeycloak;
+import org.folio.test.extensions.EnableKeycloakTlsMode;
 import org.folio.test.extensions.EnablePostgres;
 import org.folio.test.extensions.KeycloakRealms;
 import org.folio.test.types.IntegrationTest;
@@ -43,7 +43,7 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 @EnablePostgres
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
-@EnableKeycloak
+@EnableKeycloakTlsMode
 @KeycloakRealms(realms = "/json/keycloak/test-realm.json")
 class LogEventsIT extends BaseBackendIntegrationTest {
 
