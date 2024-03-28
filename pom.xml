@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>3.2.3</version>
+    <version>3.2.4</version>
     <relativePath />
   </parent>
 
@@ -20,12 +20,12 @@
 
   <properties>
     <java.version>17</java.version>
-    <swagger-annotations.version>2.2.20</swagger-annotations.version>
+    <swagger-annotations.version>2.2.21</swagger-annotations.version>
     <openapi-tools.jackson-databind-nullable.version>0.2.6</openapi-tools.jackson-databind-nullable.version>
     <folio-spring-support.version>8.1.0</folio-spring-support.version>
     <folio-java-checkstyle.version>1.0.1</folio-java-checkstyle.version>
     <applications-poc-tools.version>1.4.0-SNAPSHOT</applications-poc-tools.version>
-    <edge-api-utils.version>1.2.0</edge-api-utils.version>
+    <edge-api-utils.version>1.4.1</edge-api-utils.version>
     <coffee-boots.version>4.0.0</coffee-boots.version>
 
     <mod-login-keycloak.yaml-file>${project.basedir}/src/main/resources/swagger.api/mod-login-keycloak.yaml
@@ -35,11 +35,11 @@
     <testcontainer.version>1.19.7</testcontainer.version>
 
     <!-- Plugins versions -->
-    <maven-checkstyle.version>10.14.0</maven-checkstyle.version>
+    <maven-checkstyle.version>10.14.2</maven-checkstyle.version>
     <maven-checkstyle-plugin.version>3.3.1</maven-checkstyle-plugin.version>
     <copy-rename-maven-plugin.version>1.0.1</copy-rename-maven-plugin.version>
     <maven-release-plugin.version>3.0.1</maven-release-plugin.version>
-    <openapi-generator.version>7.3.0</openapi-generator.version>
+    <openapi-generator.version>7.4.0</openapi-generator.version>
     <mapstruct-plugin.version>1.5.5.Final</mapstruct-plugin.version>
   </properties>
 
