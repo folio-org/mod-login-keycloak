@@ -25,7 +25,6 @@
     <folio-spring-support.version>8.1.0</folio-spring-support.version>
     <folio-java-checkstyle.version>1.0.1</folio-java-checkstyle.version>
     <applications-poc-tools.version>1.4.0-SNAPSHOT</applications-poc-tools.version>
-    <edge-api-utils.version>1.4.1</edge-api-utils.version>
     <coffee-boots.version>4.0.0</coffee-boots.version>
 
     <mod-login-keycloak.yaml-file>${project.basedir}/src/main/resources/swagger.api/mod-login-keycloak.yaml
@@ -132,12 +131,6 @@
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.folio</groupId>
-      <artifactId>edge-api-utils</artifactId>
-      <version>${edge-api-utils.version}</version>
     </dependency>
 
     <dependency>
