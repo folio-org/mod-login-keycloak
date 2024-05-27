@@ -22,9 +22,9 @@
     <java.version>17</java.version>
     <swagger-annotations.version>2.2.22</swagger-annotations.version>
     <openapi-tools.jackson-databind-nullable.version>0.2.6</openapi-tools.jackson-databind-nullable.version>
-    <folio-spring-support.version>8.1.0</folio-spring-support.version>
+    <folio-spring-support.version>8.1.1</folio-spring-support.version>
     <folio-java-checkstyle.version>1.0.1</folio-java-checkstyle.version>
-    <applications-poc-tools.version>1.4.0</applications-poc-tools.version>
+    <applications-poc-tools.version>1.5.0</applications-poc-tools.version>
     <coffee-boots.version>4.0.0</coffee-boots.version>
 
     <mod-login-keycloak.yaml-file>${project.basedir}/src/main/resources/swagger.api/mod-login-keycloak.yaml
