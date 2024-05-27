@@ -1,7 +1,7 @@
 package org.folio.login.integration.keycloak.config;
 
 import lombok.Data;
-import org.folio.security.integration.keycloak.configuration.properties.KeycloakTlsProperties;
+import org.folio.common.configuration.properties.TlsProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.validation.annotation.Validated;
@@ -22,7 +22,7 @@ public class KeycloakProperties {
   private String clientSuffix;
 
   @NestedConfigurationProperty
-  private KeycloakTlsProperties tls;
+  private TlsProperties tls;
   @NestedConfigurationProperty
   private KeycloakAdminProperties admin;
 }

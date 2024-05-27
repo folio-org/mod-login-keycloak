@@ -10,7 +10,7 @@ import static org.springframework.util.ResourceUtils.getFile;
 import javax.net.ssl.SSLContext;
 import lombok.extern.log4j.Log4j2;
 import org.apache.http.ssl.SSLInitializationException;
-import org.folio.security.integration.keycloak.configuration.properties.KeycloakTlsProperties;
+import org.folio.common.configuration.properties.TlsProperties;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.admin.client.Keycloak;
@@ -27,7 +27,7 @@ public class KeycloakAdminConfiguration {
   @Bean
   public Keycloak keycloak(KeycloakProperties properties) {
     var admin = properties.getAdmin();
-    
+
     var builder = KeycloakBuilder.builder()
       .realm("master")
       .serverUrl(properties.getUrl())
@@ -44,11 +44,11 @@ public class KeycloakAdminConfiguration {
     return builder.build();
   }
 
-  private static ResteasyClient buildResteasyClient(KeycloakTlsProperties properties) {
+  private static ResteasyClient buildResteasyClient(TlsProperties properties) {
     return (ResteasyClient) newBuilder().sslContext(buildSslContext(properties)).hostnameVerifier(INSTANCE).build();
   }
 
-  private static SSLContext buildSslContext(KeycloakTlsProperties properties) {
+  private static SSLContext buildSslContext(TlsProperties properties) {
     var trustStorePath = requireNonNull(properties.getTrustStorePath(), "Trust store path is not defined");
     var trustStorePassword = requireNonNull(properties.getTrustStorePassword(), "Trust store password is not defined");
     try {

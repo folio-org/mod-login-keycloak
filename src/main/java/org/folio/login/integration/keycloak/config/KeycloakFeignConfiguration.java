@@ -21,7 +21,7 @@ import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
 import lombok.extern.log4j.Log4j2;
 import org.apache.http.conn.ssl.NoopHostnameVerifier;
-import org.folio.security.integration.keycloak.configuration.properties.KeycloakTlsProperties;
+import org.folio.common.configuration.properties.TlsProperties;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
 import org.springframework.cloud.openfeign.support.SpringEncoder;
@@ -62,7 +62,7 @@ public class KeycloakFeignConfiguration {
   }
 
   private static okhttp3.OkHttpClient sslClient(okhttp3.OkHttpClient.Builder clientBuilder,
-    KeycloakTlsProperties properties)
+                                                TlsProperties properties)
     throws CertificateException, KeyStoreException, IOException, NoSuchAlgorithmException, KeyManagementException {
     log.debug("Creating OkHttpClient with SSL enabled...");
     var keyStore = initKeyStore(properties);
@@ -76,7 +76,7 @@ public class KeycloakFeignConfiguration {
       .build();
   }
 
-  private static KeyStore initKeyStore(KeycloakTlsProperties properties)
+  private static KeyStore initKeyStore(TlsProperties properties)
     throws KeyStoreException, IOException, CertificateException, NoSuchAlgorithmException {
     var trustStorePath = requireNonNull(properties.getTrustStorePath(), "Trust store path is not defined");
     var trustStorePassword = requireNonNull(properties.getTrustStorePassword(), "Trust store password is not defined");
