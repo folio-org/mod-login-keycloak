@@ -1,4 +1,11 @@
-## Version `v1.3.0` (in progress)
+## Version `v1.5.0` (in progress)
+
+---
+
+## Version `v1.4.0` (25.05.2024)
+* Update dependencies
+
+---
 
 ## Version `v1.3.0` (16.04.2024)
 * Added HTTPS access to Keycloak (MODLOGINKC-12)
