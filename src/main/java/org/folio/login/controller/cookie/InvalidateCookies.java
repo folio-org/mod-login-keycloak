@@ -1,4 +1,4 @@
-package org.folio.login.controller;
+package org.folio.login.controller.cookie;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -8,11 +8,4 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface InvalidateCookies {
-
-  Strategy strategy() default Strategy.ALWAYS;
-
-  enum Strategy {
-    ALWAYS,
-    EXCEPTION_ONLY
-  }
 }
