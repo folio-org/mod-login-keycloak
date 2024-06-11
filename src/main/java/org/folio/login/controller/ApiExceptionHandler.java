@@ -56,7 +56,11 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 
 @Log4j2
 @RestControllerAdvice
-@InvalidateCookiesOnException(paths = {"/test-failed"})
+@InvalidateCookiesOnException(paths = {
+  "/authn/token",
+  "/authn/logout",
+  "/authn/logout-all"
+})
 public class ApiExceptionHandler {
 
   /**

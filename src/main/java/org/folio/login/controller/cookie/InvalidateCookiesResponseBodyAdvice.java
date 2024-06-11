@@ -4,6 +4,8 @@ import static java.time.Instant.ofEpochSecond;
 import static org.springframework.http.HttpHeaders.SET_COOKIE;
 
 import jakarta.servlet.http.Cookie;
+import java.util.ArrayList;
+import java.util.stream.Stream;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.annotation.AnnotationUtils;
@@ -13,6 +15,7 @@ import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.http.server.ServletServerHttpRequest;
+import org.springframework.http.server.ServletServerHttpResponse;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
@@ -31,7 +34,7 @@ public final class InvalidateCookiesResponseBodyAdvice implements ResponseBodyAd
   public Object beforeBodyWrite(Object body, MethodParameter returnType, MediaType selectedContentType,
     Class<? extends HttpMessageConverter<?>> selectedConverterType, ServerHttpRequest request,
     ServerHttpResponse response) {
-    ServletServerHttpRequest servletRequest = (ServletServerHttpRequest) request;
+    var servletRequest = (ServletServerHttpRequest) request;
 
     var onExceptionAnnotation = getInvalidateCookiesOnExceptionAnnotation(returnType);
     if (onExceptionAnnotation != null && !pathMatches(servletRequest, onExceptionAnnotation.paths())) {
@@ -39,9 +42,23 @@ public final class InvalidateCookiesResponseBodyAdvice implements ResponseBodyAd
     }
 
     var cookies = servletRequest.getServletRequest().getCookies();
+    var invalidated = new ArrayList<ResponseCookie>();
     for (var cookie: safeArray(cookies)) {
-      response.getHeaders()
-        .add(SET_COOKIE, createInvalidatedCookie(cookie).toString());
+      invalidated.add(createInvalidatedCookie(cookie));
+    }
+
+    if (!invalidated.isEmpty()) {
+      var servletResponse = (ServletServerHttpResponse) response;
+      var present = servletResponse.getHeaders().getOrEmpty(SET_COOKIE);
+
+      var resulted = Stream.concat(
+        present.stream(),
+        invalidated.stream()
+          .filter(cookie -> present.stream().noneMatch(presentCookie -> presentCookie.startsWith(cookie.getName())))
+          .map(ResponseCookie::toString)
+      ).toList();
+
+      servletResponse.getHeaders().put(SET_COOKIE, resulted);
     }
 
     return body;
@@ -68,7 +85,7 @@ public final class InvalidateCookiesResponseBodyAdvice implements ResponseBodyAd
   }
 
   private static ResponseCookie createInvalidatedCookie(Cookie cookie) {
-    return ResponseCookie.from(cookie.getName(), cookie.getValue())
+    return ResponseCookie.from(cookie.getName())
       .maxAge(EXPIRED_DATE_IN_SECONDS)
       .build();
   }

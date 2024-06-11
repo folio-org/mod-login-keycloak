@@ -19,6 +19,7 @@ import static org.folio.login.support.TestConstants.USER_CREDENTIAL_ID;
 import static org.folio.login.support.TestConstants.USER_ID;
 import static org.folio.login.support.TestConstants.USER_UUID;
 
+import jakarta.servlet.http.Cookie;
 import java.util.Map;
 import org.folio.login.domain.dto.CredentialsExistence;
 import org.folio.login.domain.dto.LoginCredentials;
@@ -190,5 +191,19 @@ public class TestValues {
       .maxAge(expires)
       .build()
       .toString();
+  }
+
+  public static Cookie requestCookie1() {
+    return requestCookie("cookie1", "cookie-value1", 1000);
+  }
+
+  public static Cookie requestCookie2() {
+    return requestCookie("cookie2", "cookie-value2", 1000);
+  }
+
+  public static Cookie requestCookie(String name, String value, int expires) {
+    var result =  new Cookie(name, value);
+    result.setMaxAge(expires);
+    return result;
   }
 }
