@@ -71,8 +71,7 @@ public final class InvalidateCookiesResponseBodyAdvice implements ResponseBodyAd
       () -> resCookies);
 
     var invalidated = new ArrayList<String>();
-    for (var cookie: safeArray(reqCookies)) {
-
+    for (var cookie : safeArray(reqCookies)) {
       if (cookieIsNotPresent(resCookies, cookie)) {
         invalidated.add(createInvalidatedCookie(cookie).toString());
       }
