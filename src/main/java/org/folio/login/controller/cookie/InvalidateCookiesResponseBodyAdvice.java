@@ -1,12 +1,17 @@
 package org.folio.login.controller.cookie;
 
 import static java.time.Instant.ofEpochSecond;
+import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
+import static org.apache.commons.collections4.ListUtils.union;
 import static org.springframework.http.HttpHeaders.SET_COOKIE;
 
 import jakarta.servlet.http.Cookie;
 import java.util.ArrayList;
-import java.util.stream.Stream;
+import java.util.Arrays;
+import java.util.List;
+import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.http.MediaType;
@@ -19,6 +24,7 @@ import org.springframework.http.server.ServletServerHttpResponse;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
+@Log4j2
 @ControllerAdvice
 public final class InvalidateCookiesResponseBodyAdvice implements ResponseBodyAdvice<Object> {
 
@@ -35,33 +41,53 @@ public final class InvalidateCookiesResponseBodyAdvice implements ResponseBodyAd
     Class<? extends HttpMessageConverter<?>> selectedConverterType, ServerHttpRequest request,
     ServerHttpResponse response) {
     var servletRequest = (ServletServerHttpRequest) request;
+    var servletResponse = (ServletServerHttpResponse) response;
 
     var onExceptionAnnotation = getInvalidateCookiesOnExceptionAnnotation(returnType);
     if (onExceptionAnnotation != null && !pathMatches(servletRequest, onExceptionAnnotation.paths())) {
       return body;
     }
 
-    var cookies = servletRequest.getServletRequest().getCookies();
-    var invalidated = new ArrayList<ResponseCookie>();
-    for (var cookie: safeArray(cookies)) {
-      invalidated.add(createInvalidatedCookie(cookie));
-    }
+    var reqCookies = servletRequest.getServletRequest().getCookies();
+    var resCookies = servletResponse.getHeaders().getOrEmpty(SET_COOKIE);
 
-    if (!invalidated.isEmpty()) {
-      var servletResponse = (ServletServerHttpResponse) response;
-      var present = servletResponse.getHeaders().getOrEmpty(SET_COOKIE);
+    var invalidated = formInvalidatedCookies(reqCookies, resCookies);
 
-      var resulted = Stream.concat(
-        present.stream(),
-        invalidated.stream()
-          .filter(cookie -> present.stream().noneMatch(presentCookie -> presentCookie.startsWith(cookie.getName())))
-          .map(ResponseCookie::toString)
-      ).toList();
+    if (isNotEmpty(invalidated)) {
+      var resulted = union(resCookies, invalidated);
 
+      log.debug("Final list of response cookies: {}", resulted);
       servletResponse.getHeaders().put(SET_COOKIE, resulted);
     }
 
     return body;
+  }
+
+  private static ArrayList<String> formInvalidatedCookies(Cookie[] reqCookies, List<String> resCookies) {
+    var safeReqCookies = safeArray(reqCookies);
+    log.debug("Forming a list of request cookies to be invalidated: requestCookies = {}, "
+        + "existingResponseCookies = {} ...",
+      () -> Arrays.stream(safeReqCookies).map(InvalidateCookiesResponseBodyAdvice::cookieToString).toList(),
+      () -> resCookies);
+
+    var invalidated = new ArrayList<String>();
+    for (var cookie: safeArray(reqCookies)) {
+
+      if (cookieIsNotPresent(resCookies, cookie)) {
+        invalidated.add(createInvalidatedCookie(cookie).toString());
+      }
+    }
+
+    log.debug("Cookies to be invalidated: {}", invalidated);
+    return invalidated;
+  }
+
+  private static String cookieToString(Cookie cookie) {
+    return ReflectionToStringBuilder.toString(cookie);
+  }
+
+  private static boolean cookieIsNotPresent(List<String> resCookies, Cookie cookie) {
+    return resCookies.stream().noneMatch(presentCookie -> presentCookie.startsWith(cookie.getName()));
   }
 
   private static InvalidateCookies getInvalidateCookiesAnnotation(MethodParameter returnType) {
