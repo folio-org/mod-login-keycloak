@@ -27,6 +27,7 @@ import java.util.Optional;
 import lombok.extern.log4j.Log4j2;
 import org.apache.logging.log4j.Level;
 import org.folio.cql2pgjson.exception.CQLFeatureUnsupportedException;
+import org.folio.login.controller.cookie.InvalidateCookiesOnException;
 import org.folio.login.domain.dto.Error;
 import org.folio.login.domain.dto.ErrorCode;
 import org.folio.login.domain.dto.ErrorResponse;
@@ -55,6 +56,11 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 
 @Log4j2
 @RestControllerAdvice
+@InvalidateCookiesOnException(paths = {
+  "/authn/token",
+  "/authn/logout",
+  "/authn/logout-all"
+})
 public class ApiExceptionHandler {
 
   /**
