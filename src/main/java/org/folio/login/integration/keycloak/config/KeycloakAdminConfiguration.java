@@ -1,15 +1,11 @@
 package org.folio.login.integration.keycloak.config;
 
 import static jakarta.ws.rs.client.ClientBuilder.newBuilder;
-import static java.util.Objects.requireNonNull;
 import static org.apache.commons.lang3.StringUtils.stripToNull;
 import static org.apache.http.conn.ssl.NoopHostnameVerifier.INSTANCE;
-import static org.apache.http.ssl.SSLContextBuilder.create;
-import static org.springframework.util.ResourceUtils.getFile;
+import static org.folio.common.utils.FeignClientTlsUtils.buildSslContext;
 
-import javax.net.ssl.SSLContext;
 import lombok.extern.log4j.Log4j2;
-import org.apache.http.ssl.SSLInitializationException;
 import org.folio.common.configuration.properties.TlsProperties;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.keycloak.OAuth2Constants;
@@ -40,24 +36,10 @@ public class KeycloakAdminConfiguration {
     if (tls != null && tls.isEnabled()) {
       builder.resteasyClient(buildResteasyClient(tls));
     }
-
     return builder.build();
   }
 
   private static ResteasyClient buildResteasyClient(TlsProperties properties) {
     return (ResteasyClient) newBuilder().sslContext(buildSslContext(properties)).hostnameVerifier(INSTANCE).build();
-  }
-
-  private static SSLContext buildSslContext(TlsProperties properties) {
-    var trustStorePath = requireNonNull(properties.getTrustStorePath(), "Trust store path is not defined");
-    var trustStorePassword = requireNonNull(properties.getTrustStorePassword(), "Trust store password is not defined");
-    try {
-      return create()
-        .loadTrustMaterial(getFile(trustStorePath), trustStorePassword.toCharArray())
-        .build();
-    } catch (Exception e) {
-      log.error("Error creating SSL context", e);
-      throw new SSLInitializationException("Error creating SSL context", e);
-    }
   }
 }
