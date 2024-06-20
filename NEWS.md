@@ -1,5 +1,7 @@
-## Version `v1.5.0` (in progress)
-
+## Version `v1.4.1` (20.06.2024)
+* Invalidate cookies upon failed token exchange (MODLOGINKC-23)
+* Pack application to Docker Image and push it to ECR (RANCHER-1515)
+* Apply OkHttpClient creation and build SslContext from app-poc-tools lib with support of keystore custom type and public trusted certs (APPPOCTOOL-20)
 ---
 
 ## Version `v1.4.0` (25.05.2024)
