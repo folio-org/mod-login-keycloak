@@ -18,6 +18,7 @@ import static org.folio.login.support.TestValues.requestCookie1;
 import static org.folio.login.support.TestValues.requestCookie2;
 import static org.folio.test.TestUtils.asJsonString;
 import static org.folio.test.TestUtils.parseResponse;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.emptyString;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.times;
@@ -26,6 +27,7 @@ import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.cookie;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -224,6 +226,27 @@ class LoginIT extends BaseIntegrationTest {
       .andExpect(jsonPath("$.errors[0].message", is("Authorization server unable to process token logout request")))
       .andExpect(jsonPath("$.errors[0].type", is("TokenLogoutException")))
       .andExpect(jsonPath("$.errors[0].code", is("token.logout.unprocessable")))
+      .andExpectAll(invalidatedCookie(refreshCookie))
+      .andExpectAll(invalidatedCookie(accessCookie))
+      .andExpectAll(invalidatedCookie(testCookie1))
+      .andExpectAll(invalidatedCookie(testCookie2));
+  }
+
+  @Test
+  void logoutAll_negative_emptyTenantAndCookiesInvalidated() throws Exception {
+    var refreshCookie = requestCookie(FOLIO_REFRESH_TOKEN, REFRESH_TOKEN, (int) REFRESH_EXPIRES_IN);
+    var accessCookie = requestCookie(FOLIO_ACCESS_TOKEN, ACCESS_TOKEN, (int) EXPIRES_IN);
+    var testCookie1 = requestCookie1();
+    var testCookie2 = requestCookie2();
+
+    mockMvc.perform(post("/authn/logout-all")
+        .header(CONTENT_TYPE, APPLICATION_JSON)
+        .header(XOkapiHeaders.USER_ID, USER_ID)
+        .header(XOkapiHeaders.URL, OKAPI_URL)
+        .cookie(refreshCookie, accessCookie, testCookie1, testCookie2))
+      .andDo(logResponse())
+      .andExpect(status().isBadRequest())
+      .andExpect(content().string(containsString("x-okapi-tenant header must be provided")))
       .andExpectAll(invalidatedCookie(refreshCookie))
       .andExpectAll(invalidatedCookie(accessCookie))
       .andExpectAll(invalidatedCookie(testCookie1))
