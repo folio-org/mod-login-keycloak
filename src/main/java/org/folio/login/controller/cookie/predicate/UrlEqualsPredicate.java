@@ -1,10 +1,11 @@
-package org.folio.login.controller.cookie;
+package org.folio.login.controller.cookie.predicate;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
 import java.util.function.BiPredicate;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import org.folio.login.controller.cookie.HttpRequestResponseHolder;
 
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class UrlEqualsPredicate implements BiPredicate<HttpRequestResponseHolder, Exception> {

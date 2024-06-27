@@ -1,10 +1,11 @@
 package org.folio.login.controller.cookie;
 
-import static org.folio.login.controller.cookie.RequestFailedWithErrorPredicate.failedWithError;
-import static org.folio.login.controller.cookie.RequestFailedWithExceptionPredicate.failedWithException;
-import static org.folio.login.controller.cookie.UrlEqualsPredicate.urlEquals;
+import static org.folio.login.controller.cookie.predicate.RequestFailedWithErrorPredicate.failedWithError;
+import static org.folio.login.controller.cookie.predicate.RequestFailedWithExceptionPredicate.failedWithException;
+import static org.folio.login.controller.cookie.predicate.UrlEqualsPredicate.urlEquals;
 
 import java.util.function.BiPredicate;
+import org.folio.login.controller.cookie.predicate.RequestHttpMethodPredicate;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

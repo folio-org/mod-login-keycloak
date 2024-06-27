@@ -1,8 +1,9 @@
-package org.folio.login.controller.cookie;
+package org.folio.login.controller.cookie.predicate;
 
 import java.util.function.BiPredicate;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.folio.login.controller.cookie.HttpRequestResponseHolder;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class RequestFailedWithExceptionPredicate implements BiPredicate<HttpRequestResponseHolder, Exception> {

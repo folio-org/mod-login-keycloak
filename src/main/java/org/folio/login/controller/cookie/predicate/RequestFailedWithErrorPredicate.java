@@ -1,8 +1,9 @@
-package org.folio.login.controller.cookie;
+package org.folio.login.controller.cookie.predicate;
 
 import java.util.function.BiPredicate;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.folio.login.controller.cookie.HttpRequestResponseHolder;
 import org.springframework.http.HttpStatus;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
