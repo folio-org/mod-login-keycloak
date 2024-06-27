@@ -2,14 +2,12 @@ package org.folio.login.controller.cookie;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import java.util.function.BiPredicate;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public final class UrlEqualsPredicate implements BiPredicate<HttpServletRequest, HttpServletResponse> {
+public final class UrlEqualsPredicate implements BiPredicate<HttpRequestResponseHolder, Exception> {
 
   private final String url;
 
@@ -21,7 +19,7 @@ public final class UrlEqualsPredicate implements BiPredicate<HttpServletRequest,
   }
 
   @Override
-  public boolean test(HttpServletRequest request, HttpServletResponse response) {
-    return request.getRequestURI().equalsIgnoreCase(url);
+  public boolean test(HttpRequestResponseHolder holder, Exception e) {
+    return holder.request().getRequestURI().equalsIgnoreCase(url);
   }
 }

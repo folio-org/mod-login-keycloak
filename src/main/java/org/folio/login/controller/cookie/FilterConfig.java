@@ -1,10 +1,9 @@
 package org.folio.login.controller.cookie;
 
-import static org.folio.login.controller.cookie.RequestFailedPredicate.requestFailed;
+import static org.folio.login.controller.cookie.RequestFailedWithErrorPredicate.failedWithError;
+import static org.folio.login.controller.cookie.RequestFailedWithExceptionPredicate.failedWithException;
 import static org.folio.login.controller.cookie.UrlEqualsPredicate.urlEquals;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import java.util.function.BiPredicate;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
@@ -25,7 +24,7 @@ public class FilterConfig {
     registrationBean.setFilter(new InvalidateCookiesFilter(
       post(URL_LOGOUT)
         .or(post(URL_LOGOUT_ALL))
-        .or(get(URL_TOKEN).and(requestFailed()))
+        .or(get(URL_TOKEN).and(failed()))
     ));
     registrationBean.addUrlPatterns(
       URL_TOKEN,
@@ -36,11 +35,15 @@ public class FilterConfig {
     return registrationBean;
   }
 
-  private static BiPredicate<HttpServletRequest, HttpServletResponse> post(String url) {
+  private static BiPredicate<HttpRequestResponseHolder, Exception> post(String url) {
     return new RequestHttpMethodPredicate(HttpMethod.POST).and(urlEquals(url));
   }
 
-  private static BiPredicate<HttpServletRequest, HttpServletResponse> get(String url) {
+  private static BiPredicate<HttpRequestResponseHolder, Exception> get(String url) {
     return new RequestHttpMethodPredicate(HttpMethod.GET).and(urlEquals(url));
+  }
+
+  private static BiPredicate<HttpRequestResponseHolder, Exception> failed() {
+    return failedWithError().or(failedWithException());
   }
 }

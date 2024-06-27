@@ -28,17 +28,24 @@ public class InvalidateCookiesFilter extends OncePerRequestFilter {
 
   public static final int ORDER = REQUEST_WRAPPER_FILTER_MAX_ORDER - 1;
 
-  private final BiPredicate<HttpServletRequest, HttpServletResponse> shouldInvalidateCookies;
+  private final BiPredicate<HttpRequestResponseHolder, Exception> shouldInvalidateCookies;
 
   @Override
   protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
     throws ServletException, IOException {
     try {
       filterChain.doFilter(request, response);
-    } finally {
-      if (shouldInvalidateCookies.test(request, response)) {
-        invalidateCookies(request, response);
-      }
+
+      invalidateCookiesIfNeeded(request, response, null);
+    } catch (IOException | ServletException | RuntimeException e) {
+      invalidateCookiesIfNeeded(request, response, e);
+      throw e;
+    }
+  }
+
+  private void invalidateCookiesIfNeeded(HttpServletRequest request, HttpServletResponse response, Exception e) {
+    if (shouldInvalidateCookies.test(new HttpRequestResponseHolder(request, response), e)) {
+      invalidateCookies(request, response);
     }
   }
 
