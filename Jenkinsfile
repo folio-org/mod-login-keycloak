@@ -8,7 +8,7 @@ node('jenkins-agent-java17-bigmem') {
     dir('mod-login-keycloak') {
       EurekaImage image = new EurekaImage(this)
       image.setModuleName('mod-login-keycloak')
-      image.makeImage()3
+      image.makeImage()
     }
   }
 }

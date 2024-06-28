@@ -99,6 +99,8 @@ public class InvalidateCookiesFilter extends OncePerRequestFilter {
 
   private static Cookie createInvalidatedCookie(Cookie cookie) {
     var invalidated = new Cookie(cookie.getName(), EMPTY);
+    invalidated.setSecure(true);
+    invalidated.setHttpOnly(true);
     invalidated.setMaxAge(0);
 
     return invalidated;
