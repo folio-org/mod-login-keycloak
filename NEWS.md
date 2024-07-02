@@ -1,3 +1,6 @@
+## Version `v1.5.0` (in progress)
+* Add kafka producer for sending logout events (MODLOGINKC-19)
+
 ## Version `v1.4.1` (20.06.2024)
 * Invalidate cookies upon failed token exchange (MODLOGINKC-23)
 * Pack application to Docker Image and push it to ECR (RANCHER-1515)
