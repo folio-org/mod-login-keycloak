@@ -9,10 +9,16 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
+import org.folio.spring.integration.XOkapiHeaders;
+import org.folio.tenant.domain.dto.TenantAttributes;
+import org.folio.test.FakeKafkaConsumer;
 import org.folio.test.base.BaseBackendIntegrationTest;
+import org.folio.test.extensions.EnableKafka;
 import org.folio.test.extensions.EnableKeycloakTlsMode;
 import org.folio.test.extensions.EnablePostgres;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -23,6 +29,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
 @Log4j2
+@EnableKafka
 @EnablePostgres
 @SpringBootTest
 @EnableKeycloakTlsMode
@@ -30,8 +37,16 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 @AutoConfigureMockMvc
 public abstract class BaseIntegrationTest extends BaseBackendIntegrationTest {
 
+  protected static FakeKafkaConsumer fakeKafkaConsumer;
+  private static final String MODULE_NAME = "mod-login-keycloak";
+
   @Autowired
   private CacheManager cacheManager;
+
+  @BeforeAll
+  static void beforeAll(@Autowired FakeKafkaConsumer kafkaConsumer) {
+    fakeKafkaConsumer = kafkaConsumer;
+  }
 
   @BeforeEach
   void setUp() {
@@ -77,5 +92,25 @@ public abstract class BaseIntegrationTest extends BaseBackendIntegrationTest {
 
   protected static ResultActions doDelete(String uri, Object... args) throws Exception {
     return attemptDelete(uri, args).andExpect(status().isNoContent());
+  }
+
+  @SneakyThrows
+  protected static void enableTenant(String tenant) {
+    var tenantAttributes = new TenantAttributes().moduleTo(MODULE_NAME);
+    mockMvc.perform(post("/_/tenant")
+        .content(asJsonString(tenantAttributes))
+        .contentType(APPLICATION_JSON)
+        .header(XOkapiHeaders.TENANT, tenant))
+      .andExpect(status().isNoContent());
+  }
+
+  @SneakyThrows
+  protected static void removeTenant(String tenantId) {
+    var tenantAttributes = new TenantAttributes().moduleFrom(MODULE_NAME).purge(true);
+    mockMvc.perform(post("/_/tenant")
+        .content(asJsonString(tenantAttributes))
+        .contentType(APPLICATION_JSON)
+        .header(XOkapiHeaders.TENANT, tenantId))
+      .andExpect(status().isNoContent());
   }
 }
