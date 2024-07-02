@@ -47,6 +47,7 @@ import org.folio.login.domain.model.KeycloakUser;
 import org.folio.login.domain.model.UserCredentials;
 import org.folio.login.exception.RequestValidationException;
 import org.folio.login.exception.ServiceException;
+import org.folio.login.integration.kafka.LogoutEventPublisher;
 import org.folio.login.integration.keycloak.KeycloakClient;
 import org.folio.login.support.TestConstants;
 import org.folio.spring.FolioExecutionContext;
@@ -69,6 +70,7 @@ class KeycloakServiceTest {
   @Mock private KeycloakUserService userService;
   @Mock private FolioExecutionContext folioExecutionContext;
   @Mock private RealmConfigurationProvider realmConfigurationProvider;
+  @Mock private LogoutEventPublisher logoutEventPublisher;
   @InjectMocks private KeycloakService keycloakService;
 
   @Test
@@ -309,6 +311,7 @@ class KeycloakServiceTest {
 
     var actual = tokenRequestCaptor.getValue();
     assertThat(actual).isEqualTo(expectedForm.asMap());
+    verify(logoutEventPublisher).publishLogoutEvent(REFRESH_TOKEN);
   }
 
   @Test
@@ -321,6 +324,7 @@ class KeycloakServiceTest {
     keycloakService.logoutAll();
 
     verify(keycloakClient).logoutAll(TENANT, KEYCLOAK_USER_ID, ACCESS_TOKEN);
+    verify(logoutEventPublisher).publishLogoutAllEvent(KEYCLOAK_USER_ID);
   }
 
   @Test

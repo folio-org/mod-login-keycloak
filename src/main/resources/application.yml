@@ -23,6 +23,24 @@ spring:
     openfeign:
       okhttp:
         enabled: true
+  kafka:
+    bootstrap-servers: ${KAFKA_HOST:kafka}:${KAFKA_PORT:9092}
+    security:
+      protocol: ${KAFKA_SECURITY_PROTOCOL:PLAINTEXT}
+    ssl:
+      key-store-password: ${KAFKA_SSL_KEYSTORE_PASSWORD:}
+      key-store-location: ${KAFKA_SSL_KEYSTORE_LOCATION:}
+      trust-store-password: ${KAFKA_SSL_TRUSTSTORE_PASSWORD:}
+      trust-store-location: ${KAFKA_SSL_TRUSTSTORE_LOCATION:}
+    producer:
+      acks: all
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        enable.idempotence: true
+        max.in.flight.requests.per.connection: 5
+        retries: 5
+        spring.json.add.type.headers: false
 
 folio:
   jpa:
@@ -76,3 +94,9 @@ application:
     enabled: ${X_OKAPI_TOKEN_HEADER_ENABLED:false}
   cookies:
     same-site: ${LOGIN_COOKIE_SAMESITE:${login.cookie.samesite:NONE}}
+  kafka:
+    tenant-topics:
+      - name: mod-login-keycloak.logout
+        num-partitions: ${KAFKA_LOGOUT_TOPIC_PARTITIONS:1}
+        replication-factor: ${KAFKA_LOGOUT_TOPIC_REPLICATION_FACTOR:}
+
