@@ -11,16 +11,18 @@ import org.folio.login.integration.kafka.event.LogoutEvent;
 import org.folio.spring.FolioExecutionContext;
 import org.keycloak.jose.jws.JWSInputException;
 import org.keycloak.util.TokenUtil;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
 @Log4j2
 @Component
 @RequiredArgsConstructor
-public class LogoutEventPublisher extends EventPublisher {
+public class LogoutEventPublisher {
 
   private static final String TOPIC_NAME = "mod-login-keycloak.logout";
 
   private final FolioExecutionContext context;
+  private final KafkaTemplate<String, LogoutEvent> kafkaTemplate;
 
   public void publishLogoutEvent(String refreshToken) {
     try {
@@ -41,13 +43,16 @@ public class LogoutEventPublisher extends EventPublisher {
     send(event);
   }
 
-  @Override
-  protected String getTopicName() {
+  private String getTopicName() {
     return KafkaUtils.getTenantTopicName(TOPIC_NAME, context.getTenantId());
   }
 
-  @Override
-  protected String getMessageKey() {
+  private String getMessageKey() {
     return context.getUserId().toString();
+  }
+
+  private void send(LogoutEvent body) {
+    kafkaTemplate.send(getTopicName(), getMessageKey(), body);
+    log.debug("Sent event to topic: {}", this::getTopicName);
   }
 }
