@@ -23,7 +23,6 @@ public class ModuleCustomTenantService extends TenantService {
 
   private final KafkaAdminService kafkaAdminService;
   private final KafkaProperties kafkaProperties;
-  private final FolioExecutionContext context;
 
   public ModuleCustomTenantService(JdbcTemplate jdbcTemplate, FolioExecutionContext context,
     FolioSpringLiquibase folioSpringLiquibase, KafkaAdminService kafkaAdminService, KafkaProperties kafkaProperties) {
@@ -31,7 +30,6 @@ public class ModuleCustomTenantService extends TenantService {
     super(jdbcTemplate, context, folioSpringLiquibase);
     this.kafkaAdminService = kafkaAdminService;
     this.kafkaProperties = kafkaProperties;
-    this.context = context;
   }
 
   @Override
