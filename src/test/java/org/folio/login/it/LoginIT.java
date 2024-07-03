@@ -192,6 +192,8 @@ class LoginIT extends BaseIntegrationTest {
       .andExpectAll(invalidatedCookie(testCookie2));
 
     assertThat(loadKcUserSessions()).isEmpty();
+    assertLogoutEvents(logoutAllEvent(USER_ID, KEYCLOAK_USER_ID));
+    verify(keycloakService).logoutAll();
   }
 
   @Test
