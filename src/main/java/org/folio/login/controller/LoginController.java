@@ -7,7 +7,7 @@ import static org.springframework.http.HttpStatus.CREATED;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.folio.login.configuration.property.TokenHeaderProperties;
-import org.folio.login.controller.cookie.InvalidateCookies;
+import org.folio.login.controller.cookie.advice.InvalidateCookies;
 import org.folio.login.domain.dto.LoginCredentials;
 import org.folio.login.domain.dto.LoginResponse;
 import org.folio.login.domain.dto.LoginResponseWithExpiry;

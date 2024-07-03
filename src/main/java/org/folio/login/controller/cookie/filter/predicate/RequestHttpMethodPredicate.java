@@ -1,8 +1,8 @@
-package org.folio.login.controller.cookie.predicate;
+package org.folio.login.controller.cookie.filter.predicate;
 
 import java.util.function.BiPredicate;
 import lombok.RequiredArgsConstructor;
-import org.folio.login.controller.cookie.HttpRequestResponseHolder;
+import org.folio.login.controller.cookie.filter.HttpRequestResponseHolder;
 import org.springframework.http.HttpMethod;
 
 @RequiredArgsConstructor

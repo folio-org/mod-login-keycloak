@@ -1,4 +1,4 @@
-package org.folio.login.controller.cookie;
+package org.folio.login.controller.cookie.advice;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;

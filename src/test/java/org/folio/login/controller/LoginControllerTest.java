@@ -34,7 +34,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import jakarta.servlet.http.Cookie;
 import org.folio.login.configuration.property.TokenHeaderProperties;
-import org.folio.login.controller.cookie.InvalidateCookiesResponseBodyAdvice;
+import org.folio.login.controller.cookie.advice.InvalidateCookiesResponseBodyAdvice;
 import org.folio.login.domain.dto.LoginCredentials;
 import org.folio.login.exception.TokenLogoutException;
 import org.folio.login.service.LoginService;
