@@ -1,11 +1,7 @@
 package org.folio.login.controller.cookie.advice;
 
-import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
-import static org.folio.login.controller.cookie.InvalidateCookieUtils.formInvalidatedCookies;
-import static org.springframework.http.HttpHeaders.SET_COOKIE;
+import static org.folio.login.controller.cookie.InvalidateCookieUtils.invalidateCookies;
 
-import jakarta.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.core.MethodParameter;
@@ -33,25 +29,15 @@ public final class InvalidateCookiesResponseBodyAdvice implements ResponseBodyAd
   public Object beforeBodyWrite(Object body, MethodParameter returnType, MediaType selectedContentType,
     Class<? extends HttpMessageConverter<?>> selectedConverterType, ServerHttpRequest request,
     ServerHttpResponse response) {
-    var httpRequest = ((ServletServerHttpRequest) request).getServletRequest();
-    var httpResponse = ((ServletServerHttpResponse) response).getServletResponse();
+    var servletRequest = (ServletServerHttpRequest) request;
+    var servletResponse = (ServletServerHttpResponse) response;
 
     var onExceptionAnnotation = getInvalidateCookiesOnExceptionAnnotation(returnType);
-    if (onExceptionAnnotation != null && !pathMatches(httpRequest, onExceptionAnnotation.paths())) {
+    if (onExceptionAnnotation != null && !pathMatches(servletRequest, onExceptionAnnotation.paths())) {
       return body;
     }
 
-    var reqCookies = httpRequest.getCookies();
-    var resCookies = new ArrayList<>(httpResponse.getHeaders(SET_COOKIE));
-
-    var invalidated = formInvalidatedCookies(reqCookies, resCookies);
-
-    if (isNotEmpty(invalidated)) {
-      invalidated.forEach(httpResponse::addCookie);
-
-      var resulted = httpResponse.getHeaders(SET_COOKIE);
-      log.debug("Final list of response cookies: {}", resulted);
-    }
+    invalidateCookies(servletRequest, servletResponse);
 
     return body;
   }
@@ -68,7 +54,7 @@ public final class InvalidateCookiesResponseBodyAdvice implements ResponseBodyAd
     return result;
   }
 
-  private static boolean pathMatches(HttpServletRequest request, String[] path) {
-    return ArrayUtils.isEmpty(path) || ArrayUtils.contains(path, request.getRequestURI());
+  private static boolean pathMatches(ServletServerHttpRequest servletRequest, String[] path) {
+    return ArrayUtils.isEmpty(path) || ArrayUtils.contains(path, servletRequest.getServletRequest().getPathInfo());
   }
 }
