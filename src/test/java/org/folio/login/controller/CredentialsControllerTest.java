@@ -22,9 +22,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
+import org.springframework.kafka.core.KafkaAdmin;
 import org.springframework.test.web.servlet.MockMvc;
 
 @UnitTest
+@MockBean(KafkaAdmin.class)
 @Import(ApiExceptionHandler.class)
 @WebMvcTest(CredentialsController.class)
 class CredentialsControllerTest {

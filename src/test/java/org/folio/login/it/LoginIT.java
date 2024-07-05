@@ -5,6 +5,7 @@ import static org.folio.login.service.TokenCookieHeaderManager.FOLIO_ACCESS_TOKE
 import static org.folio.login.service.TokenCookieHeaderManager.FOLIO_REFRESH_TOKEN;
 import static org.folio.login.support.TestConstants.ACCESS_TOKEN;
 import static org.folio.login.support.TestConstants.EXPIRES_IN;
+import static org.folio.login.support.TestConstants.KEYCLOAK_USER_ID;
 import static org.folio.login.support.TestConstants.OKAPI_URL;
 import static org.folio.login.support.TestConstants.PASSWORD;
 import static org.folio.login.support.TestConstants.REFRESH_EXPIRES_IN;
@@ -12,6 +13,9 @@ import static org.folio.login.support.TestConstants.REFRESH_TOKEN;
 import static org.folio.login.support.TestConstants.TENANT;
 import static org.folio.login.support.TestConstants.USERNAME;
 import static org.folio.login.support.TestConstants.USER_ID;
+import static org.folio.login.support.TestKafkaUtils.assertLogoutEvents;
+import static org.folio.login.support.TestKafkaUtils.logoutAllEvent;
+import static org.folio.login.support.TestKafkaUtils.logoutTopic;
 import static org.folio.login.support.TestValues.loginCredentials;
 import static org.folio.login.support.TestValues.requestCookie;
 import static org.folio.login.support.TestValues.requestCookie1;
@@ -39,11 +43,16 @@ import java.util.stream.Collectors;
 import lombok.extern.log4j.Log4j2;
 import org.folio.login.domain.dto.LoginCredentials;
 import org.folio.login.domain.dto.LoginResponse;
+import org.folio.login.integration.kafka.event.LogoutEvent;
 import org.folio.login.service.KeycloakService;
 import org.folio.login.support.base.BaseIntegrationTest;
 import org.folio.spring.integration.XOkapiHeaders;
+import org.folio.test.FakeKafkaConsumer;
 import org.folio.test.extensions.KeycloakRealms;
 import org.folio.test.types.IntegrationTest;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.representations.idm.UserSessionRepresentation;
@@ -62,6 +71,22 @@ class LoginIT extends BaseIntegrationTest {
 
   @Autowired private Keycloak keycloak;
   @SpyBean private KeycloakService keycloakService;
+
+  @BeforeAll
+  static void beforeAll() {
+    enableTenant(TENANT);
+    fakeKafkaConsumer.registerTopic(logoutTopic(), LogoutEvent.class);
+  }
+
+  @AfterAll
+  static void afterAll() {
+    removeTenant(TENANT);
+  }
+
+  @AfterEach
+  void afterEach() {
+    FakeKafkaConsumer.removeAllEvents();
+  }
 
   @Test
   @KeycloakRealms(realms = "/json/keycloak/test-realm.json")
@@ -140,6 +165,7 @@ class LoginIT extends BaseIntegrationTest {
       .andExpectAll(invalidatedCookie(testCookie2));
 
     assertThat(loadKcUserSessions()).isEmpty();
+    assertLogoutEvents(logoutAllEvent(USER_ID, KEYCLOAK_USER_ID));
     verify(keycloakService).logoutAll();
   }
 
@@ -166,6 +192,8 @@ class LoginIT extends BaseIntegrationTest {
       .andExpectAll(invalidatedCookie(testCookie2));
 
     assertThat(loadKcUserSessions()).isEmpty();
+    assertLogoutEvents(logoutAllEvent(USER_ID, KEYCLOAK_USER_ID));
+    verify(keycloakService).logoutAll();
   }
 
   @Test

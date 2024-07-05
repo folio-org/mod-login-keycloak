@@ -88,6 +88,18 @@ Keycloak all configuration properties: https://www.keycloak.org/server/all-confi
 | KC_CLIENT_TLS_TRUSTSTORE_PASSWORD | Truststore password for keycloak clients.                                                                                                                                  |
 | KC_CLIENT_TLS_TRUSTSTORE_TYPE     | Truststore file type for keycloak clients.                                                                                                                                 |
 
+### Kafka environment variables
+
+Kafka all configuration properties: https://kafka.apache.org/documentation/#configuration
+
+| Name                           | Description               |
+|:-------------------------------|:--------------------------|
+| KAFKA_SSL_KEYSTORE_PASSWORD    | Kafka keystore password   |
+| KAFKA_SSL_KEYSTORE_LOCATION    | Kafka keystore location   |
+| KAFKA_SSL_TRUSTSTORE_PASSWORD  | Kafka truststore password |
+| KAFKA_SSL_TRUSTSTORE_LOCATION  | Kafka truststore location |
+
+
 ## Loading of client IDs/secrets
 
 The module pulls client_secret for client_id from AWS Parameter store, Vault or other reliable secret storages when they
