@@ -119,6 +119,7 @@
       "serviceAccountClientId": "test-login-application"
     },
     {
+      "id": "99999999-1111-1111-1111-999999999999",
       "username": "test-username",
       "enabled": true,
       "attributes": {

@@ -2,6 +2,10 @@ spring:
   datasource:
     username: folio_admin
     password: qwerty123
+  kafka:
+    consumer:
+      auto-offset-reset: earliest
+      group-id: testing
 
 server.port: 8081
 
@@ -26,3 +30,8 @@ application:
         it-test_test_test-login-application: kc-client-password
   x-okapi-token:
     enabled: false
+  kafka:
+    tenant-topics:
+      - name: mod-login-keycloak.logout
+        num-partitions: 1
+

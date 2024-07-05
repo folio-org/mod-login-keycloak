@@ -24,6 +24,7 @@ import org.folio.login.domain.model.PasswordCredential;
 import org.folio.login.domain.model.UserCredentials;
 import org.folio.login.exception.RequestValidationException;
 import org.folio.login.exception.ServiceException;
+import org.folio.login.integration.kafka.LogoutEventPublisher;
 import org.folio.login.integration.keycloak.KeycloakClient;
 import org.folio.login.util.TokenRequestHelper;
 import org.folio.spring.FolioExecutionContext;
@@ -40,6 +41,7 @@ public class KeycloakService {
   private final KeycloakClient keycloakClient;
   private final FolioExecutionContext folioExecutionContext;
   private final RealmConfigurationProvider realmConfigurationProvider;
+  private final LogoutEventPublisher logoutEventPublisher;
 
   public KeycloakAuthentication getUserToken(LoginCredentials credentials, String userAgent, String forwardedFor) {
     var realmConfiguration = realmConfigurationProvider.getRealmConfiguration();
@@ -48,11 +50,13 @@ public class KeycloakService {
   }
 
   public void logout(String refreshToken) {
-    var tenantId = folioExecutionContext.getTenantId();
     var realm = realmConfigurationProvider.getRealmConfiguration();
     var form = new Form().param(REFRESH_TOKEN, refreshToken);
     form.param(CLIENT_ID, realm.getClientId());
     form.param(CLIENT_SECRET, realm.getClientSecret());
+
+    logoutEventPublisher.publishLogoutEvent(refreshToken);
+    var tenantId = folioExecutionContext.getTenantId();
     keycloakClient.logout(tenantId, form.asMap());
   }
 
@@ -65,6 +69,8 @@ public class KeycloakService {
     var tenantId = folioExecutionContext.getTenantId();
     var token = adminTokenService.getAdminToken(null, null);
     var keycloakUserId = userService.findKeycloakUserIdByUserId(userId.toString(), token);
+
+    logoutEventPublisher.publishLogoutAllEvent(keycloakUserId);
     keycloakClient.logoutAll(tenantId, keycloakUserId, token);
   }
 

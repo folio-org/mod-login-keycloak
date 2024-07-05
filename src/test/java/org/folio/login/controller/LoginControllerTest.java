@@ -48,10 +48,12 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpHeaders;
+import org.springframework.kafka.core.KafkaAdmin;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultMatcher;
 
 @UnitTest
+@MockBean(KafkaAdmin.class)
 @Import({ApiExceptionHandler.class, InvalidateCookiesResponseBodyAdvice.class})
 @WebMvcTest(LoginController.class)
 class LoginControllerTest {
@@ -189,7 +191,7 @@ class LoginControllerTest {
       .andExpectAll(cookie().doesNotExist(testCookie1.getName()), cookie().doesNotExist(testCookie2.getName()))
       .andExpect(content().json(asJsonString(loginResponse)));
   }
-  
+
   @Test
   void token_negative_keycloakConfigNotFound() throws Exception {
     var errorMessage = "Failed to get value from secure store [tenantId: test-tenant, key: test-tenant-login-app]";
