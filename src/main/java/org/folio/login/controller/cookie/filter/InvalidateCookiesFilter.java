@@ -8,6 +8,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Optional;
 import java.util.function.BiPredicate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -19,7 +20,7 @@ public class InvalidateCookiesFilter extends OncePerRequestFilter {
 
   public static final int ORDER = REQUEST_WRAPPER_FILTER_MAX_ORDER - 1;
 
-  private final BiPredicate<HttpRequestResponseHolder, Exception> shouldInvalidateCookies;
+  private final BiPredicate<HttpRequestResponseHolder, Optional<Exception>> shouldInvalidateCookies;
 
   @Override
   protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -35,7 +36,8 @@ public class InvalidateCookiesFilter extends OncePerRequestFilter {
   }
 
   private void invalidateCookiesIfNeeded(HttpServletRequest request, HttpServletResponse response, Exception e) {
-    if (!response.isCommitted() && shouldInvalidateCookies.test(new HttpRequestResponseHolder(request, response), e)) {
+    if (!response.isCommitted()
+      && shouldInvalidateCookies.test(new HttpRequestResponseHolder(request, response), Optional.ofNullable(e))) {
       invalidateCookies(request, response);
     }
   }

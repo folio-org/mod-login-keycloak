@@ -4,6 +4,7 @@ import static org.folio.login.controller.cookie.filter.predicate.RequestFailedWi
 import static org.folio.login.controller.cookie.filter.predicate.RequestFailedWithExceptionPredicate.failedWithException;
 import static org.folio.login.controller.cookie.filter.predicate.UrlEqualsPredicate.urlEquals;
 
+import java.util.Optional;
 import java.util.function.BiPredicate;
 import org.folio.login.controller.cookie.filter.HttpRequestResponseHolder;
 import org.folio.login.controller.cookie.filter.InvalidateCookiesFilter;
@@ -38,15 +39,15 @@ public class FilterConfig {
     return registrationBean;
   }
 
-  private static BiPredicate<HttpRequestResponseHolder, Exception> post(String url) {
+  private static BiPredicate<HttpRequestResponseHolder, Optional<Exception>> post(String url) {
     return new RequestHttpMethodPredicate(HttpMethod.POST).and(urlEquals(url));
   }
 
-  private static BiPredicate<HttpRequestResponseHolder, Exception> get(String url) {
+  private static BiPredicate<HttpRequestResponseHolder, Optional<Exception>> get(String url) {
     return new RequestHttpMethodPredicate(HttpMethod.GET).and(urlEquals(url));
   }
 
-  private static BiPredicate<HttpRequestResponseHolder, Exception> failed() {
+  private static BiPredicate<HttpRequestResponseHolder, Optional<Exception>> failed() {
     return failedWithError().or(failedWithException());
   }
 }

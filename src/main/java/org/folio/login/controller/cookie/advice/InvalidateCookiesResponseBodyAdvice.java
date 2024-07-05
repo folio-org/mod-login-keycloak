@@ -55,6 +55,6 @@ public final class InvalidateCookiesResponseBodyAdvice implements ResponseBodyAd
   }
 
   private static boolean pathMatches(ServletServerHttpRequest servletRequest, String[] path) {
-    return ArrayUtils.isEmpty(path) || ArrayUtils.contains(path, servletRequest.getServletRequest().getPathInfo());
+    return ArrayUtils.isEmpty(path) || ArrayUtils.contains(path, servletRequest.getServletRequest().getRequestURI());
   }
 }

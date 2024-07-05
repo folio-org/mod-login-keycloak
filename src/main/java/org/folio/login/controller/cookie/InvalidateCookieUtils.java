@@ -4,6 +4,7 @@ import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 import static org.apache.commons.collections4.ListUtils.union;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.apache.commons.lang3.StringUtils.defaultString;
+import static org.folio.common.utils.CollectionUtils.mapItems;
 import static org.springframework.http.HttpHeaders.SET_COOKIE;
 
 import jakarta.servlet.http.Cookie;
@@ -46,14 +47,15 @@ public class InvalidateCookieUtils {
     var invalidated = formInvalidatedCookies(reqCookies, resCookies);
 
     if (isNotEmpty(invalidated)) {
-      var resulted = union(resCookies,
-        invalidated.stream()
-          .map(InvalidateCookieUtils::toResponseCookie)
-          .map(ResponseCookie::toString).toList());
+      var resulted = union(resCookies, mapItems(invalidated, InvalidateCookieUtils::toCookieString));
 
       log.debug("Final list of response cookies: {}", resulted);
       response.getHeaders().put(SET_COOKIE, resulted);
     }
+  }
+
+  private static String toCookieString(Cookie cookie) {
+    return toResponseCookie(cookie).toString();
   }
 
   private static ResponseCookie toResponseCookie(Cookie cookie) {
