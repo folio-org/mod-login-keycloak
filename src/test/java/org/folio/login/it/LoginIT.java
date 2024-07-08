@@ -346,11 +346,9 @@ class LoginIT extends BaseIntegrationTest {
   }
 
   private static ResultMatcher[] invalidatedCookie(String cookieName) {
-    ResultMatcher[] result = new ResultMatcher[4];
+    ResultMatcher[] result = new ResultMatcher[2];
     result[0] = cookie().value(cookieName, is(emptyString()));
     result[1] = cookie().maxAge(cookieName, 0);
-    result[2] = cookie().httpOnly(cookieName, true);
-    result[3] = cookie().secure(cookieName, true);
 
     return result;
   }

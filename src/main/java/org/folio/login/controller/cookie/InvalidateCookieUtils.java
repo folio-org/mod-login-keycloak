@@ -1,55 +1,32 @@
 package org.folio.login.controller.cookie;
 
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
+import static org.apache.commons.collections4.ListUtils.union;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
-import static org.springframework.boot.web.servlet.filter.OrderedFilter.REQUEST_WRAPPER_FILTER_MAX_ORDER;
+import static org.apache.commons.lang3.StringUtils.defaultString;
+import static org.folio.common.utils.CollectionUtils.mapItems;
 import static org.springframework.http.HttpHeaders.SET_COOKIE;
 
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.BiPredicate;
 import java.util.stream.Stream;
-import lombok.RequiredArgsConstructor;
+import lombok.experimental.UtilityClass;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
-import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.http.ResponseCookie;
+import org.springframework.http.server.ServletServerHttpRequest;
+import org.springframework.http.server.ServletServerHttpResponse;
 
 @Log4j2
-@RequiredArgsConstructor
-public class InvalidateCookiesFilter extends OncePerRequestFilter {
+@UtilityClass
+public class InvalidateCookieUtils {
 
-  public static final int ORDER = REQUEST_WRAPPER_FILTER_MAX_ORDER - 1;
-
-  private final BiPredicate<HttpRequestResponseHolder, Exception> shouldInvalidateCookies;
-
-  @Override
-  protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-    throws ServletException, IOException {
-    try {
-      filterChain.doFilter(request, response);
-
-      invalidateCookiesIfNeeded(request, response, null);
-    } catch (IOException | ServletException | RuntimeException e) {
-      invalidateCookiesIfNeeded(request, response, e);
-      throw e;
-    }
-  }
-
-  private void invalidateCookiesIfNeeded(HttpServletRequest request, HttpServletResponse response, Exception e) {
-    if (shouldInvalidateCookies.test(new HttpRequestResponseHolder(request, response), e)) {
-      invalidateCookies(request, response);
-    }
-  }
-
-  private static void invalidateCookies(HttpServletRequest request, HttpServletResponse response) {
+  public static void invalidateCookies(HttpServletRequest request, HttpServletResponse response) {
     var reqCookies = request.getCookies();
     var resCookies = new ArrayList<>(response.getHeaders(SET_COOKIE));
 
@@ -61,6 +38,35 @@ public class InvalidateCookiesFilter extends OncePerRequestFilter {
       var resulted = response.getHeaders(SET_COOKIE);
       log.debug("Final list of response cookies: {}", resulted);
     }
+  }
+
+  public static void invalidateCookies(ServletServerHttpRequest request, ServletServerHttpResponse response) {
+    var reqCookies = request.getServletRequest().getCookies();
+    var resCookies = response.getHeaders().getOrEmpty(SET_COOKIE);
+
+    var invalidated = formInvalidatedCookies(reqCookies, resCookies);
+
+    if (isNotEmpty(invalidated)) {
+      var resulted = union(resCookies, mapItems(invalidated, InvalidateCookieUtils::toCookieString));
+
+      log.debug("Final list of response cookies: {}", resulted);
+      response.getHeaders().put(SET_COOKIE, resulted);
+    }
+  }
+
+  private static String toCookieString(Cookie cookie) {
+    return toResponseCookie(cookie).toString();
+  }
+
+  private static ResponseCookie toResponseCookie(Cookie cookie) {
+    return ResponseCookie.from(cookie.getName(), defaultString(cookie.getValue()))
+      .httpOnly(cookie.isHttpOnly())
+      .secure(cookie.getSecure())
+      .path(cookie.getPath())
+      .maxAge(cookie.getMaxAge())
+      .domain(cookie.getDomain())
+      .path(cookie.getPath())
+      .build();
   }
 
   private static List<Cookie> formInvalidatedCookies(Cookie[] reqCookies, List<String> resCookies) {
@@ -82,7 +88,7 @@ public class InvalidateCookiesFilter extends OncePerRequestFilter {
   }
 
   private static List<String> cookiesToString(Stream<Cookie> cookieStream) {
-    return cookieStream.map(InvalidateCookiesFilter::cookieToString).toList();
+    return cookieStream.map(InvalidateCookieUtils::cookieToString).toList();
   }
 
   private static Cookie[] safeArray(Cookie[] cookies) {
@@ -99,9 +105,11 @@ public class InvalidateCookiesFilter extends OncePerRequestFilter {
 
   private static Cookie createInvalidatedCookie(Cookie cookie) {
     var invalidated = new Cookie(cookie.getName(), EMPTY);
-    invalidated.setSecure(true);
-    invalidated.setHttpOnly(true);
+    invalidated.setSecure(cookie.getSecure());
+    invalidated.setHttpOnly(cookie.isHttpOnly());
     invalidated.setMaxAge(0);
+    invalidated.setDomain(cookie.getDomain());
+    invalidated.setPath(cookie.getPath());
 
     return invalidated;
   }
