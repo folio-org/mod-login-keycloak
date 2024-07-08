@@ -7,6 +7,7 @@ import static org.springframework.http.HttpStatus.CREATED;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.folio.login.configuration.property.TokenHeaderProperties;
+import org.folio.login.controller.cookie.advice.InvalidateCookies;
 import org.folio.login.domain.dto.LoginCredentials;
 import org.folio.login.domain.dto.LoginResponse;
 import org.folio.login.domain.dto.LoginResponseWithExpiry;
@@ -50,6 +51,7 @@ public class LoginController implements LoginApi {
   }
 
   @Override
+  @InvalidateCookies
   public ResponseEntity<Void> logout(String folioRefreshTokenRequired) {
     loginService.logout(folioRefreshTokenRequired);
     return ResponseEntity.noContent()
@@ -58,6 +60,7 @@ public class LoginController implements LoginApi {
   }
 
   @Override
+  @InvalidateCookies
   public ResponseEntity<Void> logoutAll() {
     loginService.logoutAll();
     return ResponseEntity.noContent()
