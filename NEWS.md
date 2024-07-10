@@ -1,5 +1,8 @@
-## Version `v1.5.0` (in progress)
+## Version `v1.4.2` (10.07.2024)
 * Add kafka producer for sending logout events (MODLOGINKC-19)
+* Upgrade keycloak to v25.0.1 (KEYCLOAK-11)
+* Handle cookie invalidation in filter and response advice (MODLOGINKC-23)
+---
 
 ## Version `v1.4.1` (20.06.2024)
 * Invalidate cookies upon failed token exchange (MODLOGINKC-23)
