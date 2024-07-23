@@ -421,6 +421,169 @@ paths:
                 $ref: '#/components/schemas/credentialsExistence'
         '500':
           $ref: '#/components/responses/internalServerErrorResponse'
+  /token:
+    post:
+      operationId: token-legacy
+      description: |
+        ***Not Implemented, Deprecated***
+
+        _Will be removed in a future releases_
+
+        Please use `/token/sign` instead. Returns a signed, non-expiring legacy access token.
+      parameters:
+        - $ref: '#/components/parameters/okapi-token-required'
+        - $ref: '#/components/parameters/okapi-url-required'
+      tags:
+        - authtoken
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/signTokenPayload"
+      responses:
+        '201':
+          description: Created and signed token successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/tokenResponseLegacy"
+        '501':
+          $ref: '#/components/responses/notImplementedEntityResponse'
+
+  /refreshtoken:
+    post:
+      operationId: token-sign-legacy
+      description: |
+        ***Not Implemented***
+
+        Returns a signed, expiring refresh token. This is a legacy endpoint and should not be
+        called by new code and will soon be fully depreciated.
+      parameters:
+        - $ref: '#/components/parameters/okapi-token-required'
+        - $ref: '#/components/parameters/okapi-url-required'
+      tags:
+        - authtoken
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/signRefreshToken"
+        required: true
+      responses:
+        "201":
+          description: Created and signed token successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/token"
+        '501':
+          $ref: '#/components/responses/notImplementedEntityResponse'
+
+  /token/sign:
+    post:
+      operationId: token-sign
+      description: |
+        ***Not Implemented***
+
+        Returns a signed, expiring access token and refresh token. Also returns the expiration
+        of each token in the body of the response. The access token time to live is 10 minutes and
+        the refresh token is one week.
+      tags:
+        - authtoken
+      parameters:
+        - $ref: '#/components/parameters/okapi-token-required'
+        - $ref: '#/components/parameters/okapi-url-required'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/signTokenPayload"
+        required: true
+      responses:
+        "201":
+          description: Created and signed tokens successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/tokenResponse"
+        '501':
+          $ref: '#/components/responses/notImplementedEntityResponse'
+
+  /token/refresh:
+    post:
+      description: |
+        ***Not Implemented***
+
+        Returns a new refresh token and a new access token. Also returns the expiration of each token
+        in the body of the response. Time to live is 10 minutes for the access token and one week for
+        the refresh token.
+      tags:
+        - authtoken
+      parameters:
+        - $ref: '#/components/parameters/okapi-token-required'
+        - $ref: '#/components/parameters/okapi-url-required'
+      operationId: token-refresh
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/refreshToken"
+        required: true
+      responses:
+        "201":
+          description: Refreshed tokens successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/tokenResponse"
+        '501':
+          $ref: '#/components/responses/notImplementedEntityResponse'
+
+  /token/invalidate:
+    post:
+      operationId: token-invalidate
+      description: |
+        ***Not Implemented***
+
+        Invalidate a single token
+      tags:
+        - authtoken
+      parameters:
+        - $ref: '#/components/parameters/okapi-token-required'
+        - $ref: '#/components/parameters/okapi-url-required'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/refreshToken"
+        required: true
+      responses:
+        "204":
+          description: Invalidated token successfully
+        '501':
+          $ref: '#/components/responses/notImplementedEntityResponse'
+
+  /token/invalidate-all:
+    post:
+      operationId: token-invalidate-all
+      description: |
+        ***Not Implemented***
+
+        Invalidate all tokens for a user
+      tags:
+        - authtoken
+      parameters:
+        - $ref: '#/components/parameters/okapi-token-required'
+        - $ref: '#/components/parameters/okapi-url-required'
+      responses:
+        "204":
+          description: Invalidated tokens successfully
+        '501':
+          $ref: '#/components/responses/notImplementedEntityResponse'
+tags:
+  - name: authtoken
+    description: |
+      Stub implementation for `authtoken` and `authtoken2` interfaces.
 
 components:
   schemas:
@@ -454,6 +617,18 @@ components:
       $ref: schemas/logResponse.json
     credentialsExistence:
       $ref: schemas/credentialsExistence.json
+    token:
+      $ref: schemas/authtoken/token.json
+    tokenResponse:
+      $ref: schemas/authtoken/tokenResponse.json
+    tokenResponseLegacy:
+      $ref: schemas/authtoken/tokenResponseLegacy.json
+    refreshToken:
+      $ref: schemas/authtoken/refreshToken.json
+    signRefreshToken:
+      $ref: schemas/authtoken/signRefreshToken.json
+    signTokenPayload:
+      $ref: schemas/authtoken/signTokenPayload.json
     errorResponse:
       $ref: schemas/errors.json
 
@@ -478,6 +653,12 @@ components:
             $ref: '#/components/schemas/errorResponse'
     unprocessableEntityResponse:
       description: Error response in JSON format for unprocessable entity.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/errorResponse'
+    notImplementedEntityResponse:
+      description: Error response in JSON format for endpoints that are not implemented.
       content:
         application/json:
           schema:
@@ -586,5 +767,19 @@ components:
       required: true
       name: redirect-uri
       description: initial uri that was used as redirect uri for getting authentication code
+      schema:
+        type: string
+    okapi-token-required:
+      in: header
+      name: X-Okapi-Tenant
+      description: Okapi Tenant
+      required: true
+      schema:
+        type: string
+    okapi-url-required:
+      in: header
+      name: X-Okapi-Url
+      description: Okapi URL
+      required: true
       schema:
         type: string
