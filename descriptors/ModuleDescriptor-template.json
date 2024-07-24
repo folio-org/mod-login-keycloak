@@ -140,6 +140,48 @@
           "pathPattern" : "/_/tenant/{id}"
         }
       ]
+    },
+    {
+      "id": "authtoken",
+      "version": "2.0",
+      "handlers": [
+        {
+          "methods": [ "POST" ],
+          "pathPattern": "/token",
+          "permissionsRequired": [ "auth.signtoken" ]
+        },
+        {
+          "methods": [ "POST" ],
+          "pathPattern": "/refreshtoken",
+          "permissionsRequired": [ "auth.signrefreshtoken" ]
+        }
+      ]
+    },
+    {
+      "id": "authtoken2",
+      "version": "1.0",
+      "handlers": [
+        {
+          "methods": [ "POST" ],
+          "pathPattern": "/token/sign",
+          "permissionsRequired": [ "auth.signtoken" ]
+        },
+        {
+          "methods": [ "POST" ],
+          "pathPattern": "/token/refresh",
+          "permissionsRequired": [ "auth.signrefreshtoken" ]
+        },
+        {
+          "methods": [ "POST" ],
+          "pathPattern": "/token/invalidate",
+          "permissionsRequired" : [ ]
+        },
+        {
+          "methods": [ "POST" ],
+          "pathPattern": "/token/invalidate-all",
+          "permissionsRequired" : [ ]
+        }
+      ]
     }
   ],
   "requires" : [
@@ -213,6 +255,16 @@
       "permissionName" : "login.credentials-existence.get",
       "displayName" : "Credentials existence get",
       "description" : "Get credentials existence"
+    },
+    {
+      "permissionName": "auth.signtoken",
+      "displayName": "auth-token - sign token",
+      "description": "sign token"
+    },
+    {
+      "permissionName": "auth.signrefreshtoken",
+      "displayName": "auth-token - sign refresh token",
+      "description": "sign refresh token"
     },
     {
       "permissionName" : "login.all",

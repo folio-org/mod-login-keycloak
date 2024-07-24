@@ -58,7 +58,7 @@ class ApiExceptionHandlerTest {
   void handleUnsupportedOperationException_positive() throws Exception {
     when(testService.getTestValue()).thenThrow(new UnsupportedOperationException("Operation is not supported"));
     mockMvc.perform(get("/tests").queryParam("query", "cql.allRecords=1").contentType(APPLICATION_JSON))
-      .andExpect(status().isBadRequest())
+      .andExpect(status().isNotImplemented())
       .andExpect(jsonPath("$.total_records", is(1)))
       .andExpect(jsonPath("$.errors[0].message", is("Operation is not supported")))
       .andExpect(jsonPath("$.errors[0].type", is("UnsupportedOperationException")))

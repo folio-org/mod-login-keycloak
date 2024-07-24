@@ -16,6 +16,7 @@ import static org.folio.login.domain.dto.ErrorCode.VALIDATION_ERROR;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.NOT_IMPLEMENTED;
 import static org.springframework.http.HttpStatus.UNPROCESSABLE_ENTITY;
 
 import jakarta.persistence.EntityExistsException;
@@ -72,7 +73,7 @@ public class ApiExceptionHandler {
   @ExceptionHandler(UnsupportedOperationException.class)
   public ResponseEntity<ErrorResponse> handleUnsupportedOperationException(UnsupportedOperationException exception) {
     logException(DEBUG, exception);
-    return buildResponseEntity(exception, BAD_REQUEST, SERVICE_ERROR);
+    return buildResponseEntity(exception, NOT_IMPLEMENTED, SERVICE_ERROR);
   }
 
   /**
