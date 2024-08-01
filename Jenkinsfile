@@ -3,7 +3,7 @@ import org.jenkinsci.plugins.workflow.libs.Library
 @Library('folio_jenkins_shared_libs@EPC') _
 
 buildMvn {
-  publishModDescriptor = false
+  publishModDescriptor = true
   mvnDeploy = true
   buildNode = 'jenkins-agent-java17-bigmem'
 
