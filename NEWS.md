@@ -1,3 +1,7 @@
+## Version `v1.4.4` (14.08.2024)
+*  Implement stub for authtoken and authtoken2 interfaces (MODLOGINKC-27)
+---
+
 ## Version `v1.4.2` (10.07.2024)
 * Add kafka producer for sending logout events (MODLOGINKC-19)
 * Upgrade keycloak to v25.0.1 (KEYCLOAK-11)
