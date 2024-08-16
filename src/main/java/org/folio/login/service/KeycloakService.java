@@ -79,6 +79,13 @@ public class KeycloakService {
     keycloakClient.logoutAll(tenantId, keycloakUserId, token);
   }
 
+  /**
+   * Refreshes the access token using the refresh token. The original realm is extracted from the refresh token. The
+   * `x-okapi-tenant` header is overridden with the tenant from the refresh token.
+   *
+   * @param refreshToken the refresh token
+   * @return the refreshed access token
+   */
   public KeycloakAuthentication refreshToken(String refreshToken) {
     var headers = new HashMap<>(folioExecutionContext.getAllHeaders());
     headers.put(OkapiHeaders.TENANT, List.of(extractTenant(refreshToken)));
