@@ -5,7 +5,6 @@ import static org.keycloak.util.TokenUtil.getRefreshToken;
 
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
-import org.apache.commons.lang3.StringUtils;
 
 @UtilityClass
 public class JwtUtils {
