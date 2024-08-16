@@ -1,5 +1,6 @@
 package org.folio.login.util;
 
+import static org.apache.commons.lang3.StringUtils.substringAfterLast;
 import static org.keycloak.util.TokenUtil.getRefreshToken;
 
 import lombok.SneakyThrows;
@@ -12,6 +13,6 @@ public class JwtUtils {
   @SneakyThrows
   public static String extractTenant(String refreshToken) {
     var token = getRefreshToken(refreshToken);
-    return StringUtils.substringAfterLast(token.getIssuer(), "/");
+    return substringAfterLast(token.getIssuer(), "/");
   }
 }
