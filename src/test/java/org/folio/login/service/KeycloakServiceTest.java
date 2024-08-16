@@ -28,6 +28,7 @@ import static org.folio.login.support.TestValues.refreshTokenRequest;
 import static org.folio.login.support.TestValues.updateCredentials;
 import static org.folio.login.support.TestValues.updatePassword;
 import static org.folio.login.support.TestValues.userCredentials;
+import static org.folio.test.security.TestJwtGenerator.generateJwtToken;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -329,7 +330,8 @@ class KeycloakServiceTest {
 
   @Test
   void refreshToken_positive() {
-    var requestData = refreshTokenRequest(REFRESH_TOKEN);
+    var refreshToken = generateJwtToken("http://localhost:8081", TENANT);
+    var requestData = refreshTokenRequest(refreshToken);
     var realmConfiguration = keycloakRealmConfiguration();
     var keycloakAuth = keycloakAuthentication();
 
@@ -338,7 +340,7 @@ class KeycloakServiceTest {
     when(keycloakClient.callTokenEndpoint(any(), any(), any(), any()))
       .thenReturn(keycloakAuth);
 
-    var actualAuth = keycloakService.refreshToken(REFRESH_TOKEN);
+    var actualAuth = keycloakService.refreshToken(refreshToken);
     assertThat(actualAuth).isEqualTo(keycloakAuth);
 
     var captor = ArgumentCaptor.forClass(Map.class);

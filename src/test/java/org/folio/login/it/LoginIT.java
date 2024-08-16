@@ -125,6 +125,25 @@ class LoginIT extends BaseIntegrationTest {
 
   @Test
   @KeycloakRealms(realms = "/json/keycloak/test-realm.json")
+  void refresh_positive_crossTenantRequest_tenantHeaderIsDifferentFromTokenRealm() throws Exception {
+    var tokens = doLogin();
+
+    mockMvc.perform(post("/authn/refresh")
+        .header(CONTENT_TYPE, APPLICATION_JSON)
+        .header(XOkapiHeaders.USER_ID, USER_ID)
+        .header(XOkapiHeaders.URL, OKAPI_URL)
+        .header(XOkapiHeaders.TENANT, "targettenant")
+        .cookie(new Cookie(FOLIO_ACCESS_TOKEN, tokens.getOkapiToken()),
+          new Cookie(FOLIO_REFRESH_TOKEN, tokens.getRefreshToken())))
+      .andExpect(status().isCreated())
+      .andExpect(header().doesNotExist(XOkapiHeaders.TOKEN))
+      .andExpect(header().exists(HttpHeaders.SET_COOKIE))
+      .andExpect(cookie().httpOnly(FOLIO_ACCESS_TOKEN, true))
+      .andExpect(cookie().httpOnly(FOLIO_REFRESH_TOKEN, true));
+  }
+
+  @Test
+  @KeycloakRealms(realms = "/json/keycloak/test-realm.json")
   void logout_positive() throws Exception {
     final var firstLoginTokens = doLogin();
     final var secondLoginTokens = doLogin();

@@ -2,6 +2,7 @@ package org.folio.login.service;
 
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
+import static org.folio.login.util.JwtUtils.extractTenant;
 import static org.folio.login.util.TokenRequestHelper.prepareCodeRequestBody;
 import static org.folio.login.util.TokenRequestHelper.prepareRefreshRequestBody;
 import static org.keycloak.OAuth2Constants.CLIENT_ID;
@@ -12,9 +13,12 @@ import feign.FeignException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.core.Form;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.folio.common.utils.OkapiHeaders;
 import org.folio.login.domain.dto.CredentialsExistence;
 import org.folio.login.domain.dto.LoginCredentials;
 import org.folio.login.domain.dto.PasswordResetAction;
@@ -28,6 +32,7 @@ import org.folio.login.integration.kafka.LogoutEventPublisher;
 import org.folio.login.integration.keycloak.KeycloakClient;
 import org.folio.login.util.TokenRequestHelper;
 import org.folio.spring.FolioExecutionContext;
+import org.folio.spring.scope.FolioExecutionContextSetter;
 import org.springframework.stereotype.Service;
 
 @Log4j2
@@ -75,9 +80,13 @@ public class KeycloakService {
   }
 
   public KeycloakAuthentication refreshToken(String refreshToken) {
-    var realmConfiguration = realmConfigurationProvider.getRealmConfiguration();
-    var requestData = prepareRefreshRequestBody(refreshToken, realmConfiguration);
-    return getToken(null, null, requestData);
+    var headers = new HashMap<>(folioExecutionContext.getAllHeaders());
+    headers.put(OkapiHeaders.TENANT, List.of(extractTenant(refreshToken)));
+    try (var ctx = new FolioExecutionContextSetter(folioExecutionContext.getFolioModuleMetadata(), headers)) {
+      var realmConfiguration = realmConfigurationProvider.getRealmConfiguration();
+      var requestData = prepareRefreshRequestBody(refreshToken, realmConfiguration);
+      return getToken(null, null, requestData);
+    }
   }
 
   public KeycloakAuthentication getTokenAuthCodeFlow(String code, String redirectUri, String userAgent,
