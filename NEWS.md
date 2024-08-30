@@ -1,3 +1,7 @@
+## Version `v1.4.5` (30.08.2024)
+* Implement stub for authtoken and authtoken2 interfaces (MODLOGINKC-27)
+* Support cross tenant token refreshing (EUREKA-255)
+
 ## Version `v1.4.4` (14.08.2024)
 *  Implement stub for authtoken and authtoken2 interfaces (MODLOGINKC-27)
 ---
