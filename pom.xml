@@ -24,7 +24,8 @@
     <openapi-tools.jackson-databind-nullable.version>0.2.6</openapi-tools.jackson-databind-nullable.version>
     <folio-spring-support.version>8.1.2</folio-spring-support.version>
     <folio-java-checkstyle.version>1.0.1</folio-java-checkstyle.version>
-    <applications-poc-tools.version>1.5.5</applications-poc-tools.version>
+    <applications-poc-tools.version>1.5.6</applications-poc-tools.version>
+    <commons-lang3.version>3.17.0</commons-lang3.version>
     <coffee-boots.version>4.0.0</coffee-boots.version>
 
     <mod-login-keycloak.yaml-file>${project.basedir}/src/main/resources/swagger.api/mod-login-keycloak.yaml
@@ -53,6 +54,12 @@
       <groupId>org.folio</groupId>
       <artifactId>folio-spring-cql</artifactId>
       <version>${folio-spring-support.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.folio</groupId>
+      <artifactId>folio-tls-utils</artifactId>
+      <version>${applications-poc-tools.version}</version>
     </dependency>
 
     <dependency>

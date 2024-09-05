@@ -5,7 +5,7 @@ import feign.codec.Encoder;
 import feign.form.FormEncoder;
 import feign.okhttp.OkHttpClient;
 import lombok.extern.log4j.Log4j2;
-import org.folio.common.utils.FeignClientTlsUtils;
+import org.folio.common.utils.tls.FeignClientTlsUtils;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
 import org.springframework.cloud.openfeign.support.SpringEncoder;
