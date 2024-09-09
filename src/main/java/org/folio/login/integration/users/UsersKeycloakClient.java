@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
 @FeignClient(name = "users-keycloak")
-public interface ModUsersKeycloakClient {
+public interface UsersKeycloakClient {
 
   /**
    * Create keycloak user if not exists.
