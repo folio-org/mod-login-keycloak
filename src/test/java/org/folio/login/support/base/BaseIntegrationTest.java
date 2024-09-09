@@ -1,8 +1,12 @@
 package org.folio.login.support.base;
 
+import static org.folio.login.support.TestConstants.TENANT;
 import static org.folio.login.support.TestUtils.cleanUpCaches;
+import static org.folio.test.TestConstants.OKAPI_AUTH_TOKEN;
 import static org.folio.test.TestUtils.asJsonString;
+import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -18,26 +22,36 @@ import org.folio.test.base.BaseBackendIntegrationTest;
 import org.folio.test.extensions.EnableKafka;
 import org.folio.test.extensions.EnableKeycloakTlsMode;
 import org.folio.test.extensions.EnablePostgres;
+import org.folio.test.extensions.EnableWireMock;
+import org.folio.test.extensions.impl.KeycloakExecutionListener;
+import org.folio.test.extensions.impl.WireMockAdminClient;
+import org.folio.test.extensions.impl.WireMockExecutionListener;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cache.CacheManager;
+import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
 @Log4j2
 @EnableKafka
+@EnableWireMock
 @EnablePostgres
 @SpringBootTest
 @EnableKeycloakTlsMode
 @ActiveProfiles("it")
 @AutoConfigureMockMvc
+@TestExecutionListeners(listeners = {WireMockExecutionListener.class, KeycloakExecutionListener.class},
+  mergeMode = TestExecutionListeners.MergeMode.MERGE_WITH_DEFAULTS)
 public abstract class BaseIntegrationTest extends BaseBackendIntegrationTest {
 
   protected static FakeKafkaConsumer fakeKafkaConsumer;
+  protected static WireMockAdminClient wmAdminClient;
   private static final String MODULE_NAME = "mod-login-keycloak";
 
   @Autowired
@@ -55,6 +69,15 @@ public abstract class BaseIntegrationTest extends BaseBackendIntegrationTest {
 
   public static ResultActions attemptGet(String uri, Object... args) throws Exception {
     return mockMvc.perform(get(uri, args).contentType(APPLICATION_JSON));
+  }
+
+  protected static HttpHeaders okapiHeaders() {
+    var headers = new HttpHeaders();
+    headers.add(CONTENT_TYPE, APPLICATION_JSON_VALUE);
+    headers.add(XOkapiHeaders.URL, wmAdminClient.getWireMockUrl());
+    headers.add(XOkapiHeaders.TOKEN, OKAPI_AUTH_TOKEN);
+    headers.add(XOkapiHeaders.TENANT, TENANT);
+    return headers;
   }
 
   protected static ResultActions attemptPost(String uri, Object body, Object... args) throws Exception {

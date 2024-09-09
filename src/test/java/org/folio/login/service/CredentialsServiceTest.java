@@ -8,6 +8,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import org.folio.login.domain.dto.CredentialsExistence;
+import org.folio.login.integration.users.UsersKeycloakClient;
 import org.folio.test.types.UnitTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,10 +21,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class CredentialsServiceTest {
 
   @Mock private KeycloakService keycloakService;
+  @Mock private UsersKeycloakClient usersKeycloakClient;
   @InjectMocks private CredentialsService credentialsService;
 
   @Test
   void createCredentials_positive() {
+    doNothing().when(usersKeycloakClient).createAuthUserInfo(loginCredentials().getUserId());
     doNothing().when(keycloakService).createAuthCredentials(loginCredentials());
     credentialsService.createAuthCredentials(loginCredentials());
     verify(keycloakService).createAuthCredentials(loginCredentials());
