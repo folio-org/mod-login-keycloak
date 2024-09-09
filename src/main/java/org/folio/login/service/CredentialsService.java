@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.folio.login.domain.dto.CredentialsExistence;
 import org.folio.login.domain.dto.LoginCredentials;
 import org.folio.login.domain.dto.UpdateCredentials;
+import org.folio.login.integration.users.ModUsersKeycloakClient;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -11,8 +12,10 @@ import org.springframework.stereotype.Service;
 public class CredentialsService {
 
   private final KeycloakService keycloakService;
+  private final ModUsersKeycloakClient modUsersKeycloakClient;
 
   public void createAuthCredentials(LoginCredentials loginCredentials) {
+    modUsersKeycloakClient.createAuthUserInfo(loginCredentials.getUserId());
     keycloakService.createAuthCredentials(loginCredentials);
   }
 

@@ -85,7 +85,8 @@
         {
           "methods" : [ "POST" ],
           "pathPattern" : "/authn/credentials",
-          "permissionsRequired" : [ "login.item.post" ]
+          "permissionsRequired" : [ "login.item.post" ],
+          "modulePermissions": [ "users-keycloak.auth-users.item.post" ]
         },
         {
           "methods" : [ "DELETE" ],
@@ -188,6 +189,10 @@
     {
       "id" : "users",
       "version" : "16.1"
+    },
+    {
+      "id" : "users-keycloak",
+      "version" : "1.0"
     }
   ],
   "optional" : [
