@@ -1,3 +1,6 @@
+## Version `v1.5.0` (24.09.2024)
+* JIT AuthUser creation in POST /authn/credentials (MODLOGINKC-17)
+
 ## Version `v1.4.4` (30.08.2024)
 * Support cross tenant token refreshing (EUREKA-255)
 ---
