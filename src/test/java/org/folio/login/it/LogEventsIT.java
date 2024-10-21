@@ -13,7 +13,6 @@ import static org.folio.test.TestUtils.asJsonString;
 import static org.folio.test.TestUtils.parseResponse;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -24,32 +23,25 @@ import lombok.SneakyThrows;
 import org.folio.login.domain.dto.LogEvent;
 import org.folio.login.domain.dto.LogEventCollection;
 import org.folio.login.domain.dto.LogEventType;
+import org.folio.login.support.base.BaseIntegrationTest;
 import org.folio.spring.integration.XOkapiHeaders;
-import org.folio.test.base.BaseBackendIntegrationTest;
-import org.folio.test.extensions.EnableKeycloakTlsMode;
-import org.folio.test.extensions.EnablePostgres;
 import org.folio.test.extensions.KeycloakRealms;
+import org.folio.test.extensions.WireMockStub;
 import org.folio.test.types.IntegrationTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 
 @IntegrationTest
-@EnablePostgres
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-@AutoConfigureMockMvc
-@EnableKeycloakTlsMode
 @KeycloakRealms(realms = "/json/keycloak/test-realm.json")
-class LogEventsIT extends BaseBackendIntegrationTest {
+class LogEventsIT extends BaseIntegrationTest {
 
   @ParameterizedTest(name = "[{index}] {1}")
   @MethodSource("logEventsProvider")
   @DisplayName("testLogEvents_parametrized")
+  @WireMockStub(scripts = {"/wiremock/stubs/users-kc/create-kc-user.json"})
   void testLogEvents_loginEvent(Runnable eventTrigger, LogEventType expectedEventType) {
     eventTrigger.run();
 
@@ -66,6 +58,7 @@ class LogEventsIT extends BaseBackendIntegrationTest {
   }
 
   @Test
+  @WireMockStub(scripts = {"/wiremock/stubs/users-kc/create-kc-user.json"})
   void testLogEvents_multipleEvents() {
     callLoginEndpoint();
     callCredentialsUpdateEndpoint();
@@ -83,6 +76,7 @@ class LogEventsIT extends BaseBackendIntegrationTest {
   }
 
   @Test
+  @WireMockStub(scripts = {"/wiremock/stubs/users-kc/create-kc-user.json"})
   void testLogEvents_pagination() {
     callLoginEndpoint();
     callCredentialsUpdateEndpoint();
@@ -139,8 +133,7 @@ class LogEventsIT extends BaseBackendIntegrationTest {
   private static void callCredentialsUpdateEndpoint() {
     mockMvc.perform(post("/authn/update")
         .content(asJsonString(updateCredentials()))
-        .header(CONTENT_TYPE, APPLICATION_JSON)
-        .header(XOkapiHeaders.TENANT, TENANT))
+        .headers(okapiHeaders()))
       .andExpect(status().isNoContent());
   }
 

@@ -31,6 +31,7 @@ public class CredentialsService {
    * @param forwardedFor      - x-forwarded-for header value
    */
   public void updateCredentials(UpdateCredentials updateCredentials, String userAgent, String forwardedFor) {
+    usersKeycloakClient.createAuthUserInfo(updateCredentials.getUserId());
     keycloakService.updateCredentials(userAgent, forwardedFor, updateCredentials);
   }
 

@@ -3,6 +3,7 @@ package org.folio.login.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.login.support.TestConstants.USER_ID;
 import static org.folio.login.support.TestValues.loginCredentials;
+import static org.folio.login.support.TestValues.updateCredentials;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -37,6 +38,21 @@ class CredentialsServiceTest {
     doNothing().when(keycloakService).deleteAuthCredentials(USER_ID);
     credentialsService.deleteAuthCredentials(USER_ID);
     verify(keycloakService).deleteAuthCredentials(USER_ID);
+  }
+
+  @Test
+  void updateCredentials_positive() {
+    var updateCredentials = updateCredentials();
+    var userAgent = "user-agent-test";
+    var forwardedFor = "forwarded-for-test";
+
+    doNothing().when(usersKeycloakClient).createAuthUserInfo(updateCredentials.getUserId());
+    doNothing().when(keycloakService).updateCredentials(userAgent, forwardedFor, updateCredentials);
+
+    credentialsService.updateCredentials(updateCredentials, userAgent, forwardedFor);
+
+    verify(usersKeycloakClient).createAuthUserInfo(updateCredentials.getUserId());
+    verify(keycloakService).updateCredentials(userAgent, forwardedFor, updateCredentials);
   }
 
   @Test
