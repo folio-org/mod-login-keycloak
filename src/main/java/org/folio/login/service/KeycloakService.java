@@ -1,6 +1,5 @@
 package org.folio.login.service;
 
-import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 import static org.folio.login.util.JwtUtils.extractTenant;
 import static org.folio.login.util.TokenRequestHelper.prepareCodeRequestBody;
@@ -141,7 +140,7 @@ public class KeycloakService {
         .stream()
         .filter(credentials -> credentials.getType().equals(GRANT_TYPE_PASSWORD))
         .map(UserCredentials::getId)
-        .collect(toList());
+        .toList();
       if (userCredentials.isEmpty()) {
         throw new EntityNotFoundException("No credentials for userId " + userId + " found");
       }

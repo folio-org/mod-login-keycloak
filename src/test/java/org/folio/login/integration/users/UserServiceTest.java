@@ -2,6 +2,7 @@ package org.folio.login.integration.users;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.folio.login.support.TestConstants.USERNAME;
 import static org.folio.login.support.TestValues.user;
 import static org.mockito.Mockito.when;
 
@@ -33,11 +34,10 @@ class UserServiceTest {
 
   @Test
   void getUserByUsername_negative_notFound() {
-    var user = user();
-    when(usersClient.query("username==" + user.getUsername(), 1)).thenReturn(ResultList.empty());
+    when(usersClient.query("username==" + USERNAME, 1)).thenReturn(ResultList.empty());
 
-    assertThatThrownBy(() -> userService.getUserByUsername(user.getUsername()))
+    assertThatThrownBy(() -> userService.getUserByUsername(USERNAME))
       .isInstanceOf(EntityNotFoundException.class)
-      .hasMessage("Failed to find user by name: username = " + user.getUsername());
+      .hasMessage("Failed to find user by name: username = " + USERNAME);
   }
 }
