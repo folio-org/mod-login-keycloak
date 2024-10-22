@@ -1,14 +1,17 @@
 package org.folio.login.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.folio.login.support.TestConstants.USERNAME;
 import static org.folio.login.support.TestConstants.USER_ID;
 import static org.folio.login.support.TestValues.loginCredentials;
 import static org.folio.login.support.TestValues.updateCredentials;
+import static org.folio.login.support.TestValues.user;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import org.folio.login.domain.dto.CredentialsExistence;
+import org.folio.login.integration.users.UserService;
 import org.folio.login.integration.users.UsersKeycloakClient;
 import org.folio.test.types.UnitTest;
 import org.junit.jupiter.api.Test;
@@ -23,6 +26,7 @@ class CredentialsServiceTest {
 
   @Mock private KeycloakService keycloakService;
   @Mock private UsersKeycloakClient usersKeycloakClient;
+  @Mock private UserService userService;
   @InjectMocks private CredentialsService credentialsService;
 
   @Test
@@ -53,6 +57,21 @@ class CredentialsServiceTest {
 
     verify(usersKeycloakClient).createAuthUserInfo(updateCredentials.getUserId());
     verify(keycloakService).updateCredentials(userAgent, forwardedFor, updateCredentials);
+  }
+
+  @Test
+  void updateCredentials_positive_noUserId() {
+    var userAgent = "user-agent-test";
+    var forwardedFor = "forwarded-for-test";
+
+    when(userService.getUserByUsername(USERNAME)).thenReturn(user());
+    doNothing().when(usersKeycloakClient).createAuthUserInfo(USER_ID);
+    doNothing().when(keycloakService).updateCredentials(userAgent, forwardedFor, updateCredentials());
+
+    credentialsService.updateCredentials(updateCredentials().userId(null), userAgent, forwardedFor);
+
+    verify(usersKeycloakClient).createAuthUserInfo(USER_ID);
+    verify(keycloakService).updateCredentials(userAgent, forwardedFor, updateCredentials());
   }
 
   @Test

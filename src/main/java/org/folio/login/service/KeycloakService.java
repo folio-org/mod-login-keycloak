@@ -42,7 +42,7 @@ public class KeycloakService {
 
   private static final String GRANT_TYPE_PASSWORD = "password";
   private final AdminTokenService adminTokenService;
-  private final KeycloakUserService userService;
+  private final KeycloakUserService keycloakUserService;
   private final KeycloakClient keycloakClient;
   private final FolioExecutionContext folioExecutionContext;
   private final RealmConfigurationProvider realmConfigurationProvider;
@@ -73,7 +73,7 @@ public class KeycloakService {
     log.debug("Logging out all user sessions [userId: {}]", userId);
     var tenantId = folioExecutionContext.getTenantId();
     var token = adminTokenService.getAdminToken(null, null);
-    var keycloakUserId = userService.findKeycloakUserIdByUserId(userId.toString(), token);
+    var keycloakUserId = keycloakUserService.findKeycloakUserIdByUserId(userId.toString(), token);
 
     logoutEventPublisher.publishLogoutAllEvent(keycloakUserId);
     keycloakClient.logoutAll(tenantId, keycloakUserId, token);
@@ -116,8 +116,8 @@ public class KeycloakService {
       var token = adminTokenService.getAdminToken(null, null);
       var tenantId = folioExecutionContext.getTenantId();
       var keycloakUserId = isNotEmpty(userId)
-        ? userService.findKeycloakUserIdByUserId(userId, token)
-        : userService.findKeycloakUserByUsername(userName, token).getId();
+        ? keycloakUserService.findKeycloakUserIdByUserId(userId, token)
+        : keycloakUserService.findKeycloakUserByUsername(userName, token).getId();
       var userCredentials = keycloakClient.getUserCredentials(tenantId, keycloakUserId, token);
 
       if (!userCredentials.isEmpty()) {
@@ -136,7 +136,7 @@ public class KeycloakService {
     var tenantId = folioExecutionContext.getTenantId();
     try {
       var token = adminTokenService.getAdminToken(null, null);
-      var keycloakUserId = userService.findKeycloakUserIdByUserId(userId, token);
+      var keycloakUserId = keycloakUserService.findKeycloakUserIdByUserId(userId, token);
       var userCredentials = keycloakClient.getUserCredentials(tenantId, keycloakUserId, token)
         .stream()
         .filter(credentials -> credentials.getType().equals(GRANT_TYPE_PASSWORD))
@@ -155,7 +155,7 @@ public class KeycloakService {
     var tenantId = folioExecutionContext.getTenantId();
     try {
       var token = adminTokenService.getAdminToken(null, null);
-      var keycloakUserId = userService.findKeycloakUserIdByUserId(userId, token);
+      var keycloakUserId = keycloakUserService.findKeycloakUserIdByUserId(userId, token);
       var userCredentials = keycloakClient.getUserCredentials(tenantId, keycloakUserId, token);
       return new CredentialsExistence().credentialsExist(!userCredentials.isEmpty());
     } catch (FeignException cause) {
@@ -171,7 +171,7 @@ public class KeycloakService {
     var tenantId = folioExecutionContext.getTenantId();
     try {
       var token = adminTokenService.getAdminToken(null, null);
-      var keycloakUserId = userService.findKeycloakUserIdByUserId(userId, token);
+      var keycloakUserId = keycloakUserService.findKeycloakUserIdByUserId(userId, token);
       var kcPasswordReset = PasswordCredential.of(false, GRANT_TYPE_PASSWORD,
         newPassword);
       keycloakClient.updateCredentials(tenantId, keycloakUserId, kcPasswordReset, token);

@@ -114,6 +114,34 @@ class CredentialIT extends BaseIntegrationTest {
   }
 
   @Test
+  @KeycloakRealms(realms = "/json/keycloak/test-realm.json")
+  @WireMockStub(scripts = {
+    "/wiremock/stubs/users/find-user-by-query.json",
+    "/wiremock/stubs/users-kc/create-kc-user.json"
+  })
+  void updateCredentials_positive_whenUserFoundByName() throws Exception {
+    var credentials = updateCredentials().userId(null);
+    mockMvc.perform(post("/authn/update")
+        .content(asJsonString(credentials))
+        .headers(okapiHeaders()))
+      .andExpect(status().isNoContent());
+  }
+
+  @Test
+  @KeycloakRealms(realms = "/json/keycloak/test-realm.json")
+  @WireMockStub(scripts = {
+    "/wiremock/stubs/users/find-user-by-query-no-results.json",
+    "/wiremock/stubs/users-kc/create-kc-user.json"
+  })
+  void updateCredentials_negative_userNotFoundByName() throws Exception {
+    var credentials = updateCredentials().userId(null);
+    mockMvc.perform(post("/authn/update")
+        .content(asJsonString(credentials))
+        .headers(okapiHeaders()))
+      .andExpectAll(notFoundWithMsg("Failed to find user by name: username = " + credentials.getUsername()));
+  }
+
+  @Test
   @WireMockStub(scripts = {"/wiremock/stubs/users-kc/create-kc-user.json"})
   void updateCredentials_negative_keycloakError() throws Exception {
     var credentials = updateCredentials();

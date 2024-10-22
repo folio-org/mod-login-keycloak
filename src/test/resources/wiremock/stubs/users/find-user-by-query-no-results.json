@@ -1,0 +1,29 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPath": "/users",
+    "headers": {
+      "x-okapi-tenant": { "equalTo": "test" },
+      "x-okapi-token": { "equalTo": "X-Okapi-Token test value" }
+    },
+    "queryParameters": {
+      "query": { "equalTo": "username==test-username" },
+      "limit": { "equalTo": "1" }
+    }
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "jsonBody": {
+      "users": [],
+      "totalRecords": 0,
+      "resultInfo": {
+        "totalRecords": 0,
+        "facets": [],
+        "diagnostics": []
+      }
+    }
+  }
+}
