@@ -37,6 +37,7 @@ import org.folio.login.domain.model.PasswordCredential;
 import org.folio.login.domain.model.Token;
 import org.folio.login.domain.model.TokenContainer;
 import org.folio.login.domain.model.UserCredentials;
+import org.folio.login.integration.users.model.User;
 import org.keycloak.OAuth2Constants;
 import org.springframework.http.ResponseCookie;
 
@@ -205,5 +206,9 @@ public class TestValues {
     var result =  new Cookie(name, value);
     result.setMaxAge(expires);
     return result;
+  }
+
+  public static User user() {
+    return new User().id(USER_UUID).username(USERNAME);
   }
 }

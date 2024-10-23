@@ -1,0 +1,59 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPath": "/users",
+    "headers": {
+      "x-okapi-tenant": { "equalTo": "test" },
+      "x-okapi-token": { "equalTo": "X-Okapi-Token test value" }
+    },
+    "queryParameters": {
+      "query": { "equalTo": "username==test-username" },
+      "limit": { "equalTo": "1" }
+    }
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "jsonBody": {
+      "users": [
+        {
+          "id": "99999999-9999-4999-9999-999999999999",
+          "username": "test-username",
+          "active": true,
+          "barcode": "787181529957397",
+          "type": "patron",
+          "patronGroup": "3684a786-6671-4268-8ed0-9db82ebca60b",
+          "departments": [],
+          "proxyFor": [],
+          "personal": {
+            "firstName": "Test",
+            "lastName": "User",
+            "email": "test-user@folio.org",
+            "phone": "1-028-589-2513",
+            "mobilePhone": "1-154-117-4466",
+            "dateOfBirth": "1961-01-30T00:00:00.000+00:00",
+            "addresses": [],
+            "preferredContactTypeId": "002"
+          },
+          "enrollmentDate": "2018-09-30T00:00:00.000+00:00",
+          "expirationDate": "2020-09-15T00:00:00.000+00:00",
+          "createdDate": "2024-10-21T14:57:56.933+00:00",
+          "updatedDate": "2024-10-21T14:57:56.933+00:00",
+          "metadata": {
+            "createdDate": "2024-10-21T14:57:56.315+00:00",
+            "updatedDate": "2024-10-21T14:57:56.315+00:00"
+          },
+          "preferredEmailCommunication": []
+        }
+      ],
+      "totalRecords": 1,
+      "resultInfo": {
+        "totalRecords": 1,
+        "facets": [],
+        "diagnostics": []
+      }
+    }
+  }
+}
