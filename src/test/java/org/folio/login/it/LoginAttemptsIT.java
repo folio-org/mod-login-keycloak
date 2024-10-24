@@ -95,7 +95,7 @@ class LoginAttemptsIT extends BaseBackendIntegrationTest {
         .contentType(APPLICATION_JSON)
         .header(XOkapiHeaders.TENANT, TENANT)
         .content(asJsonString(invalidLoginCredentials())))
-      .andExpect(status().isBadRequest());
+      .andExpect(status().isUnauthorized());
   }
 
   @SneakyThrows

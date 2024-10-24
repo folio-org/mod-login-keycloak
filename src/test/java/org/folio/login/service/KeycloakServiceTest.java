@@ -154,7 +154,6 @@ class KeycloakServiceTest {
       .hasMessage("Unauthorized error");
   }
 
-
   @Test
   void updateCredentials_positive() {
     changePassword();
