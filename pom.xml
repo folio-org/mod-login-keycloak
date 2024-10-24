@@ -41,6 +41,20 @@
     <maven-release-plugin.version>3.1.1</maven-release-plugin.version>
     <openapi-generator.version>7.9.0</openapi-generator.version>
     <mapstruct-plugin.version>1.6.2</mapstruct-plugin.version>
+
+    <sonar.exclusions>
+      <!--
+        exclude:
+         - exclude domain classes, which are essentially simple POJO classes
+           most of their body is generated with lombok. here is nothing to test or analyse
+         - rest resources (generated API)
+      -->
+      src/main/java/**/domain/**,
+      src/main/java/**/model/**,
+      src/main/java/**/rest/resource/**,
+      src/main/java/**/mapper/**,
+      src/main/java/org/folio/login/LoginKeycloakApplication.java
+    </sonar.exclusions>
   </properties>
 
   <dependencies>
@@ -474,6 +488,7 @@
              - rest resources (generated API)
           -->
           src/main/java/**/domain/**,
+          src/main/java/**/model/**,
           src/main/java/**/rest/resource/**,
           src/main/java/**/mapper/**,
           src/main/java/org/folio/login/LoginKeycloakApplication.java
