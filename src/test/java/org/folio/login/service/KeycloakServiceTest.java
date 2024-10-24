@@ -37,6 +37,7 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import feign.FeignException;
 import feign.RetryableException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.ws.rs.core.Form;
@@ -48,6 +49,7 @@ import org.folio.login.domain.model.KeycloakUser;
 import org.folio.login.domain.model.UserCredentials;
 import org.folio.login.exception.RequestValidationException;
 import org.folio.login.exception.ServiceException;
+import org.folio.login.exception.UnauthorizedException;
 import org.folio.login.integration.kafka.LogoutEventPublisher;
 import org.folio.login.integration.keycloak.KeycloakClient;
 import org.folio.login.support.TestConstants;
@@ -135,6 +137,23 @@ class KeycloakServiceTest {
       .isInstanceOf(ServiceException.class)
       .hasMessage("Failed to obtain a token");
   }
+
+  @Test
+  void getUserToken_negative_unauthorizedException() {
+    var requestData = loginRequest(USERNAME, PASSWORD, CLIENT_ID, CLIENT_SECRET);
+    var realmConfig = keycloakRealmConfiguration();
+
+    when(folioExecutionContext.getTenantId()).thenReturn(TENANT);
+    when(realmConfigurationProvider.getRealmConfiguration()).thenReturn(realmConfig);
+    when(keycloakClient.callTokenEndpoint(TENANT, requestData, null, null))
+      .thenThrow(FeignException.Unauthorized.class);
+
+    var credentials = loginCredentials();
+    assertThatThrownBy(() -> keycloakService.getUserToken(credentials, null, null))
+      .isInstanceOf(UnauthorizedException.class)
+      .hasMessage("Unauthorized error");
+  }
+
 
   @Test
   void updateCredentials_positive() {

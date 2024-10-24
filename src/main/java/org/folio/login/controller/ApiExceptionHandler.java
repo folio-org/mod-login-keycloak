@@ -11,12 +11,14 @@ import static org.folio.login.domain.dto.ErrorCode.SERVICE_ERROR;
 import static org.folio.login.domain.dto.ErrorCode.TOKEN_LOGOUT_UNPROCESSABLE;
 import static org.folio.login.domain.dto.ErrorCode.TOKEN_PARSE_FAILURE;
 import static org.folio.login.domain.dto.ErrorCode.TOKEN_REFRESH_UNPROCESSABLE;
+import static org.folio.login.domain.dto.ErrorCode.UNAUTHORIZED_ERROR;
 import static org.folio.login.domain.dto.ErrorCode.UNKNOWN_ERROR;
 import static org.folio.login.domain.dto.ErrorCode.VALIDATION_ERROR;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.NOT_IMPLEMENTED;
+import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 import static org.springframework.http.HttpStatus.UNPROCESSABLE_ENTITY;
 
 import jakarta.persistence.EntityExistsException;
@@ -38,6 +40,7 @@ import org.folio.login.exception.ServiceException;
 import org.folio.login.exception.TokenLogoutException;
 import org.folio.login.exception.TokenParsingException;
 import org.folio.login.exception.TokenRefreshException;
+import org.folio.login.exception.UnauthorizedException;
 import org.folio.spring.cql.CqlQueryValidationException;
 import org.folio.spring.exception.NotFoundException;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
@@ -296,6 +299,12 @@ public class ApiExceptionHandler {
   public ResponseEntity<ErrorResponse> handleAllOtherExceptions(Exception exception) {
     logException(WARN, exception);
     return buildResponseEntity(exception, INTERNAL_SERVER_ERROR, UNKNOWN_ERROR);
+  }
+
+  @ExceptionHandler(UnauthorizedException.class)
+  public ResponseEntity<ErrorResponse> handleUnauthorizedException(UnauthorizedException exception) {
+    logException(DEBUG, exception);
+    return buildResponseEntity(exception, UNAUTHORIZED, UNAUTHORIZED_ERROR);
   }
 
   private static ErrorResponse buildValidationError(Exception exception, List<Parameter> parameters) {

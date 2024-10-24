@@ -28,6 +28,7 @@ import org.folio.login.domain.model.PasswordCredential;
 import org.folio.login.domain.model.UserCredentials;
 import org.folio.login.exception.RequestValidationException;
 import org.folio.login.exception.ServiceException;
+import org.folio.login.exception.UnauthorizedException;
 import org.folio.login.integration.kafka.LogoutEventPublisher;
 import org.folio.login.integration.keycloak.KeycloakClient;
 import org.folio.login.util.TokenRequestHelper;
@@ -184,6 +185,8 @@ public class KeycloakService {
     var tenantId = folioExecutionContext.getTenantId();
     try {
       return keycloakClient.callTokenEndpoint(tenantId, payload, userAgent, forwardedFor);
+    } catch (FeignException.Unauthorized e) {
+      throw new UnauthorizedException("Unauthorized error", e);
     } catch (FeignException cause) {
       throw new ServiceException("Failed to obtain a token", cause);
     }

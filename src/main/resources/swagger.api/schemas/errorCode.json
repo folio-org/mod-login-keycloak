@@ -12,6 +12,7 @@
     "found_error",
     "token.parse.failure",
     "token.refresh.unprocessable",
-    "token.logout.unprocessable"
+    "token.logout.unprocessable",
+    "unauthorized_error"
   ]
 }
