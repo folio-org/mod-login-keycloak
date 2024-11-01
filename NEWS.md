@@ -1,3 +1,8 @@
+## Version `v2.0.0` (01.11.2024)
+* Increase keycloak-admin-client to v25.0.6 (KEYCLOAK-24)
+* JIT AuthUser creation in POST /authn/update (MODLOGINKC-34)
+* Post request to /authn/login-with-expirity return 400 when keycloak return 401 (MODLOGINKC-35)
+
 ## Version `v1.5.0` (24.09.2024)
 * JIT AuthUser creation in POST /authn/credentials (MODLOGINKC-17)
 
