@@ -24,7 +24,7 @@
     <openapi-tools.jackson-databind-nullable.version>0.2.6</openapi-tools.jackson-databind-nullable.version>
     <folio-spring-support.version>8.2.0</folio-spring-support.version>
     <folio-java-checkstyle.version>1.0.1</folio-java-checkstyle.version>
-    <applications-poc-tools.version>1.5.8-SNAPSHOT</applications-poc-tools.version>
+    <applications-poc-tools.version>2.0.0</applications-poc-tools.version>
     <commons-lang3.version>3.17.0</commons-lang3.version>
     <coffee-boots.version>4.0.0</coffee-boots.version>
 
@@ -41,6 +41,7 @@
     <maven-release-plugin.version>3.1.1</maven-release-plugin.version>
     <openapi-generator.version>7.9.0</openapi-generator.version>
     <mapstruct-plugin.version>1.6.2</mapstruct-plugin.version>
+    <folio-module-descriptor-validator.version>1.0.0</folio-module-descriptor-validator.version>
 
     <sonar.exclusions>
       <!--
@@ -471,6 +472,22 @@
             </configuration>
           </execution>
         </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.folio</groupId>
+        <artifactId>folio-module-descriptor-validator</artifactId>
+        <version>${folio-module-descriptor-validator.version}</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>validate</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <failOnInvalidDescriptor>false</failOnInvalidDescriptor>
+        </configuration>
       </plugin>
     </plugins>
   </build>
