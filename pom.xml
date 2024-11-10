@@ -35,13 +35,13 @@
     <testcontainer.version>1.20.3</testcontainer.version>
 
     <!-- Plugins versions -->
-    <maven-checkstyle.version>10.20.0</maven-checkstyle.version>
+    <maven-checkstyle.version>10.20.1</maven-checkstyle.version>
     <maven-checkstyle-plugin.version>3.6.0</maven-checkstyle-plugin.version>
     <copy-rename-maven-plugin.version>1.0.1</copy-rename-maven-plugin.version>
     <maven-release-plugin.version>3.1.1</maven-release-plugin.version>
     <openapi-generator.version>7.9.0</openapi-generator.version>
-    <mapstruct-plugin.version>1.6.2</mapstruct-plugin.version>
-    <folio-module-descriptor-validator.version>1.0.0</folio-module-descriptor-validator.version>
+    <mapstruct-plugin.version>1.6.3</mapstruct-plugin.version>
+    <folio-module-descriptor-validator.version>1.0.1</folio-module-descriptor-validator.version>
 
     <sonar.exclusions>
       <!--
