@@ -27,6 +27,7 @@
     <application-poc-tools.version>2.2.0-SNAPSHOT</application-poc-tools.version>
     <commons-lang3.version>3.17.0</commons-lang3.version>
     <coffee-boots.version>4.0.0</coffee-boots.version>
+    <jackson-bom.version>2.17.2</jackson-bom.version>
 
     <mod-login-keycloak.yaml-file>${project.basedir}/src/main/resources/swagger.api/mod-login-keycloak.yaml
     </mod-login-keycloak.yaml-file>
