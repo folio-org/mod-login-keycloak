@@ -1,3 +1,6 @@
+## Version `v2.0.2` (31.01.2025)
+* Increase keycloak-admin-client to v26.0.4 (KEYCLOAK-25)
+
 ## Version `v2.0.1` (15.11.2024)
 * Rename auth permissions (MODAT-168)
 
