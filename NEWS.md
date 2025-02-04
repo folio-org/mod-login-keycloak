@@ -1,3 +1,6 @@
+## Version `v1.5.1` (04.02.2025)
+* Add support for Keycloak v26.1.0 ([KEYCLOAK-37](https://issues.folio.org/browse/KEYCLOAK-37))
+
 ## Version `v1.5.0` (24.09.2024)
 * JIT AuthUser creation in POST /authn/credentials (MODLOGINKC-17)
 
