@@ -24,7 +24,7 @@
     <maven.compiler.target>21</maven.compiler.target>
     <swagger-annotations.version>2.2.28</swagger-annotations.version>
     <openapi-tools.jackson-databind-nullable.version>0.2.6</openapi-tools.jackson-databind-nullable.version>
-    <folio-spring-support.version>8.3.0-SNAPSHOT</folio-spring-support.version>
+    <folio-spring-support.version>9.0.0</folio-spring-support.version>
     <folio-java-checkstyle.version>1.0.1</folio-java-checkstyle.version>
     <applications-poc-tools.version>2.3.0-SNAPSHOT</applications-poc-tools.version>
     <commons-lang3.version>3.17.0</commons-lang3.version>
@@ -38,11 +38,11 @@
     <testcontainer.version>1.20.5</testcontainer.version>
 
     <!-- Plugins versions -->
-    <maven-checkstyle.version>10.21.2</maven-checkstyle.version>
+    <maven-checkstyle.version>10.21.3</maven-checkstyle.version>
     <maven-checkstyle-plugin.version>3.6.0</maven-checkstyle-plugin.version>
     <copy-rename-maven-plugin.version>1.0.1</copy-rename-maven-plugin.version>
     <maven-release-plugin.version>3.1.1</maven-release-plugin.version>
-    <openapi-generator.version>7.11.0</openapi-generator.version>
+    <openapi-generator.version>7.12.0</openapi-generator.version>
     <mapstruct-plugin.version>1.6.3</mapstruct-plugin.version>
     <folio-module-descriptor-validator.version>1.0.1</folio-module-descriptor-validator.version>
 
