@@ -1,3 +1,6 @@
+## Version `v3.0.0` (12.03.2025)
+* Update mod-login-keycloak Java 21 (MODLOGINKC-43)
+
 ## Version `v2.0.0` (01.11.2024)
 * Increase keycloak-admin-client to v25.0.6 (KEYCLOAK-24)
 * JIT AuthUser creation in POST /authn/update (MODLOGINKC-34)
