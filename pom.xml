@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>3.4.3</version>
+    <version>3.4.4</version>
     <relativePath />
   </parent>
 
@@ -24,7 +24,7 @@
     <maven.compiler.target>21</maven.compiler.target>
     <swagger-annotations.version>2.2.29</swagger-annotations.version>
     <openapi-tools.jackson-databind-nullable.version>0.2.6</openapi-tools.jackson-databind-nullable.version>
-    <folio-spring-support.version>9.0.0</folio-spring-support.version>
+    <folio-spring-support.version>9.0.1</folio-spring-support.version>
     <folio-java-checkstyle.version>1.1.0</folio-java-checkstyle.version>
     <applications-poc-tools.version>3.1.0-SNAPSHOT</applications-poc-tools.version>
     <commons-lang3.version>3.17.0</commons-lang3.version>
