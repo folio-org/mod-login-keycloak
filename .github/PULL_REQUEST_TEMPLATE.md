@@ -16,4 +16,3 @@ Provide a brief technical summary of the changes.
   - [ ] Interface version updates
   - [ ] DB schema changes / migration scripts
 - [ ] **New Properties / Environment Variables** — Updated README.md if new configs were added.
-- [ ] **Environment Recreation Test (if needed)** — Verified that environment can be recreated successfully.
