@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>3.4.4</version>
+    <version>3.4.5</version>
     <relativePath />
   </parent>
 
@@ -24,7 +24,7 @@
     <maven.compiler.target>21</maven.compiler.target>
     <swagger-annotations.version>2.2.30</swagger-annotations.version>
     <openapi-tools.jackson-databind-nullable.version>0.2.6</openapi-tools.jackson-databind-nullable.version>
-    <folio-spring-support.version>9.0.1</folio-spring-support.version>
+    <folio-spring-support.version>9.1.0</folio-spring-support.version>
     <folio-java-checkstyle.version>1.1.0</folio-java-checkstyle.version>
     <applications-poc-tools.version>3.1.0-SNAPSHOT</applications-poc-tools.version>
     <commons-lang3.version>3.17.0</commons-lang3.version>
@@ -35,14 +35,14 @@
     </mod-login-keycloak.yaml-file>
 
     <!-- Test dependencies versions -->
-    <testcontainer.version>1.20.6</testcontainer.version>
+    <testcontainer.version>1.21.0</testcontainer.version>
 
     <!-- Plugins versions -->
     <maven-checkstyle.version>10.23.0</maven-checkstyle.version>
     <maven-checkstyle-plugin.version>3.6.0</maven-checkstyle-plugin.version>
     <copy-rename-maven-plugin.version>1.0.1</copy-rename-maven-plugin.version>
     <maven-release-plugin.version>3.1.1</maven-release-plugin.version>
-    <openapi-generator.version>7.12.0</openapi-generator.version>
+    <openapi-generator.version>7.13.0</openapi-generator.version>
     <mapstruct-plugin.version>1.6.3</mapstruct-plugin.version>
     <folio-module-descriptor-validator.version>1.0.1</folio-module-descriptor-validator.version>
 
