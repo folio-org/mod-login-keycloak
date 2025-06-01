@@ -35,7 +35,7 @@
     </mod-login-keycloak.yaml-file>
 
     <!-- Test dependencies versions -->
-    <testcontainer.version>1.21.0</testcontainer.version>
+    <testcontainer.version>1.21.1</testcontainer.version>
 
     <!-- Plugins versions -->
     <maven-checkstyle.version>10.23.1</maven-checkstyle.version>
