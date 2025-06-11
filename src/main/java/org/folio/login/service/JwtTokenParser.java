@@ -30,7 +30,7 @@ public class JwtTokenParser {
     }
 
     try {
-      var payload = objectMapper.readTree(new String(Base64.getDecoder().decode(split[1])));
+      var payload = objectMapper.readTree(new String(Base64.getUrlDecoder().decode(split[1])));
       return payload.get("exp").asLong();
     } catch (Exception e) {
       log.warn("Failed to parse token", e);
