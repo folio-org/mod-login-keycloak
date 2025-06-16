@@ -1,4 +1,4 @@
-## Version `v3.1.0-SNAPSHOT` (TBD)
+## Version `v3.0.1` (16.06.2025)
 * User can't log in due to invalid token error (MODLOGINKC-44)
 
 ## Version `v3.0.0` (12.03.2025)
