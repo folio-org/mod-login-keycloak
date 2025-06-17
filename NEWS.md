@@ -1,5 +1,6 @@
 ## Version `v3.1.0-SNAPSHOT` (TBD)
 * User can't log in due to invalid token error (MODLOGINKC-44)
+* Introduce configuration for FSSP (APPPOCTOOL-59)
 
 ## Version `v3.0.0` (12.03.2025)
 * Update mod-login-keycloak Java 21 (MODLOGINKC-43)
