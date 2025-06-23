@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>3.5.0</version>
+    <version>3.5.3</version>
     <relativePath />
   </parent>
 
@@ -22,7 +22,7 @@
     <java.version>21</java.version>
     <maven.compiler.source>21</maven.compiler.source>
     <maven.compiler.target>21</maven.compiler.target>
-    <swagger-annotations.version>2.2.33</swagger-annotations.version>
+    <swagger-annotations.version>2.2.34</swagger-annotations.version>
     <openapi-tools.jackson-databind-nullable.version>0.2.6</openapi-tools.jackson-databind-nullable.version>
     <folio-spring-support.version>10.0.0-SNAPSHOT</folio-spring-support.version>
     <folio-java-checkstyle.version>1.1.0</folio-java-checkstyle.version>
@@ -35,10 +35,10 @@
     </mod-login-keycloak.yaml-file>
 
     <!-- Test dependencies versions -->
-    <testcontainer.version>1.21.1</testcontainer.version>
+    <testcontainer.version>1.21.2</testcontainer.version>
 
     <!-- Plugins versions -->
-    <maven-checkstyle.version>10.25.0</maven-checkstyle.version>
+    <maven-checkstyle.version>10.25.1</maven-checkstyle.version>
     <maven-checkstyle-plugin.version>3.6.0</maven-checkstyle-plugin.version>
     <copy-rename-maven-plugin.version>1.0.1</copy-rename-maven-plugin.version>
     <maven-release-plugin.version>3.1.1</maven-release-plugin.version>
