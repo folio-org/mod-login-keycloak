@@ -183,6 +183,8 @@ public class KeycloakService {
   private KeycloakAuthentication getToken(String userAgent, String forwardedFor, Map<String, String> payload) {
     var tenantId = folioExecutionContext.getTenantId();
     try {
+      log.info("I'm inside getToken method, payload: {}, userAgent: {}, forwardedFor: {} tenantId: {}",
+        payload, userAgent, forwardedFor, tenantId);
       return keycloakClient.callTokenEndpoint(tenantId, payload, userAgent, forwardedFor);
     } catch (FeignException.Unauthorized e) {
       throw new UnauthorizedException("Unauthorized error", e);
