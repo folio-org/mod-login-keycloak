@@ -32,10 +32,10 @@ public class LoginController implements LoginApi {
   public ResponseEntity<LoginResponse> login(LoginCredentials credentials, String userAgent, String forwardedFor) {
     var tokenContainer = loginService.login(credentials, userAgent, forwardedFor);
 
-    log.info("I'm inside login method, tokenContainer: {} userAgent: {} forwardedFor: {}"
-      , tokenContainer
-      , userAgent
-      , forwardedFor
+    log.info("I'm inside login method, tokenContainer: {} userAgent: {} forwardedFor: {}",
+      tokenContainer,
+      userAgent,
+      forwardedFor
     );
 
     var headers = tokenCookieHeaderManager.createAuthorizationCookieHeader(tokenContainer);
