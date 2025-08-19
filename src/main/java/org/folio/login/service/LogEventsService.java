@@ -1,5 +1,6 @@
 package org.folio.login.service;
 
+import static org.folio.common.utils.CollectionUtils.toStream;
 import static org.folio.login.domain.dto.LogEventType.FAILED_LOGIN_ATTEMPT;
 import static org.folio.login.domain.dto.LogEventType.PASSWORD_CHANGE;
 import static org.folio.login.domain.dto.LogEventType.PASSWORD_RESET;
@@ -11,7 +12,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.IntFunction;
 import java.util.regex.Pattern;
@@ -115,45 +116,56 @@ public class LogEventsService {
 
   private static List<LogEvent> mapSupportedUserEvents(List<EventRepresentation> userEvents, String tenant,
     Map<String, UserRepresentation> usersMap) {
-    var logEvents = new ArrayList<LogEvent>();
-    for (var userEvent : userEvents) {
-      var eventType = resolveUserEventType(userEvent.getType());
-      var eventUserId = userEvent.getUserId();
-      if (eventType != null && isFolioUser(eventUserId, usersMap)) {
-        var event = new LogEvent()
-          .eventType(eventType)
-          .userId(getFolioUserId(eventUserId, usersMap))
-          .ip(userEvent.getIpAddress())
-          .tenant(tenant)
-          .timestamp(new Date(userEvent.getTime()));
-        logEvents.add(event);
-      }
-    }
-    return logEvents;
+    return toLogEvents(userEvents, userEvent -> createLogEvent(userEvent, tenant, usersMap));
   }
 
   private static List<LogEvent> mapSupportedAdminEvents(List<AdminEventRepresentation> adminEvents, String tenant,
     Map<String, UserRepresentation> usersMap) {
-    var logEvents = new ArrayList<LogEvent>();
-    for (var adminEvent : adminEvents) {
-      var eventType = resolveAdminEventType(adminEvent);
-      var authDetails = adminEvent.getAuthDetails();
-      if (eventType != null) {
-        var resourcePath = adminEvent.getResourcePath();
-        extractFirstUuid(resourcePath).ifPresent(userId -> {
-          if (isFolioUser(userId, usersMap)) {
-            var event = new LogEvent()
-              .eventType(eventType)
-              .userId(getFolioUserId(userId, usersMap))
-              .ip(authDetails.getIpAddress())
-              .tenant(tenant)
-              .timestamp(new Date(adminEvent.getTime()));
-            logEvents.add(event);
-          }
-        });
-      }
+    return toLogEvents(adminEvents, adminEvent -> createLogEvent(adminEvent, tenant, usersMap));
+  }
+
+  private static <T> List<LogEvent> toLogEvents(List<T> keycloakEvents, Function<T, LogEvent> mapper) {
+    return toStream(keycloakEvents)
+      .map(mapper)
+      .filter(Objects::nonNull)
+      .toList();
+  }
+
+  private static LogEvent createLogEvent(EventRepresentation userEvent, String tenant,
+    Map<String, UserRepresentation> usersMap) {
+    var eventType = resolveUserEventType(userEvent.getType());
+    if (eventType == null) {
+      return null;
     }
-    return logEvents;
+
+    var eventUserId = userEvent.getUserId();
+    return isFolioUser(eventUserId, usersMap)
+      ? new LogEvent()
+        .eventType(eventType)
+        .userId(getFolioUserId(eventUserId, usersMap))
+        .ip(userEvent.getIpAddress())
+        .tenant(tenant)
+        .timestamp(new Date(userEvent.getTime()))
+      : null;
+  }
+
+  private static LogEvent createLogEvent(AdminEventRepresentation adminEvent, String tenant,
+    Map<String, UserRepresentation> usersMap) {
+    var eventType = resolveAdminEventType(adminEvent);
+    if (eventType == null) {
+      return null;
+    }
+
+    var userId = extractFirstUuid(adminEvent.getResourcePath());
+
+    return userId != null && isFolioUser(userId, usersMap)
+      ? new LogEvent()
+        .eventType(eventType)
+        .userId(getFolioUserId(userId, usersMap))
+        .ip(adminEvent.getAuthDetails().getIpAddress())
+        .tenant(tenant)
+        .timestamp(new Date(adminEvent.getTime()))
+      : null;
   }
 
   private static boolean isFolioUser(String userId, Map<String, UserRepresentation> usersMap) {
@@ -163,12 +175,12 @@ public class LogEventsService {
 
   private static String getFolioUserId(String userId, Map<String, UserRepresentation> usersMap) {
     var user = usersMap.get(userId);
-    return user.getAttributes().get(USER_ID_ATTR).get(0);
+    return user.getAttributes().get(USER_ID_ATTR).getFirst();
   }
 
-  private static Optional<String> extractFirstUuid(String resourcePath) {
-    var matcher = UUID_PATTERN.matcher(resourcePath);
-    return matcher.find() ? Optional.of(matcher.group(0)) : Optional.empty();
+  private static String extractFirstUuid(String resourcePath) {
+    var matcher = LogEventsService.UUID_PATTERN.matcher(resourcePath);
+    return matcher.find() ? matcher.group(0) : null;
   }
 
   private static LogEventType resolveAdminEventType(AdminEventRepresentation adminEvent) {
