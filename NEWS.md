@@ -1,3 +1,6 @@
+## Version `v3.0.2` (09.09.2025)
+* Upgrade to Keycloak 26.3.3 (KEYCLOAK-56)
+
 ## Version `v3.0.1` (16.06.2025)
 * User can't log in due to invalid token error (MODLOGINKC-44)
 
