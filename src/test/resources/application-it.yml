@@ -25,6 +25,7 @@ application:
       trust-store-type: JKS
   secret-store:
     type: EPHEMERAL
+    environment: it-test
     ephemeral:
       content:
         it-test_test_test-login-application: kc-client-password
