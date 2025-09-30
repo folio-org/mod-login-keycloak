@@ -147,7 +147,7 @@ curl -XPOST \
 --data-urlencode "client_id=$clientId" \
 --data-urlencode "client_secret=$clientSecret" \
 --data-urlencode "grant_type=password" \
---data-urlencode "scopes=openid profile email" \
+--data-urlencode "scope=openid profile email" \
 "$keycloakUrl/realms/$tenantId/protocol/openid-connect/token"
 ```
 
@@ -155,7 +155,7 @@ curl -XPOST \
 ```shell
 curl -XGET \
 -H "Content-Type: application/x-www-form-urlencoded" \
--H "Authorization: Bearer $acessToken" \
+-H "Authorization: Bearer $accessToken" \
 "$keycloakUrl/realms/$tenantId/protocol/openid-connect/userinfo"
 ```
 
@@ -184,7 +184,7 @@ curl -XPOST \
 ```shell
 curl -XPOST \
 -H "Content-Type: application/x-www-form-urlencoded" \
---data-urlencode "refreshToken=$refreshToken" \
+--data-urlencode "refresh_token=$refreshToken" \
 --data-urlencode "client_id=$clientId" \
 --data-urlencode "client_secret=$clientSecret" \
 "$keycloakUrl/realms/$tenantId/protocol/openid-connect/logout"
