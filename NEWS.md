@@ -1,4 +1,5 @@
 ## Version `v3.1.0-SNAPSHOT` (TBD)
+* Fix parameter names and typos in README curl examples (MODLOGINKC-51)
 * User can't log in due to invalid token error (MODLOGINKC-44)
 * Introduce configuration for FSSP (APPPOCTOOL-59)
 * Use SECURE_STORE_ENV, not ENV, for secure store key(MODLOGINKC-48)
