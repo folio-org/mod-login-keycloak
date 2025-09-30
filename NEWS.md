@@ -1,3 +1,6 @@
+## Version `v3.0.3` (30.09.2025)
+* Use SECURE_STORE_ENV, not ENV, for secure store key(MODLOGINKC-48)
+
 ## Version `v3.0.2` (09.09.2025)
 * Upgrade to Keycloak 26.3.3 (KEYCLOAK-56)
 
