@@ -19,7 +19,7 @@ public class UserService {
   private final UsersClient usersClient;
 
   public User getUserByUsername(String username) {
-    log.info("Getting user by user: username = {}", username);
+    log.debug("Getting user by username: {}", username);
 
     return findOne(usersClient.query("username==" + username, 1).getRecords())
       .orElseThrow(() -> new EntityNotFoundException(format("Failed to find user by name: username = %s", username)));
