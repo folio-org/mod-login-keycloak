@@ -11,6 +11,7 @@ import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.folio.common.configuration.properties.TlsProperties;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.keycloak.OAuth2Constants;
+import org.keycloak.admin.client.JacksonProvider;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.KeycloakBuilder;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -47,6 +48,7 @@ public class KeycloakAdminConfiguration {
     return (ResteasyClient) newBuilder()
       .sslContext(buildSslContext(properties))
       .hostnameVerifier(IS_HOSTNAME_VERIFICATION_DISABLED ? NoopHostnameVerifier.INSTANCE : DEFAULT_HOSTNAME_VERIFIER)
+      .register(JacksonProvider.class)
       .build();
   }
 }
