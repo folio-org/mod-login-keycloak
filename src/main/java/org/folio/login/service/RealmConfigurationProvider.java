@@ -5,7 +5,7 @@ import org.folio.login.domain.model.KeycloakRealmConfiguration;
 import org.folio.login.integration.keycloak.config.KeycloakProperties;
 import org.folio.spring.FolioExecutionContext;
 import org.folio.tools.store.SecureStore;
-import org.folio.tools.store.exception.NotFoundException;
+import org.folio.tools.store.exception.SecretNotFoundException;
 import org.folio.tools.store.properties.SecureStoreProperties;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -36,7 +36,7 @@ public class RealmConfigurationProvider {
   private String retrieveKcClientSecret(String tenantId, String clientId) {
     try {
       return secureStore.get(buildKey(secureStoreProperties.getEnvironment(), tenantId, clientId));
-    } catch (NotFoundException e) {
+    } catch (SecretNotFoundException e) {
       throw new IllegalStateException(String.format(
         "Failed to get value from secure store [tenantId: %s, clientId: %s]", tenantId, clientId), e);
     }
