@@ -4,6 +4,8 @@
 * Introduce configuration for FSSP (APPPOCTOOL-59)
 * Use SECURE_STORE_ENV, not ENV, for secure store key(MODLOGINKC-48)
 * Change log level from info to debug in some logging (MODLOGINKC-54)
+* Register JacksonProvider in ResteasyClient Keycloak for TLS connections (KEYCLOAK-90)
+
 
 ## Version `v3.0.0` (12.03.2025)
 * Update mod-login-keycloak Java 21 (MODLOGINKC-43)
