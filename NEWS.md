@@ -1,3 +1,7 @@
+## Version `v3.0.4` (12.12.2025)
+* bump applications-poc-tools to v3.0.9
+* Register JacksonProvider in ResteasyClient Keycloak for TLS connections (KEYCLOAK-90)
+
 ## Version `v3.0.3` (30.09.2025)
 * Use SECURE_STORE_ENV, not ENV, for secure store key(MODLOGINKC-48)
 
