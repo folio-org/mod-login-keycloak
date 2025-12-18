@@ -47,6 +47,7 @@ class ModuleCustomTenantServiceTest {
     var tenantId = "testtenant";
     when(context.getTenantId()).thenReturn(tenantId);
     when(kafkaProperties.getTenantTopics()).thenReturn(List.of(kafkaTopic));
+    when(kafkaProperties.getProducerTenantCollection()).thenReturn(false);
 
     var tenantAttributes = new TenantAttributes();
     moduleCustomTenantService.afterTenantUpdate(tenantAttributes);
@@ -76,6 +77,7 @@ class ModuleCustomTenantServiceTest {
     var tenantId = "testtenant";
     when(context.getTenantId()).thenReturn(tenantId);
     when(kafkaProperties.getTenantTopics()).thenReturn(List.of(kafkaTopic1, kafkaTopic2));
+    when(kafkaProperties.getProducerTenantCollection()).thenReturn(false);
 
     var tenantAttributes = new TenantAttributes();
     moduleCustomTenantService.afterTenantUpdate(tenantAttributes);
@@ -101,5 +103,31 @@ class ModuleCustomTenantServiceTest {
     moduleCustomTenantService.afterTenantUpdate(tenantAttributes);
 
     verify(kafkaAdminService, org.mockito.Mockito.never()).createTopic(any());
+  }
+
+  @Test
+  void afterTenantUpdate_withTenantCollection_shouldCreateSharedTopic() {
+    var topicName = "mod-login-keycloak.logout";
+    var numPartitions = 1;
+    var replicationFactor = (short) 1;
+
+    var kafkaTopic = new KafkaTopic();
+    kafkaTopic.setName(topicName);
+    kafkaTopic.setNumPartitions(numPartitions);
+    kafkaTopic.setReplicationFactor(replicationFactor);
+
+    when(context.getTenantId()).thenReturn("testtenant");
+    when(kafkaProperties.getTenantTopics()).thenReturn(List.of(kafkaTopic));
+    when(kafkaProperties.getProducerTenantCollection()).thenReturn(true);
+
+    var tenantAttributes = new TenantAttributes();
+    moduleCustomTenantService.afterTenantUpdate(tenantAttributes);
+
+    var topicCaptor = ArgumentCaptor.forClass(NewTopic.class);
+    verify(kafkaAdminService).createTopic(topicCaptor.capture());
+
+    var createdTopic = topicCaptor.getValue();
+    var expectedTopicName = String.format("folio.ALL.%s", topicName);
+    org.assertj.core.api.Assertions.assertThat(createdTopic.name()).isEqualTo(expectedTopicName);
   }
 }

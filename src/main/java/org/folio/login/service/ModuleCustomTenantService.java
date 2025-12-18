@@ -2,7 +2,7 @@ package org.folio.login.service;
 
 import static org.folio.common.utils.CollectionUtils.toStream;
 import static org.folio.integration.kafka.KafkaUtils.createTopic;
-import static org.folio.integration.kafka.KafkaUtils.getTenantTopicName;
+import static org.folio.login.util.KafkaTopicUtils.getTopicName;
 
 import lombok.extern.log4j.Log4j2;
 import org.folio.integration.kafka.FolioKafkaProperties.KafkaTopic;
@@ -38,7 +38,8 @@ public class ModuleCustomTenantService extends TenantService {
   }
 
   private void createTenantTopics(KafkaTopic tenantTopic) {
-    var topicName = getTenantTopicName(tenantTopic.getName(), context.getTenantId());
+    var topicName =
+      getTopicName(tenantTopic.getName(), context.getTenantId(), kafkaProperties.getProducerTenantCollection());
     var topic = createTopic(topicName, tenantTopic.getNumPartitions(), tenantTopic.getReplicationFactor());
     kafkaAdminService.createTopic(topic);
 

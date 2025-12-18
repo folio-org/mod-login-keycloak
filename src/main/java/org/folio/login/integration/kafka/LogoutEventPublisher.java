@@ -5,10 +5,10 @@ import static org.folio.login.integration.kafka.event.LogoutEvent.Type.LOGOUT_AL
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.folio.integration.kafka.KafkaUtils;
 import org.folio.login.exception.TokenParsingException;
 import org.folio.login.integration.kafka.configuration.property.KafkaProperties;
 import org.folio.login.integration.kafka.event.LogoutEvent;
+import org.folio.login.util.KafkaTopicUtils;
 import org.folio.spring.FolioExecutionContext;
 import org.keycloak.jose.jws.JWSInputException;
 import org.keycloak.util.TokenUtil;
@@ -47,10 +47,8 @@ public class LogoutEventPublisher {
   }
 
   private String getTopicName() {
-    var tenantName = kafkaProperties.getProducerTenantCollection()
-      ? ALL_TENANTS
-      : context.getTenantId();
-    return KafkaUtils.getTenantTopicName(TOPIC_NAME, tenantName);
+    return KafkaTopicUtils.getTopicName(TOPIC_NAME, context.getTenantId(),
+      kafkaProperties.getProducerTenantCollection());
   }
 
   private String getMessageKey() {
