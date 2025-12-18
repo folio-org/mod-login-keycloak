@@ -1,5 +1,6 @@
 package org.folio.login.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -57,9 +58,9 @@ class ModuleCustomTenantServiceTest {
 
     var createdTopic = topicCaptor.getValue();
     var expectedTopicName = String.format("folio.%s.%s", tenantId, topicName);
-    org.assertj.core.api.Assertions.assertThat(createdTopic.name()).isEqualTo(expectedTopicName);
-    org.assertj.core.api.Assertions.assertThat(createdTopic.numPartitions()).isEqualTo(numPartitions);
-    org.assertj.core.api.Assertions.assertThat(createdTopic.replicationFactor()).isEqualTo(replicationFactor);
+    assertThat(createdTopic.name()).isEqualTo(expectedTopicName);
+    assertThat(createdTopic.numPartitions()).isEqualTo(numPartitions);
+    assertThat(createdTopic.replicationFactor()).isEqualTo(replicationFactor);
   }
 
   @Test
@@ -128,6 +129,6 @@ class ModuleCustomTenantServiceTest {
 
     var createdTopic = topicCaptor.getValue();
     var expectedTopicName = String.format("folio.ALL.%s", topicName);
-    org.assertj.core.api.Assertions.assertThat(createdTopic.name()).isEqualTo(expectedTopicName);
+    assertThat(createdTopic.name()).isEqualTo(expectedTopicName);
   }
 }
