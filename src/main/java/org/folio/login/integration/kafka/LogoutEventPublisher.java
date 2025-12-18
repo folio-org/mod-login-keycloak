@@ -21,7 +21,6 @@ import org.springframework.stereotype.Component;
 public class LogoutEventPublisher {
 
   private static final String TOPIC_NAME = "mod-login-keycloak.logout";
-  private static final String ALL_TENANTS = "ALL";
 
   private final KafkaProperties kafkaProperties;
   private final FolioExecutionContext context;
