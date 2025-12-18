@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.folio.integration.kafka.KafkaUtils;
 import org.folio.login.exception.TokenParsingException;
+import org.folio.login.integration.kafka.configuration.property.KafkaProperties;
 import org.folio.login.integration.kafka.event.LogoutEvent;
 import org.folio.spring.FolioExecutionContext;
 import org.keycloak.jose.jws.JWSInputException;
@@ -20,7 +21,9 @@ import org.springframework.stereotype.Component;
 public class LogoutEventPublisher {
 
   private static final String TOPIC_NAME = "mod-login-keycloak.logout";
+  private static final String ALL_TENANTS = "ALL";
 
+  private final KafkaProperties kafkaProperties;
   private final FolioExecutionContext context;
   private final KafkaTemplate<String, LogoutEvent> kafkaTemplate;
 
@@ -44,7 +47,10 @@ public class LogoutEventPublisher {
   }
 
   private String getTopicName() {
-    return KafkaUtils.getTenantTopicName(TOPIC_NAME, context.getTenantId());
+    var tenantName = kafkaProperties.getProducerTenantCollection()
+      ? ALL_TENANTS
+      : context.getTenantId();
+    return KafkaUtils.getTenantTopicName(TOPIC_NAME, tenantName);
   }
 
   private String getMessageKey() {

@@ -103,6 +103,7 @@ application:
   cookies:
     same-site: ${LOGIN_COOKIE_SAMESITE:${login.cookie.samesite:NONE}}
   kafka:
+    producer-tenant-collection: ${KAFKA_PRODUCER_TENANT_COLLECTION:false}
     tenant-topics:
       - name: mod-login-keycloak.logout
         num-partitions: ${KAFKA_LOGOUT_TOPIC_PARTITIONS:1}

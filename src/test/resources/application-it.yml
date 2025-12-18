@@ -32,6 +32,7 @@ application:
   x-okapi-token:
     enabled: false
   kafka:
+    producer-tenant-collection: ${KAFKA_PRODUCER_TENANT_COLLECTION:false}
     tenant-topics:
       - name: mod-login-keycloak.logout
         num-partitions: 1

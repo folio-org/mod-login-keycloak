@@ -5,6 +5,7 @@
 * Use SECURE_STORE_ENV, not ENV, for secure store key(MODLOGINKC-48)
 * Change log level from info to debug in some logging (MODLOGINKC-54)
 * Register JacksonProvider in ResteasyClient Keycloak for TLS connections (KEYCLOAK-90)
+* Add configurable tenant collection mode for Kafka logout events (MODLOGINKC-56)
 
 
 ## Version `v3.0.0` (12.03.2025)

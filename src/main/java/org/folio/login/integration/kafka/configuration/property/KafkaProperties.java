@@ -12,6 +12,8 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties("application.kafka")
 public class KafkaProperties {
 
+  private Boolean producerTenantCollection;
+
   @NestedConfigurationProperty
   private List<KafkaTopic> tenantTopics;
 }

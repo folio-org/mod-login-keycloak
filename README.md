@@ -123,12 +123,18 @@ Keycloak all configuration properties: https://www.keycloak.org/server/all-confi
 
 Kafka all configuration properties: https://kafka.apache.org/documentation/#configuration
 
-| Name                           | Description               |
-|:-------------------------------|:--------------------------|
-| KAFKA_SSL_KEYSTORE_PASSWORD    | Kafka keystore password   |
-| KAFKA_SSL_KEYSTORE_LOCATION    | Kafka keystore location   |
-| KAFKA_SSL_TRUSTSTORE_PASSWORD  | Kafka truststore password |
-| KAFKA_SSL_TRUSTSTORE_LOCATION  | Kafka truststore location |
+| Name                                 | Default value | Description                                                                                       |
+|:-------------------------------------|:--------------|:--------------------------------------------------------------------------------------------------|
+| KAFKA_HOST                           | kafka         | Kafka broker hostname                                                                             |
+| KAFKA_PORT                           | 9092          | Kafka broker port                                                                                 |
+| KAFKA_SECURITY_PROTOCOL              | PLAINTEXT     | Kafka security protocol                                                                           |
+| KAFKA_SSL_KEYSTORE_PASSWORD          | -             | Kafka keystore password                                                                           |
+| KAFKA_SSL_KEYSTORE_LOCATION          | -             | Kafka keystore location                                                                           |
+| KAFKA_SSL_TRUSTSTORE_PASSWORD        | -             | Kafka truststore password                                                                         |
+| KAFKA_SSL_TRUSTSTORE_LOCATION        | -             | Kafka truststore location                                                                         |
+| KAFKA_PRODUCER_TENANT_COLLECTION     | false         | If true, logout events are sent to a single shared topic (ALL). If false, per-tenant topics used |
+| KAFKA_LOGOUT_TOPIC_PARTITIONS        | 1             | Number of partitions for logout topic                                                             |
+| KAFKA_LOGOUT_TOPIC_REPLICATION_FACTOR| -             | Replication factor for logout topic                                                               |
 
 
 ## Loading of client IDs/secrets
