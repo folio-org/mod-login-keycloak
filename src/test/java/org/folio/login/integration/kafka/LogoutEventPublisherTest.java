@@ -8,6 +8,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.UUID;
 import org.folio.login.exception.TokenParsingException;
+import org.folio.login.integration.kafka.configuration.property.KafkaProperties;
 import org.folio.login.integration.kafka.event.LogoutEvent;
 import org.folio.spring.FolioExecutionContext;
 import org.folio.test.types.UnitTest;
@@ -32,6 +33,7 @@ class LogoutEventPublisherTest {
 
   @Mock private KafkaTemplate<String, LogoutEvent> kafkaTemplate;
   @Mock private FolioExecutionContext context;
+  @Mock private KafkaProperties kafkaProperties;
 
   @Test
   void publishLogoutEvent_positive() {
@@ -39,6 +41,7 @@ class LogoutEventPublisherTest {
     var tenantId = "testtenant";
     when(context.getTenantId()).thenReturn(tenantId);
     when(context.getUserId()).thenReturn(userId);
+    when(kafkaProperties.isProducerTenantCollection()).thenReturn(false);
 
     logoutEventPublisher.publishLogoutEvent(TOKEN);
 
@@ -62,6 +65,7 @@ class LogoutEventPublisherTest {
     var tenantId = "testtenant";
     when(context.getTenantId()).thenReturn(tenantId);
     when(context.getUserId()).thenReturn(userId);
+    when(kafkaProperties.isProducerTenantCollection()).thenReturn(false);
 
     var keycloakUserId = UUID.randomUUID();
     logoutEventPublisher.publishLogoutAllEvent(keycloakUserId.toString());
@@ -74,6 +78,42 @@ class LogoutEventPublisherTest {
         .build();
     var expectedMessageKey = userId.toString();
     var expectedTopicName = String.format("folio.%s.mod-login-keycloak.logout", tenantId);
+
+    verify(kafkaTemplate).send(expectedTopicName, expectedMessageKey, expectedEvent);
+  }
+
+  @Test
+  void publishLogoutEvent_withTenantCollection_positive() {
+    var userId = UUID.randomUUID();
+    when(context.getUserId()).thenReturn(userId);
+    when(kafkaProperties.isProducerTenantCollection()).thenReturn(true);
+
+    logoutEventPublisher.publishLogoutEvent(TOKEN);
+
+    var expectedEvent = LogoutEvent.builder().userId(userId.toString()).sessionId(SESSION_ID).type(LOGOUT).build();
+    var expectedMessageKey = userId.toString();
+    var expectedTopicName = "folio.ALL.mod-login-keycloak.logout";
+
+    verify(kafkaTemplate).send(expectedTopicName, expectedMessageKey, expectedEvent);
+  }
+
+  @Test
+  void publishLogoutAllEvent_withTenantCollection_positive() {
+    var userId = UUID.randomUUID();
+    when(context.getUserId()).thenReturn(userId);
+    when(kafkaProperties.isProducerTenantCollection()).thenReturn(true);
+
+    var keycloakUserId = UUID.randomUUID();
+    logoutEventPublisher.publishLogoutAllEvent(keycloakUserId.toString());
+
+    var expectedEvent =
+      LogoutEvent.builder()
+        .userId(userId.toString())
+        .keycloakUserId(keycloakUserId.toString())
+        .type(LOGOUT_ALL)
+        .build();
+    var expectedMessageKey = userId.toString();
+    var expectedTopicName = "folio.ALL.mod-login-keycloak.logout";
 
     verify(kafkaTemplate).send(expectedTopicName, expectedMessageKey, expectedEvent);
   }
