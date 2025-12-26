@@ -18,7 +18,7 @@ class KafkaPropertiesIT extends BaseIntegrationTest {
   @Test
   void shouldLoadKafkaPropertiesFromConfiguration() {
     assertThat(kafkaProperties).isNotNull();
-    assertThat(kafkaProperties.getProducerTenantCollection()).isFalse();
+    assertThat(kafkaProperties.isProducerTenantCollection()).isFalse();
     assertThat(kafkaProperties.getTenantTopics()).isNotNull();
   }
 
@@ -41,6 +41,6 @@ class KafkaPropertiesIT extends BaseIntegrationTest {
 
   @Test
   void shouldUseEnvironmentVariableForProducerTenantCollection() {
-    assertThat(kafkaProperties.getProducerTenantCollection()).isFalse();
+    assertThat(kafkaProperties.isProducerTenantCollection()).isFalse();
   }
 }

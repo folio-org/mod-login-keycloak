@@ -27,7 +27,7 @@ class KafkaPropertiesTest {
 
   @Test
   void shouldBindProducerTenantCollectionProperty() {
-    assertThat(kafkaProperties.getProducerTenantCollection()).isTrue();
+    assertThat(kafkaProperties.isProducerTenantCollection()).isTrue();
   }
 
   @Test
@@ -45,7 +45,7 @@ class KafkaPropertiesTest {
   @Test
   void shouldHandleNullProducerTenantCollection() {
     var properties = new KafkaProperties();
-    assertThat(properties.getProducerTenantCollection()).isNull();
+    assertThat(properties.isProducerTenantCollection()).isFalse();
   }
 
   @Test

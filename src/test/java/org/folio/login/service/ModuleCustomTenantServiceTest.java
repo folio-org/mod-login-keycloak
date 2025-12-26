@@ -48,7 +48,7 @@ class ModuleCustomTenantServiceTest {
     var tenantId = "testtenant";
     when(context.getTenantId()).thenReturn(tenantId);
     when(kafkaProperties.getTenantTopics()).thenReturn(List.of(kafkaTopic));
-    when(kafkaProperties.getProducerTenantCollection()).thenReturn(false);
+    when(kafkaProperties.isProducerTenantCollection()).thenReturn(false);
 
     var tenantAttributes = new TenantAttributes();
     moduleCustomTenantService.afterTenantUpdate(tenantAttributes);
@@ -78,7 +78,7 @@ class ModuleCustomTenantServiceTest {
     var tenantId = "testtenant";
     when(context.getTenantId()).thenReturn(tenantId);
     when(kafkaProperties.getTenantTopics()).thenReturn(List.of(kafkaTopic1, kafkaTopic2));
-    when(kafkaProperties.getProducerTenantCollection()).thenReturn(false);
+    when(kafkaProperties.isProducerTenantCollection()).thenReturn(false);
 
     var tenantAttributes = new TenantAttributes();
     moduleCustomTenantService.afterTenantUpdate(tenantAttributes);
@@ -119,7 +119,7 @@ class ModuleCustomTenantServiceTest {
 
     when(context.getTenantId()).thenReturn("testtenant");
     when(kafkaProperties.getTenantTopics()).thenReturn(List.of(kafkaTopic));
-    when(kafkaProperties.getProducerTenantCollection()).thenReturn(true);
+    when(kafkaProperties.isProducerTenantCollection()).thenReturn(true);
 
     var tenantAttributes = new TenantAttributes();
     moduleCustomTenantService.afterTenantUpdate(tenantAttributes);
