@@ -12,9 +12,9 @@ import org.folio.login.util.TokenRequestHelper;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
+@Log4j2
 @Service
 @RequiredArgsConstructor
-@Log4j2
 public class AdminTokenService {
 
   private static final String BEARER = "Bearer";

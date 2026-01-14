@@ -45,5 +45,3 @@ public class AdminTokenCacheFactory {
     return duration.toNanos();
   }
 }
-
-
