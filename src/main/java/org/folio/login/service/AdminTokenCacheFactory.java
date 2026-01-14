@@ -19,14 +19,13 @@ public class AdminTokenCacheFactory {
   private final TokenCacheProperties tokenCacheProperties;
 
   public Cache<String, KeycloakAuthentication> createCache() {
-    var builder = Caffeine.newBuilder()
+    return Caffeine.newBuilder()
       .expireAfter(new TokenCacheExpiry(this::calculateTtl))
       .scheduler(Scheduler.systemScheduler())
       .initialCapacity(1)
-      .maximumSize(1);
-
-    builder.removalListener((k, jwt, cause) -> log.debug("Cached access token removed: key={}, cause={}", k, cause));
-    return builder.build();
+      .maximumSize(1)
+      .removalListener((k, jwt, cause) -> log.debug("Cached access token removed: key={}, cause={}", k, cause))
+      .build();
   }
 
   private long calculateTtl(KeycloakAuthentication token) {
