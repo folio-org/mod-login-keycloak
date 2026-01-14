@@ -34,23 +34,23 @@ mod-login-keycloak provides following functionality:
 
 ## Environment Variables
 
-| Name                         | Default value         | Required | Description                                                 |
-|:-----------------------------|:----------------------|:--------:|:------------------------------------------------------------|
-| KC_URL                       | -                     |   true   | Keycloak URL                                                |
-| KC_LOGIN_CLIENT_SUFFIX       | login-application     |  false   | Keycloak client suffix                                      |
-| DB_HOST                      | localhost             |  false   | Postgres hostname                                           |
-| DB_PORT                      | 5432                  |  false   | Postgres port                                               |
-| DB_USERNAME                  | postgres              |  false   | Postgres username                                           |
-| DB_PASSWORD                  | postgres              |  false   | Postgres username password                                  |
-| DB_DATABASE                  | postgres              |  false   | Postgres database name                                      |
-| KC_CONFIG_STORE_TYPE         | ephemeral             |  false   | Secure storage type                                         |
-| ENV                          | folio                 |  false   | Environment name                                            |
-| KC_CONFIG_TTL                | 3600s                 |  false   | Client credentials expiration timeout                       |
-| KC_ADMIN_TOKEN_TTL           | 410s                  |  false   | Admin token cache ttl                                       |
-| KC_ADMIN_PASSWORD            | keycloak_system_admin |   true   | Keycloak admin password                                     |
-| X_OKAPI_TOKEN_HEADER_ENABLED | false                 |  false   | Enable `x-okapi-token` header for login similar API methods |
-| LOGIN_COOKIE_SAMESITE        | None                  |  false   | Value for the `SameSite` attribute in a cookie header       |
-| login.cookie.samesite        | None                  |  false   | Alias for `LOGIN_COOKIE_SAMESITE`                           |
+| Name                                               | Default value         | Required | Description                                                                                   |
+|:---------------------------------------------------|:----------------------|:--------:|:----------------------------------------------------------------------------------------------|
+| KC_URL                                             | -                     |   true   | Keycloak URL                                                                                  |
+| KC_LOGIN_CLIENT_SUFFIX                             | login-application     |  false   | Keycloak client suffix                                                                        |
+| DB_HOST                                            | localhost             |  false   | Postgres hostname                                                                             |
+| DB_PORT                                            | 5432                  |  false   | Postgres port                                                                                 |
+| DB_USERNAME                                        | postgres              |  false   | Postgres username                                                                             |
+| DB_PASSWORD                                        | postgres              |  false   | Postgres username password                                                                    |
+| DB_DATABASE                                        | postgres              |  false   | Postgres database name                                                                        |
+| KC_CONFIG_STORE_TYPE                               | ephemeral             |  false   | Secure storage type                                                                           |
+| ENV                                                | folio                 |  false   | Environment name                                                                              |
+| KC_CONFIG_TTL                                      | 3600s                 |  false   | Client credentials expiration timeout                                                         |
+| KC_ADMIN_TOKEN_CACHE_REFRESH_PRIOR_EXPIRATION_SEC  | 25                    |  false   | Specifies the amount of seconds for a cache entry invalidation prior to the token expiration  |
+| KC_ADMIN_PASSWORD                                  | keycloak_system_admin |   true   | Keycloak admin password                                                                       |
+| X_OKAPI_TOKEN_HEADER_ENABLED                       | false                 |  false   | Enable `x-okapi-token` header for login similar API methods                                   |
+| LOGIN_COOKIE_SAMESITE                              | None                  |  false   | Value for the `SameSite` attribute in a cookie header                                         |
+| login.cookie.samesite                              | None                  |  false   | Alias for `LOGIN_COOKIE_SAMESITE`                                                             |
 
 ### Secure storage environment variables
 

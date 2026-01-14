@@ -11,6 +11,8 @@ server.port: 8081
 
 application:
   environment: it-test
+  admin-token-cache:
+    refresh-before-expiry-sec: 10
   keycloak:
     client-suffix: -login-application
     admin:

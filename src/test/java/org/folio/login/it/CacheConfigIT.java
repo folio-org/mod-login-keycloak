@@ -4,7 +4,6 @@ import static java.time.Duration.ofMillis;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.login.support.TestConstants.KEYCLOAK_CONFIG_CACHE;
-import static org.folio.login.support.TestConstants.TOKEN_CACHE;
 import static org.folio.login.support.TestUtils.cleanUpCaches;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -22,8 +21,7 @@ import org.springframework.test.context.TestPropertySource;
 
 @IntegrationTest
 @TestPropertySource(properties = {
-  "KC_CONFIG_TTL=PT0.1S",
-  "KC_ADMIN_TOKEN_TTL=PT0.05S"
+  "KC_CONFIG_TTL=PT0.1S"
 })
 class CacheConfigIT extends BaseIntegrationTest {
 
@@ -38,28 +36,22 @@ class CacheConfigIT extends BaseIntegrationTest {
   @Test
   void testCacheTtl() {
     var keycloakConfigCache = getCaffeineCache(KEYCLOAK_CONFIG_CACHE);
-    var tokenCache = getCaffeineCache(TOKEN_CACHE);
 
     checkCacheTtl(keycloakConfigCache, 100);
-    checkCacheTtl(tokenCache, 50);
   }
 
   @Test
   void testCacheEviction() {
     var keycloakConfigCache = getCaffeineCache(KEYCLOAK_CONFIG_CACHE);
-    var tokenCache = getCaffeineCache(TOKEN_CACHE);
 
     checkCacheEviction(keycloakConfigCache);
-    checkCacheEviction(tokenCache);
   }
 
   @Test
   void testCacheExpiration() {
     var keycloakConfigCache = getCaffeineCache(KEYCLOAK_CONFIG_CACHE);
-    var tokenCache = getCaffeineCache(TOKEN_CACHE);
 
     checkCacheExpiration(keycloakConfigCache, 100);
-    checkCacheExpiration(tokenCache, 50);
   }
 
   CaffeineCache getCaffeineCache(String name) {
