@@ -6,7 +6,7 @@
 * Change log level from info to debug in some logging (MODLOGINKC-54)
 * Register JacksonProvider in ResteasyClient Keycloak for TLS connections (KEYCLOAK-90)
 * Add configurable tenant collection mode for Kafka logout events (MODLOGINKC-56)
-
+* Improper response from GET /authn/credentials-existence when authUser don't exist. (MODLOGINKC-60)
 
 ## Version `v3.0.0` (12.03.2025)
 * Update mod-login-keycloak Java 21 (MODLOGINKC-43)

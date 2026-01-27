@@ -8,6 +8,7 @@ import org.folio.login.domain.dto.LoginCredentials;
 import org.folio.login.domain.dto.UpdateCredentials;
 import org.folio.login.integration.users.UserService;
 import org.folio.login.integration.users.UsersKeycloakClient;
+import org.folio.spring.exception.NotFoundException;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -45,6 +46,10 @@ public class CredentialsService {
   }
 
   public CredentialsExistence checkCredentialsExistence(String userId) {
-    return keycloakService.checkCredentialExistence(userId);
+    try {
+      return keycloakService.checkCredentialExistence(userId);
+    } catch (NotFoundException e) {
+      return new CredentialsExistence(false);
+    }
   }
 }
