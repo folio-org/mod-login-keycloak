@@ -15,8 +15,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import jakarta.persistence.EntityExistsException;
@@ -26,7 +26,10 @@ import org.folio.login.domain.dto.PasswordCreateAction;
 import org.folio.login.domain.dto.ResponseResetAction;
 import org.folio.login.domain.entity.PasswordCreateActionEntity;
 import org.folio.login.domain.repository.PasswordCreateActionRepository;
+import org.folio.login.exception.ServiceException;
 import org.folio.login.mapper.PasswordCreateActionMapper;
+import org.folio.spring.exception.NotFoundException;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -52,6 +55,11 @@ class PasswordServiceTest {
       .thenReturn(passwordCreateActionEntity);
   }
 
+  @AfterEach
+  void tearDown() {
+    verifyNoMoreInteractions(keycloakService, passwordCreateActionMapper, passwordCreateActionRepository);
+  }
+
   @Test
   void createResetPasswordAction_positive() {
     toEntity();
@@ -71,18 +79,36 @@ class PasswordServiceTest {
   @Test
   void createResetPasswordAction_alreadyExists() {
     toEntity();
+    when(keycloakService.checkCredentialExistence(USER_ID))
+      .thenReturn(credentialsExistence(true));
     when(passwordCreateActionRepository.findById(PASSWORD_RESET_ACTION_UUID))
       .thenReturn(Optional.of(passwordCreateActionEntity));
     assertThrows(EntityExistsException.class,
       () -> passwordService.createResetPasswordAction(passwordCreateAction),
       "Password action with ID: " + PASSWORD_RESET_ACTION_ID
         + " already exist for a user: " + USER_ID);
+  }
 
-    verify(passwordCreateActionRepository).findById(PASSWORD_RESET_ACTION_UUID);
-    verify(passwordCreateActionRepository, never()).save(any());
-    verify(passwordCreateActionRepository, never())
-      .findPasswordCreateActionEntityByUserId(any());
-    verify(passwordCreateActionRepository, never()).delete(any());
+  @Test
+  void createResetPasswordAction_negative_userNotFound() {
+    toEntity();
+    when(keycloakService.checkCredentialExistence(USER_ID))
+      .thenThrow(new NotFoundException("User not found"));
+
+    assertThrows(NotFoundException.class,
+      () -> passwordService.createResetPasswordAction(passwordCreateAction),
+      "User not found");
+  }
+
+  @Test
+  void createResetPasswordAction_negative_serviceException() {
+    toEntity();
+    when(keycloakService.checkCredentialExistence(USER_ID))
+      .thenThrow(new ServiceException("Failed to get credentials for a user: " + USER_ID, new RuntimeException()));
+
+    assertThrows(ServiceException.class,
+      () -> passwordService.createResetPasswordAction(passwordCreateAction),
+      "Failed to get credentials for a user: " + USER_ID);
   }
 
   @Test

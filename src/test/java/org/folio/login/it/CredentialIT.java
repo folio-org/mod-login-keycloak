@@ -166,6 +166,27 @@ class CredentialIT extends BaseIntegrationTest {
   }
 
   @Test
+  @KeycloakRealms(realms = "/json/keycloak/test-realm.json")
+  void checkCredentials_positive_noCredentials() throws Exception {
+    mockMvc.perform(get("/authn/credentials-existence")
+        .param("userId", ADMIN_USER_ID)
+        .headers(okapiHeaders()))
+      .andExpect(status().isOk())
+      .andExpect(content().json(asJsonString(new CredentialsExistence().credentialsExist(false))));
+  }
+
+  @Test
+  @KeycloakRealms(realms = "/json/keycloak/test-realm.json")
+  void checkCredentials_positive_userNotFound() throws Exception {
+    var userId = "6c923fea-8d85-4902-b194-cd1eb44fc9d7";
+    mockMvc.perform(get("/authn/credentials-existence")
+        .param("userId", userId)
+        .headers(okapiHeaders()))
+      .andExpect(status().isOk())
+      .andExpect(content().json(asJsonString(new CredentialsExistence().credentialsExist(false))));
+  }
+
+  @Test
   void checkCredentials_negative_keycloakError() throws Exception {
     mockMvc.perform(get("/authn/credentials-existence")
         .param("userId", USER_ID)

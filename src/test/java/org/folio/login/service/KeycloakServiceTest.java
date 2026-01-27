@@ -54,6 +54,7 @@ import org.folio.login.integration.kafka.LogoutEventPublisher;
 import org.folio.login.integration.keycloak.KeycloakClient;
 import org.folio.login.support.TestConstants;
 import org.folio.spring.FolioExecutionContext;
+import org.folio.spring.exception.NotFoundException;
 import org.folio.test.types.UnitTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -310,6 +311,18 @@ class KeycloakServiceTest {
     assertThatThrownBy(() -> keycloakService.checkCredentialExistence(USER_ID))
       .isInstanceOf(ServiceException.class)
       .hasMessage("Failed to get credentials for a user: " + USER_ID);
+  }
+
+  @Test
+  void checkCredentialsExistence_negative_userNotFound() {
+    when(folioExecutionContext.getTenantId()).thenReturn(TENANT);
+    when(adminTokenService.getAdminToken(null, null)).thenReturn(BEARER_TOKEN);
+    when(userService.findKeycloakUserIdByUserId(USER_ID, BEARER_TOKEN))
+      .thenThrow(new NotFoundException("User not found"));
+
+    assertThatThrownBy(() -> keycloakService.checkCredentialExistence(USER_ID))
+      .isInstanceOf(NotFoundException.class)
+      .hasMessageContaining("User not found");
   }
 
   @Test
