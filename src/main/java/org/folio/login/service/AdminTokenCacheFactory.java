@@ -16,6 +16,7 @@ import org.folio.login.domain.model.KeycloakAuthentication;
 public class AdminTokenCacheFactory {
 
   private static final int MIN_EARLY_EXPIRATION_SEC = 30;
+  private static final int DEFAULT_TTL_SEC = 300;
   private final TokenCacheProperties tokenCacheProperties;
 
   public Cache<String, KeycloakAuthentication> createCache() {
@@ -30,6 +31,12 @@ public class AdminTokenCacheFactory {
 
   long calculateTtl(KeycloakAuthentication token) {
     var expiresIn = token.getExpiresIn();
+    
+    if (expiresIn == null) {
+      log.warn("Token expiresIn is null, using default TTL of {} seconds", DEFAULT_TTL_SEC);
+      return ofSeconds(DEFAULT_TTL_SEC).toNanos();
+    }
+    
     var refreshBeforeExpiry = tokenCacheProperties.getRefreshBeforeExpirySec();
 
     log.debug("Calculating token TTL: tokenExpiresIn = {} secs, refreshBeforeExpiry = {} secs",

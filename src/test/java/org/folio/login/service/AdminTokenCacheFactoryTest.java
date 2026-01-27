@@ -27,6 +27,7 @@ class AdminTokenCacheFactoryTest {
 
   private static final int REFRESH_BEFORE_EXPIRY_DEFAULT = 25;
   private static final int REFRESH_BEFORE_EXPIRY_NONE = 0;
+  private static final int DEFAULT_TTL_SEC = 300;
 
   private static final long EXPECTED_TTL_LONG_LIVED = 275L; // 300 - 25
   private static final long EXPECTED_TTL_SHORT_LIVED = 40L; // Falls back to full expiresIn
@@ -107,6 +108,15 @@ class AdminTokenCacheFactoryTest {
     long ttlNanos = factory.calculateTtl(token);
 
     assertEquals(ofSeconds(EXPECTED_TTL_NO_EARLY_REFRESH).toNanos(), ttlNanos);
+  }
+
+  @Test
+  void calculateTtl_positive_nullExpiresIn() {
+    var token = createToken(null);
+
+    long ttlNanos = factory.calculateTtl(token);
+
+    assertEquals(ofSeconds(DEFAULT_TTL_SEC).toNanos(), ttlNanos);
   }
 
   @Test
