@@ -18,7 +18,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class AdminTokenCacheFactoryTest {
 
-  private static final long EXPIRES_IN_LONG_LIVED = 300L; // 5 minutes (typical Keycloak default)
+  private static final long EXPIRES_IN_LONG_LIVED = 300L; // 5 minutes
   private static final long EXPIRES_IN_SHORT_LIVED = 40L;
   private static final long EXPIRES_IN_VERY_SHORT = 10L;
   private static final long EXPIRES_IN_BOUNDARY_AT_THRESHOLD = 55L; // With refresh=25, earlyExp=30
@@ -40,7 +40,7 @@ class AdminTokenCacheFactoryTest {
   @InjectMocks private AdminTokenCacheFactory factory;
 
   @Test
-  public void calculateTtl_positive() {
+  void calculateTtl_positive() {
     var token = createToken(EXPIRES_IN_LONG_LIVED);
     when(tokenCacheProperties.getRefreshBeforeExpirySec()).thenReturn(REFRESH_BEFORE_EXPIRY_DEFAULT);
 
@@ -50,7 +50,7 @@ class AdminTokenCacheFactoryTest {
   }
 
   @Test
-  public void calculateTtl_positive_shortLivedToken() {
+  void calculateTtl_positive_shortLivedToken() {
     var token = createToken(EXPIRES_IN_SHORT_LIVED);
     when(tokenCacheProperties.getRefreshBeforeExpirySec()).thenReturn(REFRESH_BEFORE_EXPIRY_DEFAULT);
 
@@ -60,7 +60,7 @@ class AdminTokenCacheFactoryTest {
   }
 
   @Test
-  public void calculateTtl_positive_refreshBeforeExpiryLargeThenExpiresIn() {
+  void calculateTtl_positive_refreshBeforeExpiryLargeThenExpiresIn() {
     var token = createToken(EXPIRES_IN_VERY_SHORT);
     when(tokenCacheProperties.getRefreshBeforeExpirySec()).thenReturn(REFRESH_BEFORE_EXPIRY_DEFAULT);
 
@@ -70,7 +70,7 @@ class AdminTokenCacheFactoryTest {
   }
 
   @Test
-  public void calculateTtl_positive_earlyExpirationEqualsThreshold() {
+  void calculateTtl_positive_earlyExpirationEqualsThreshold() {
     var token = createToken(EXPIRES_IN_BOUNDARY_AT_THRESHOLD);
     when(tokenCacheProperties.getRefreshBeforeExpirySec()).thenReturn(REFRESH_BEFORE_EXPIRY_DEFAULT);
 
@@ -80,7 +80,7 @@ class AdminTokenCacheFactoryTest {
   }
 
   @Test
-  public void calculateTtl_positive_earlyExpirationAboveThreshold() {
+  void calculateTtl_positive_earlyExpirationAboveThreshold() {
     var token = createToken(EXPIRES_IN_BOUNDARY_ABOVE_THRESHOLD);
     when(tokenCacheProperties.getRefreshBeforeExpirySec()).thenReturn(REFRESH_BEFORE_EXPIRY_DEFAULT);
 
@@ -90,7 +90,7 @@ class AdminTokenCacheFactoryTest {
   }
 
   @Test
-  public void calculateTtl_positive_zeroExpiresIn() {
+  void calculateTtl_positive_zeroExpiresIn() {
     var token = createToken(EXPIRES_IN_ZERO);
     when(tokenCacheProperties.getRefreshBeforeExpirySec()).thenReturn(REFRESH_BEFORE_EXPIRY_DEFAULT);
 
@@ -100,7 +100,7 @@ class AdminTokenCacheFactoryTest {
   }
 
   @Test
-  public void calculateTtl_positive_noEarlyRefresh() {
+  void calculateTtl_positive_noEarlyRefresh() {
     var token = createToken(EXPIRES_IN_LONG_LIVED);
     when(tokenCacheProperties.getRefreshBeforeExpirySec()).thenReturn(REFRESH_BEFORE_EXPIRY_NONE);
 
@@ -110,7 +110,7 @@ class AdminTokenCacheFactoryTest {
   }
 
   @Test
-  public void createCache_positive() {
+  void createCache_positive() {
     var cache = factory.createCache();
 
     assertNotNull(cache);
