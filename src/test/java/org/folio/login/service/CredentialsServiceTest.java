@@ -13,6 +13,7 @@ import static org.mockito.Mockito.when;
 import org.folio.login.domain.dto.CredentialsExistence;
 import org.folio.login.integration.users.UserService;
 import org.folio.login.integration.users.UsersKeycloakClient;
+import org.folio.spring.exception.NotFoundException;
 import org.folio.test.types.UnitTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -75,13 +76,23 @@ class CredentialsServiceTest {
   }
 
   @Test
-  void checkCredentials_positive() {
+  void checkCredentials_positive_credentialsExist() {
     checkCredentials(true);
   }
 
   @Test
-  void checkCredentials_negative() {
+  void checkCredentials_positive_noCredentials() {
     checkCredentials(false);
+  }
+
+  @Test
+  void checkCredentials_positive_userNotFound() {
+    when(keycloakService.checkCredentialExistence(USER_ID))
+      .thenThrow(new NotFoundException("User not found"));
+
+    var result = credentialsService.checkCredentialsExistence(USER_ID);
+
+    assertThat(result.getCredentialsExist()).isFalse();
   }
 
   void checkCredentials(boolean value) {
