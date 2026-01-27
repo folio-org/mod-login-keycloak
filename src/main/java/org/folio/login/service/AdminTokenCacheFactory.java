@@ -28,7 +28,7 @@ public class AdminTokenCacheFactory {
       .build();
   }
 
-  private long calculateTtl(KeycloakAuthentication token) {
+  long calculateTtl(KeycloakAuthentication token) {
     var expiresIn = token.getExpiresIn();
     var refreshBeforeExpiry = tokenCacheProperties.getRefreshBeforeExpirySec();
 

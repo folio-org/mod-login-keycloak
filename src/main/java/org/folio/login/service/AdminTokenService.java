@@ -26,27 +26,25 @@ public class AdminTokenService {
   private final Cache<String, KeycloakAuthentication> adminTokenCache;
 
   public String getAdminToken(String userAgent, String forwardedFor) {
-    var cachedToken = adminTokenCache.getIfPresent(CACHE_KEY);
-    if (cachedToken != null) {
-      log.debug("Returning cached admin token");
-      return formatBearerToken(cachedToken.getAccessToken());
-    }
+    var token = adminTokenCache.get(CACHE_KEY, key -> {
+      log.debug("Cache miss - fetching new admin token from Keycloak");
+      var adminProperties = keycloakProperties.getAdmin();
+      var realmConfig = new KeycloakRealmConfiguration()
+        .clientId(adminProperties.getClientId());
 
-    var adminProperties = keycloakProperties.getAdmin();
-    var realmConfig = new KeycloakRealmConfiguration()
-      .clientId(adminProperties.getClientId());
+      var credentials = new LoginCredentials()
+        .password(adminProperties.getPassword())
+        .username(adminProperties.getUsername());
 
-    var credentials = new LoginCredentials()
-      .password(adminProperties.getPassword())
-      .username(adminProperties.getUsername());
+      var requestData = TokenRequestHelper.preparePasswordRequestBody(credentials, realmConfig);
+      var realm = adminProperties.getRealm();
+      var fetchedToken = keycloakClient.callTokenEndpoint(realm, requestData, userAgent, forwardedFor);
 
-    var requestData = TokenRequestHelper.preparePasswordRequestBody(credentials, realmConfig);
-    var realm = adminProperties.getRealm();
-    var token = keycloakClient.callTokenEndpoint(realm, requestData, userAgent, forwardedFor);
-    
-    adminTokenCache.put(CACHE_KEY, token);
-    log.debug("Admin token cached with dynamic TTL based on expiresIn: {} seconds", token.getExpiresIn());
-    
+      log.debug("Admin token cached with dynamic TTL based on expiresIn: {} seconds", fetchedToken.getExpiresIn());
+      return fetchedToken;
+    });
+
+    log.debug("Returning admin token");
     return formatBearerToken(token.getAccessToken());
   }
 
