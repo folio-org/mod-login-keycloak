@@ -8,6 +8,8 @@ import static org.folio.login.support.TestConstants.REALM;
 import static org.folio.login.support.TestConstants.USERNAME;
 import static org.folio.login.support.TestValues.keycloakAuthentication;
 import static org.folio.login.support.TestValues.loginRequest;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -28,9 +30,10 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 
 @UnitTest
-@SpringBootTest(classes = {AdminTokenService.class, TokenCacheConfiguration.class, TokenCacheProperties.class}, 
+@SpringBootTest(classes = {AdminTokenService.class, TokenCacheConfiguration.class, TokenCacheProperties.class},
                 webEnvironment = NONE)
 @EnableConfigurationProperties(TokenCacheProperties.class)
 class AdminTokenServiceTest {
@@ -38,7 +41,7 @@ class AdminTokenServiceTest {
   private static final String CACHE_KEY = "admin-cli-token";
 
   @Autowired private AdminTokenService adminTokenService;
-  @Autowired @Qualifier("adminTokenCache") private Cache<String, KeycloakAuthentication> adminTokenCache;
+  @MockitoSpyBean @Qualifier("adminTokenCache") private Cache<String, KeycloakAuthentication> adminTokenCache;
   @MockitoBean private KeycloakProperties keycloakProperties;
   @MockitoBean private KeycloakAdminProperties adminProperties;
   @MockitoBean private KeycloakClient keycloakClient;
@@ -65,6 +68,11 @@ class AdminTokenServiceTest {
 
     assertThat(issuedToken).isEqualTo("Bearer " + ACCESS_TOKEN);
     verify(keycloakClient).callTokenEndpoint(REALM, requestData, null, null);
+
+    // Verify cache.get(key, mappingFunction) was called - this method is thread-safe
+    // and ensures atomic computation: only one thread will execute the mapping function
+    // for a cache miss, preventing race conditions and duplicate token requests
+    verify(adminTokenCache).get(eq(CACHE_KEY), any());
     
     // Verify token is cached
     var cachedToken = adminTokenCache.getIfPresent(CACHE_KEY);
@@ -88,6 +96,10 @@ class AdminTokenServiceTest {
     // Second call - cache hit
     var secondToken = adminTokenService.getAdminToken(null, null);
     assertThat(secondToken).isEqualTo("Bearer " + ACCESS_TOKEN);
+    
+    // Verify cache.get() was called twice (once per getAdminToken call)
+    // Using cache.get(key, mappingFunction) is thread-safe: it atomically checks and computes
+    verify(adminTokenCache, times(2)).get(eq(CACHE_KEY), any());
     
     // Verify Keycloak client was called only once (second call used cache)
     verify(keycloakClient, times(1)).callTokenEndpoint(REALM, requestData, null, null);
