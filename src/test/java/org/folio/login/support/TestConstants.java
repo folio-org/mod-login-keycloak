@@ -20,7 +20,6 @@ public class TestConstants {
   public static final String REALM = TENANT;
   public static final String OKAPI_URL = "http://okapi:9130";
   public static final String AUTH_CODE = "secret_code";
-  public static final String TOKEN_CACHE = "token";
   public static final String KEYCLOAK_CONFIG_CACHE = "keycloak-configuration";
   public static final String PASSWORD_RESET_ACTION_ID = "aa69563e-78e7-4e5d-a264-e40a55616150";
   public static final UUID PASSWORD_RESET_ACTION_UUID = UUID.fromString(PASSWORD_RESET_ACTION_ID);
