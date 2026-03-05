@@ -11,6 +11,7 @@ import org.folio.login.domain.dto.ResponseCreateAction;
 import org.folio.login.domain.dto.ResponseResetAction;
 import org.folio.login.domain.repository.PasswordCreateActionRepository;
 import org.folio.login.mapper.PasswordCreateActionMapper;
+import org.folio.spring.FolioExecutionContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +24,7 @@ public class PasswordService {
   private final KeycloakService keycloakService;
   private final PasswordCreateActionMapper passwordCreateActionMapper;
   private final PasswordCreateActionRepository passwordCreateActionRepository;
+  private final FolioExecutionContext folioExecutionContext;
 
   public ResponseCreateAction createResetPasswordAction(PasswordCreateAction passwordCreateAction) {
     var userId = passwordCreateAction.getUserId();
@@ -40,6 +42,8 @@ public class PasswordService {
       .findPasswordCreateActionEntityByUserId(UUID.fromString(userId))
       .ifPresent(passwordCreateActionRepository::delete);
     passwordCreateActionRepository.save(entity);
+    log.info("Password reset link created [actorUserId: {}, targetUserId: {}]",
+      folioExecutionContext.getUserId(), userId);
     return response;
   }
 
@@ -59,6 +63,8 @@ public class PasswordService {
     response.setIsNewPassword(!isPasswordExist.getCredentialsExist());
     keycloakService.resetPassword(passwordResetAction, action.getUserId());
     passwordCreateActionRepository.deleteById(UUID.fromString(action.getId()));
+    log.info("Password reset completed [actorUserId: {}, targetUserId: {}]",
+      folioExecutionContext.getUserId(), action.getUserId());
     return response;
   }
 }

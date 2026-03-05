@@ -28,6 +28,7 @@ import org.folio.login.domain.entity.PasswordCreateActionEntity;
 import org.folio.login.domain.repository.PasswordCreateActionRepository;
 import org.folio.login.exception.ServiceException;
 import org.folio.login.mapper.PasswordCreateActionMapper;
+import org.folio.spring.FolioExecutionContext;
 import org.folio.spring.exception.NotFoundException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -42,6 +43,7 @@ class PasswordServiceTest {
   @Mock private KeycloakService keycloakService;
   @Mock private PasswordCreateActionMapper passwordCreateActionMapper;
   @Mock private PasswordCreateActionRepository passwordCreateActionRepository;
+  @Mock private FolioExecutionContext folioExecutionContext;
 
   @InjectMocks private PasswordService passwordService;
 
@@ -57,7 +59,8 @@ class PasswordServiceTest {
 
   @AfterEach
   void tearDown() {
-    verifyNoMoreInteractions(keycloakService, passwordCreateActionMapper, passwordCreateActionRepository);
+    verifyNoMoreInteractions(keycloakService, passwordCreateActionMapper, passwordCreateActionRepository,
+      folioExecutionContext);
   }
 
   @Test
@@ -74,6 +77,7 @@ class PasswordServiceTest {
     verify(passwordCreateActionRepository).findById(PASSWORD_RESET_ACTION_UUID);
     verify(passwordCreateActionRepository).save(any());
     verify(passwordCreateActionRepository).findPasswordCreateActionEntityByUserId(USER_UUID);
+    verify(folioExecutionContext).getUserId();
   }
 
   @Test
@@ -163,6 +167,9 @@ class PasswordServiceTest {
 
     doNothing().when(keycloakService).resetPassword(passResetAction, USER_ID);
     doNothing().when(passwordCreateActionRepository).deleteById(PASSWORD_RESET_ACTION_UUID);
-    return passwordService.resetAction(passResetAction);
+    var response = passwordService.resetAction(passResetAction);
+
+    verify(folioExecutionContext).getUserId();
+    return response;
   }
 }
