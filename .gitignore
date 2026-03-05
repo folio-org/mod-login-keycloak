@@ -35,3 +35,5 @@ build/
 
 ### AI tools ###
 .claude/
+.codemie/
+.agents/

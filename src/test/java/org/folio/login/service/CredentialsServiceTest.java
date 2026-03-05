@@ -3,9 +3,11 @@ package org.folio.login.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.login.support.TestConstants.USERNAME;
 import static org.folio.login.support.TestConstants.USER_ID;
+import static org.folio.login.support.TestConstants.USER_UUID;
 import static org.folio.login.support.TestValues.loginCredentials;
 import static org.folio.login.support.TestValues.updateCredentials;
 import static org.folio.login.support.TestValues.user;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -13,6 +15,7 @@ import static org.mockito.Mockito.when;
 import org.folio.login.domain.dto.CredentialsExistence;
 import org.folio.login.integration.users.UserService;
 import org.folio.login.integration.users.UsersKeycloakClient;
+import org.folio.spring.FolioExecutionContext;
 import org.folio.spring.exception.NotFoundException;
 import org.folio.test.types.UnitTest;
 import org.junit.jupiter.api.Test;
@@ -28,13 +31,25 @@ class CredentialsServiceTest {
   @Mock private KeycloakService keycloakService;
   @Mock private UsersKeycloakClient usersKeycloakClient;
   @Mock private UserService userService;
+  @Mock private FolioExecutionContext folioExecutionContext;
   @InjectMocks private CredentialsService credentialsService;
 
   @Test
   void createCredentials_positive() {
     doNothing().when(usersKeycloakClient).createAuthUserInfo(loginCredentials().getUserId());
     doNothing().when(keycloakService).createAuthCredentials(loginCredentials());
+    when(folioExecutionContext.getUserId()).thenReturn(USER_UUID);
     credentialsService.createAuthCredentials(loginCredentials());
+    verify(keycloakService).createAuthCredentials(loginCredentials());
+  }
+
+  @Test
+  void createCredentials_positive_nullActorUserId() {
+    doNothing().when(usersKeycloakClient).createAuthUserInfo(loginCredentials().getUserId());
+    doNothing().when(keycloakService).createAuthCredentials(loginCredentials());
+    when(folioExecutionContext.getUserId()).thenReturn(null);
+
+    assertDoesNotThrow(() -> credentialsService.createAuthCredentials(loginCredentials()));
     verify(keycloakService).createAuthCredentials(loginCredentials());
   }
 
@@ -53,6 +68,7 @@ class CredentialsServiceTest {
 
     doNothing().when(usersKeycloakClient).createAuthUserInfo(updateCredentials.getUserId());
     doNothing().when(keycloakService).updateCredentials(userAgent, forwardedFor, updateCredentials);
+    when(folioExecutionContext.getUserId()).thenReturn(USER_UUID);
 
     credentialsService.updateCredentials(updateCredentials, userAgent, forwardedFor);
 
@@ -68,11 +84,26 @@ class CredentialsServiceTest {
     when(userService.getUserByUsername(USERNAME)).thenReturn(user());
     doNothing().when(usersKeycloakClient).createAuthUserInfo(USER_ID);
     doNothing().when(keycloakService).updateCredentials(userAgent, forwardedFor, updateCredentials());
+    when(folioExecutionContext.getUserId()).thenReturn(USER_UUID);
 
     credentialsService.updateCredentials(updateCredentials().userId(null), userAgent, forwardedFor);
 
     verify(usersKeycloakClient).createAuthUserInfo(USER_ID);
     verify(keycloakService).updateCredentials(userAgent, forwardedFor, updateCredentials());
+  }
+
+  @Test
+  void updateCredentials_positive_nullActorUserId() {
+    var updateCredentials = updateCredentials();
+    var userAgent = "user-agent-test";
+    var forwardedFor = "forwarded-for-test";
+
+    doNothing().when(usersKeycloakClient).createAuthUserInfo(updateCredentials.getUserId());
+    doNothing().when(keycloakService).updateCredentials(userAgent, forwardedFor, updateCredentials);
+    when(folioExecutionContext.getUserId()).thenReturn(null);
+
+    assertDoesNotThrow(() -> credentialsService.updateCredentials(updateCredentials, userAgent, forwardedFor));
+    verify(keycloakService).updateCredentials(userAgent, forwardedFor, updateCredentials);
   }
 
   @Test

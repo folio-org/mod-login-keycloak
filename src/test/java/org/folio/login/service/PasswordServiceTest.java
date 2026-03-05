@@ -9,6 +9,7 @@ import static org.folio.login.support.TestValues.passwordCreateAction;
 import static org.folio.login.support.TestValues.passwordCreateActionEntity;
 import static org.folio.login.support.TestValues.passwordResetAction;
 import static org.folio.login.support.TestValues.responseResetAction;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -28,6 +29,7 @@ import org.folio.login.domain.entity.PasswordCreateActionEntity;
 import org.folio.login.domain.repository.PasswordCreateActionRepository;
 import org.folio.login.exception.ServiceException;
 import org.folio.login.mapper.PasswordCreateActionMapper;
+import org.folio.spring.FolioExecutionContext;
 import org.folio.spring.exception.NotFoundException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -42,6 +44,7 @@ class PasswordServiceTest {
   @Mock private KeycloakService keycloakService;
   @Mock private PasswordCreateActionMapper passwordCreateActionMapper;
   @Mock private PasswordCreateActionRepository passwordCreateActionRepository;
+  @Mock private FolioExecutionContext folioExecutionContext;
 
   @InjectMocks private PasswordService passwordService;
 
@@ -57,7 +60,8 @@ class PasswordServiceTest {
 
   @AfterEach
   void tearDown() {
-    verifyNoMoreInteractions(keycloakService, passwordCreateActionMapper, passwordCreateActionRepository);
+    verifyNoMoreInteractions(keycloakService, passwordCreateActionMapper, passwordCreateActionRepository,
+      folioExecutionContext);
   }
 
   @Test
@@ -67,6 +71,7 @@ class PasswordServiceTest {
       .thenReturn(credentialsExistence(true));
     when(passwordCreateActionRepository.findById(PASSWORD_RESET_ACTION_UUID))
       .thenReturn(Optional.empty());
+    when(folioExecutionContext.getUserId()).thenReturn(USER_UUID);
 
     var response = passwordService.createResetPasswordAction(passwordCreateAction);
     assertTrue(response.getPasswordExists());
@@ -74,6 +79,20 @@ class PasswordServiceTest {
     verify(passwordCreateActionRepository).findById(PASSWORD_RESET_ACTION_UUID);
     verify(passwordCreateActionRepository).save(any());
     verify(passwordCreateActionRepository).findPasswordCreateActionEntityByUserId(USER_UUID);
+    verify(folioExecutionContext).getUserId();
+  }
+
+  @Test
+  void createResetPasswordAction_positive_nullActorUserId() {
+    toEntity();
+    when(keycloakService.checkCredentialExistence(USER_ID))
+      .thenReturn(credentialsExistence(true));
+    when(passwordCreateActionRepository.findById(PASSWORD_RESET_ACTION_UUID))
+      .thenReturn(Optional.empty());
+    when(folioExecutionContext.getUserId()).thenReturn(null);
+
+    assertDoesNotThrow(() -> passwordService.createResetPasswordAction(passwordCreateAction));
+    verify(passwordCreateActionRepository).save(any());
   }
 
   @Test
@@ -161,8 +180,32 @@ class PasswordServiceTest {
     when(keycloakService.checkCredentialExistence(USER_ID))
       .thenReturn(credentialsExistence(credentialExist));
 
+    when(folioExecutionContext.getUserId()).thenReturn(USER_UUID);
+
     doNothing().when(keycloakService).resetPassword(passResetAction, USER_ID);
     doNothing().when(passwordCreateActionRepository).deleteById(PASSWORD_RESET_ACTION_UUID);
-    return passwordService.resetAction(passResetAction);
+    var response = passwordService.resetAction(passResetAction);
+
+    verify(folioExecutionContext).getUserId();
+    return response;
+  }
+
+  @Test
+  void resetAction_positive_nullActorUserId() {
+    var passResetAction = passwordResetAction();
+    var passwordCreateActionEntity = passwordCreateActionEntity();
+
+    when(passwordCreateActionRepository.findById(PASSWORD_RESET_ACTION_UUID))
+      .thenReturn(Optional.of(passwordCreateActionEntity));
+    when(passwordCreateActionMapper.toDto(passwordCreateActionEntity())).thenReturn(passwordCreateAction());
+    when(keycloakService.checkCredentialExistence(USER_ID))
+      .thenReturn(credentialsExistence(true));
+    when(folioExecutionContext.getUserId()).thenReturn(null);
+
+    doNothing().when(keycloakService).resetPassword(passResetAction, USER_ID);
+    doNothing().when(passwordCreateActionRepository).deleteById(PASSWORD_RESET_ACTION_UUID);
+
+    assertDoesNotThrow(() -> passwordService.resetAction(passResetAction));
+    verify(passwordCreateActionRepository).deleteById(PASSWORD_RESET_ACTION_UUID);
   }
 }

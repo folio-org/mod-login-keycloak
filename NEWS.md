@@ -8,6 +8,7 @@
 * Add configurable tenant collection mode for Kafka logout events (MODLOGINKC-56)
 * Improper response from GET /authn/credentials-existence when authUser don't exist. (MODLOGINKC-60)
 * Improve caching mechanisms to automatically calculate TTL (MODLOGINKC-59)
+* Add logging for password creation, update, reset (MODLOGINKC-61)
 
 ## Version `v3.0.0` (12.03.2025)
 * Update mod-login-keycloak Java 21 (MODLOGINKC-43)
