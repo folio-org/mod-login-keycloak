@@ -19,7 +19,7 @@ import org.springframework.web.service.annotation.HttpExchange;
 import org.springframework.web.service.annotation.PostExchange;
 import org.springframework.web.service.annotation.PutExchange;
 
-@HttpExchange(url = "${application.keycloak.url}")
+@HttpExchange
 public interface KeycloakClient {
 
   /**
