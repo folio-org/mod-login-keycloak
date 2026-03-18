@@ -53,13 +53,12 @@ public interface KeycloakClient {
    * @param userId - user's id in keycloak
    * @param passwordCredential - update credentials request body
    * @param token - bearer token
-   *
-   * */
+   */
   @PutExchange(value = "/admin/realms/{realm}/users/{userId}/reset-password")
   void updateCredentials(@PathVariable("realm") String realm,
-                         @PathVariable("userId") String userId,
-                         @RequestBody PasswordCredential passwordCredential,
-                         @RequestHeader(AUTHORIZATION) String token);
+    @PathVariable("userId") String userId,
+    @RequestBody PasswordCredential passwordCredential,
+    @RequestHeader(AUTHORIZATION) String token);
 
   /**
    * Get user's credentials.
@@ -67,12 +66,11 @@ public interface KeycloakClient {
    * @param realm - tenant realm name
    * @param userId - user's id in keycloak
    * @param token - bearer token
-   *
-   * */
+   */
   @GetExchange(value = "admin/realms/{realm}/users/{userId}/credentials")
   List<UserCredentials> getUserCredentials(@PathVariable("realm") String realm,
-                                           @PathVariable("userId") String userId,
-                                           @RequestHeader(AUTHORIZATION) String token);
+    @PathVariable("userId") String userId,
+    @RequestHeader(AUTHORIZATION) String token);
 
   /**
    * Delete user's credentials.
@@ -81,11 +79,10 @@ public interface KeycloakClient {
    * @param userId - user's id in keycloak
    * @param credId - user's credential id in keycloak
    * @param token - bearer token
-   *
-   * */
+   */
   @DeleteExchange(value = "admin/realms/{realm}/users/{userId}/credentials/{credId}")
   void deleteUsersCredentials(@PathVariable("realm") String realm,
-                               @PathVariable("userId") String userId,
-                               @PathVariable("credId") String credId,
-                               @RequestHeader(AUTHORIZATION) String token);
+    @PathVariable("userId") String userId,
+    @PathVariable("credId") String credId,
+    @RequestHeader(AUTHORIZATION) String token);
 }

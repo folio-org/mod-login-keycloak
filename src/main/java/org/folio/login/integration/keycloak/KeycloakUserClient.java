@@ -24,12 +24,12 @@ public interface KeycloakUserClient {
    */
   @GetExchange(value = "/admin/realms/{realm}/users")
   List<KeycloakUser> findUsersWithAttrs(@RequestHeader(AUTHORIZATION) String token,
-                                        @PathVariable("realm") String realmName,
-                                        @RequestParam("q") String attrQuery,
-                                        @RequestParam("briefRepresentation") boolean briefRepresentation);
+    @PathVariable("realm") String realmName,
+    @RequestParam("q") String attrQuery,
+    @RequestParam("briefRepresentation") boolean briefRepresentation);
 
   @GetExchange(value = "/admin/realms/{realm}/users")
   List<KeycloakUser> findUsers(@RequestHeader(AUTHORIZATION) String token,
-                               @PathVariable("realm") String realmName,
-                               @RequestParam("search") String searchTerm);
+    @PathVariable("realm") String realmName,
+    @RequestParam("search") String searchTerm);
 }
