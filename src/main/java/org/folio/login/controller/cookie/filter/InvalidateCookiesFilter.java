@@ -1,7 +1,6 @@
 package org.folio.login.controller.cookie.filter;
 
 import static org.folio.login.controller.cookie.InvalidateCookieUtils.invalidateCookies;
-import static org.springframework.boot.web.servlet.filter.OrderedFilter.REQUEST_WRAPPER_FILTER_MAX_ORDER;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -18,7 +17,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 @RequiredArgsConstructor
 public class InvalidateCookiesFilter extends OncePerRequestFilter {
 
-  public static final int ORDER = REQUEST_WRAPPER_FILTER_MAX_ORDER - 1;
+  public static final int ORDER = Integer.MAX_VALUE - 6;
 
   private final BiPredicate<HttpRequestResponseHolder, Optional<Exception>> shouldInvalidateCookies;
 

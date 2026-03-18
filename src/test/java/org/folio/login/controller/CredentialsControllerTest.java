@@ -19,20 +19,21 @@ import org.folio.spring.integration.XOkapiHeaders;
 import org.folio.test.types.UnitTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Import;
 import org.springframework.kafka.core.KafkaAdmin;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 @UnitTest
-@MockBean(KafkaAdmin.class)
+@MockitoBean(types = {KafkaAdmin.class, CacheManager.class})
 @Import(ApiExceptionHandler.class)
 @WebMvcTest(CredentialsController.class)
 class CredentialsControllerTest {
 
   @Autowired private MockMvc mockMvc;
-  @MockBean private CredentialsService credentialsService;
+  @MockitoBean private CredentialsService credentialsService;
 
   @Test
   void createCredentials_positive() throws Exception {

@@ -5,27 +5,21 @@ import static org.springframework.http.HttpHeaders.USER_AGENT;
 import static org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
-import feign.Headers;
 import java.util.List;
-import java.util.Map;
 import org.folio.login.domain.model.KeycloakAuthentication;
 import org.folio.login.domain.model.PasswordCredential;
 import org.folio.login.domain.model.UserCredentials;
-import org.folio.login.integration.keycloak.config.KeycloakFeignConfiguration;
-import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.service.annotation.DeleteExchange;
+import org.springframework.web.service.annotation.GetExchange;
+import org.springframework.web.service.annotation.HttpExchange;
+import org.springframework.web.service.annotation.PostExchange;
+import org.springframework.web.service.annotation.PutExchange;
 
-@FeignClient(
-  name = "keycloak-client",
-  url = "${application.keycloak.url}",
-  configuration = KeycloakFeignConfiguration.class
-)
+@HttpExchange(url = "${application.keycloak.url}")
 public interface KeycloakClient {
 
   /**
@@ -35,18 +29,20 @@ public interface KeycloakClient {
    * @param formData - authentication request body
    * @return access and refresh tokens as {@link KeycloakAuthentication} object
    */
-  @PostMapping(value = "/realms/{realm}/protocol/openid-connect/token", consumes = APPLICATION_FORM_URLENCODED_VALUE)
-  @Headers("Content-Type: application/x-www-form-urlencoded")
+  @PostExchange(value = "/realms/{realm}/protocol/openid-connect/token",
+    contentType = APPLICATION_FORM_URLENCODED_VALUE)
   KeycloakAuthentication callTokenEndpoint(
     @PathVariable("realm") String realm,
-    @RequestBody Map<String, ?> formData,
-    @RequestHeader(USER_AGENT) String userAgent,
-    @RequestHeader("X-Forwarded-For") String forwardedFor);
+    @RequestBody MultiValueMap<String, String> formData,
+    @RequestHeader(value = USER_AGENT, required = false) String userAgent,
+    @RequestHeader(value = "X-Forwarded-For", required = false) String forwardedFor);
 
-  @PostMapping(value = "/realms/{realm}/protocol/openid-connect/logout", consumes = APPLICATION_FORM_URLENCODED_VALUE)
-  void logout(@PathVariable("realm") String realm, @RequestBody Map<String, ?> formData);
+  @PostExchange(value = "/realms/{realm}/protocol/openid-connect/logout",
+    contentType = APPLICATION_FORM_URLENCODED_VALUE)
+  void logout(@PathVariable("realm") String realm, @RequestBody MultiValueMap<String, String> formData);
 
-  @PostMapping(value = "/admin/realms/{realm}/users/{userId}/logout", consumes = APPLICATION_JSON_VALUE)
+  @PostExchange(value = "/admin/realms/{realm}/users/{userId}/logout",
+    contentType = APPLICATION_JSON_VALUE)
   void logoutAll(@PathVariable("realm") String realm, @PathVariable("userId") String userId,
     @RequestHeader(AUTHORIZATION) String token);
 
@@ -59,7 +55,7 @@ public interface KeycloakClient {
    * @param token - bearer token
    *
    * */
-  @PutMapping(value = "/admin/realms/{realm}/users/{userId}/reset-password")
+  @PutExchange(value = "/admin/realms/{realm}/users/{userId}/reset-password")
   void updateCredentials(@PathVariable("realm") String realm,
                          @PathVariable("userId") String userId,
                          @RequestBody PasswordCredential passwordCredential,
@@ -73,10 +69,10 @@ public interface KeycloakClient {
    * @param token - bearer token
    *
    * */
-  @GetMapping(value = "admin/realms/{realm}/users/{userId}/credentials")
+  @GetExchange(value = "admin/realms/{realm}/users/{userId}/credentials")
   List<UserCredentials> getUserCredentials(@PathVariable("realm") String realm,
-                                          @PathVariable("userId") String userId,
-                                          @RequestHeader(AUTHORIZATION) String token);
+                                           @PathVariable("userId") String userId,
+                                           @RequestHeader(AUTHORIZATION) String token);
 
   /**
    * Delete user's credentials.
@@ -87,9 +83,9 @@ public interface KeycloakClient {
    * @param token - bearer token
    *
    * */
-  @DeleteMapping(value = "admin/realms/{realm}/users/{userId}/credentials/{credId}")
+  @DeleteExchange(value = "admin/realms/{realm}/users/{userId}/credentials/{credId}")
   void deleteUsersCredentials(@PathVariable("realm") String realm,
-                              @PathVariable("userId") String userId,
-                              @PathVariable("credId") String credId,
-                              @RequestHeader(AUTHORIZATION) String token);
+                               @PathVariable("userId") String userId,
+                               @PathVariable("credId") String credId,
+                               @RequestHeader(AUTHORIZATION) String token);
 }

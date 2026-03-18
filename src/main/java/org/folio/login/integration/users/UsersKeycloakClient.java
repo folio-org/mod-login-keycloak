@@ -1,10 +1,10 @@
 package org.folio.login.integration.users;
 
-import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.service.annotation.HttpExchange;
+import org.springframework.web.service.annotation.PostExchange;
 
-@FeignClient(name = "users-keycloak")
+@HttpExchange(url = "users-keycloak")
 public interface UsersKeycloakClient {
 
   /**
@@ -12,6 +12,6 @@ public interface UsersKeycloakClient {
    *
    * @param userId folio user ID, UUID.
    */
-  @PostMapping("/auth-users/{userId}")
+  @PostExchange("/auth-users/{userId}")
   void createAuthUserInfo(@PathVariable("userId") String userId);
 }

@@ -57,8 +57,8 @@ import org.junit.jupiter.api.Test;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.representations.idm.UserSessionRepresentation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.http.HttpHeaders;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.ResultHandler;
 import org.springframework.test.web.servlet.ResultMatcher;
@@ -70,7 +70,7 @@ class LoginIT extends BaseIntegrationTest {
   private static final LoginCredentials CREDENTIALS = new LoginCredentials().username(USERNAME).password(PASSWORD);
 
   @Autowired private Keycloak keycloak;
-  @SpyBean private KeycloakService keycloakService;
+  @MockitoSpyBean private KeycloakService keycloakService;
 
   @BeforeAll
   static void beforeAll() {

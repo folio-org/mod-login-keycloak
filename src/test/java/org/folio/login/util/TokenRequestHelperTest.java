@@ -1,6 +1,5 @@
 package org.folio.login.util;
 
-import static java.util.Map.entry;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.keycloak.OAuth2Constants.AUTHORIZATION_CODE;
 import static org.keycloak.OAuth2Constants.CLIENT_ID;
@@ -10,12 +9,12 @@ import static org.keycloak.OAuth2Constants.PASSWORD;
 import static org.keycloak.OAuth2Constants.REFRESH_TOKEN;
 import static org.keycloak.OAuth2Constants.USERNAME;
 
-import java.util.Map;
 import org.folio.login.domain.dto.LoginCredentials;
 import org.folio.login.domain.model.KeycloakRealmConfiguration;
 import org.folio.login.support.TestConstants;
 import org.junit.jupiter.api.Test;
 import org.keycloak.OAuth2Constants;
+import org.springframework.util.LinkedMultiValueMap;
 
 class TokenRequestHelperTest {
 
@@ -35,15 +34,14 @@ class TokenRequestHelperTest {
     var credential = new LoginCredentials();
     credential.username(TEST_USER);
     credential.password(TEST_USER_PASSWORD);
-    var actual = TokenRequestHelper.preparePasswordRequestBody(credential, config);
 
-    var expected = Map.ofEntries(
-      entry(GRANT_TYPE, PASSWORD),
-      entry(CLIENT_ID, TEST_CLIENT),
-      entry(CLIENT_SECRET, TEST_CLIENT_SECRET),
-      entry(USERNAME, TEST_USER),
-      entry(PASSWORD, TEST_USER_PASSWORD)
-    );
+    var expected = new LinkedMultiValueMap<String, String>();
+    expected.add(GRANT_TYPE, PASSWORD);
+    expected.add(CLIENT_ID, TEST_CLIENT);
+    expected.add(CLIENT_SECRET, TEST_CLIENT_SECRET);
+    expected.add(USERNAME, TEST_USER);
+    expected.add(PASSWORD, TEST_USER_PASSWORD);
+    var actual = TokenRequestHelper.preparePasswordRequestBody(credential, config);
     assertEquals(actual, expected);
   }
 
@@ -56,15 +54,14 @@ class TokenRequestHelperTest {
     var credential = new LoginCredentials();
     credential.username(TEST_USER);
     credential.password(TEST_USER_PASSWORD);
-    var actual = TokenRequestHelper.prepareCodeRequestBody(CODE_VALUE, REDIRECT_URI, config);
 
-    var expected = Map.ofEntries(
-      entry(GRANT_TYPE, AUTHORIZATION_CODE),
-      entry(CLIENT_ID, config.getClientId()),
-      entry(CLIENT_SECRET, config.getClientSecret()),
-      entry(OAuth2Constants.CODE, CODE_VALUE),
-      entry(OAuth2Constants.REDIRECT_URI, REDIRECT_URI)
-    );
+    var expected = new LinkedMultiValueMap<String, String>();
+    expected.add(GRANT_TYPE, AUTHORIZATION_CODE);
+    expected.add(CLIENT_ID, config.getClientId());
+    expected.add(CLIENT_SECRET, config.getClientSecret());
+    expected.add(OAuth2Constants.CODE, CODE_VALUE);
+    expected.add(OAuth2Constants.REDIRECT_URI, REDIRECT_URI);
+    var actual = TokenRequestHelper.prepareCodeRequestBody(CODE_VALUE, REDIRECT_URI, config);
     assertEquals(actual, expected);
   }
 
@@ -77,14 +74,13 @@ class TokenRequestHelperTest {
     var credential = new LoginCredentials();
     credential.username(TEST_USER);
     credential.password(TEST_USER_PASSWORD);
-    var actual = TokenRequestHelper.prepareRefreshRequestBody(TestConstants.REFRESH_TOKEN, config);
 
-    var expected = Map.ofEntries(
-      entry(GRANT_TYPE, REFRESH_TOKEN),
-      entry(CLIENT_ID, config.getClientId()),
-      entry(CLIENT_SECRET, config.getClientSecret()),
-      entry(REFRESH_TOKEN, TestConstants.REFRESH_TOKEN)
-    );
+    var expected = new LinkedMultiValueMap<String, String>();
+    expected.add(GRANT_TYPE, REFRESH_TOKEN);
+    expected.add(CLIENT_ID, config.getClientId());
+    expected.add(CLIENT_SECRET, config.getClientSecret());
+    expected.add(REFRESH_TOKEN, TestConstants.REFRESH_TOKEN);
+    var actual = TokenRequestHelper.prepareRefreshRequestBody(TestConstants.REFRESH_TOKEN, config);
     assertEquals(actual, expected);
   }
 }

@@ -1,41 +1,40 @@
 package org.folio.login.integration.keycloak.config;
 
-import feign.Client;
-import feign.codec.Encoder;
-import feign.form.FormEncoder;
-import feign.okhttp.OkHttpClient;
-import lombok.extern.log4j.Log4j2;
-import org.folio.common.utils.tls.FeignClientTlsUtils;
-import org.springframework.beans.factory.ObjectFactory;
-import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
-import org.springframework.cloud.openfeign.support.SpringEncoder;
+import org.folio.common.utils.tls.HttpClientTlsUtils;
+import org.folio.login.integration.keycloak.KeycloakClient;
+import org.folio.login.integration.keycloak.KeycloakUserClient;
+import org.folio.login.integration.users.UsersClient;
+import org.folio.login.integration.users.UsersKeycloakClient;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.client.RestClient;
+import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 
 /**
- * Keycloak feign client additional configuration.
+ * Keycloak and FOLIO HTTP service client configuration.
  */
-@Log4j2
+@Configuration
 public class KeycloakFeignConfiguration {
 
-  /**
-   * Additional map to form-data encoder for feign client.
-   *
-   * @param converters - existing {@link HttpMessageConverters} factory
-   * @return configured {@link Encoder} object
-   */
   @Bean
-  Encoder feignFormEncoder(ObjectFactory<HttpMessageConverters> converters) {
-    return new FormEncoder(new SpringEncoder(converters));
+  KeycloakClient keycloakClient(KeycloakProperties properties) {
+    return HttpClientTlsUtils.buildHttpServiceClient(
+      RestClient.builder(), properties.getTls(), properties.getUrl(), KeycloakClient.class);
   }
 
-  /**
-   * Feign {@link OkHttpClient} based client.
-   *
-   * @param okHttpClient - {@link OkHttpClient} from spring context
-   * @return created feign {@link Client} object
-   */
   @Bean
-  public Client feignClient(KeycloakProperties keycloakProperties, okhttp3.OkHttpClient okHttpClient) {
-    return FeignClientTlsUtils.getOkHttpClient(okHttpClient, keycloakProperties.getTls());
+  KeycloakUserClient keycloakUserClient(KeycloakProperties properties) {
+    return HttpClientTlsUtils.buildHttpServiceClient(
+      RestClient.builder(), properties.getTls(), properties.getUrl(), KeycloakUserClient.class);
+  }
+
+  @Bean
+  UsersClient usersClient(HttpServiceProxyFactory factory) {
+    return factory.createClient(UsersClient.class);
+  }
+
+  @Bean
+  UsersKeycloakClient usersKeycloakClient(HttpServiceProxyFactory factory) {
+    return factory.createClient(UsersKeycloakClient.class);
   }
 }
