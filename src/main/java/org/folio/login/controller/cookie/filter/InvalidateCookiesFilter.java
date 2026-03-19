@@ -11,13 +11,14 @@ import java.util.Optional;
 import java.util.function.BiPredicate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.boot.servlet.filter.OrderedFilter;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 @Log4j2
 @RequiredArgsConstructor
 public class InvalidateCookiesFilter extends OncePerRequestFilter {
 
-  public static final int ORDER = Integer.MAX_VALUE - 6;
+  public static final int ORDER = -OrderedFilter.REQUEST_WRAPPER_FILTER_MAX_ORDER - 1;
 
   private final BiPredicate<HttpRequestResponseHolder, Optional<Exception>> shouldInvalidateCookies;
 
