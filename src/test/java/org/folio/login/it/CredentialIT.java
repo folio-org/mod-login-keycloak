@@ -5,7 +5,6 @@ import static org.folio.login.support.TestConstants.ADMIN_USERNAME;
 import static org.folio.login.support.TestConstants.ADMIN_USER_ID;
 import static org.folio.login.support.TestConstants.USERNAME;
 import static org.folio.login.support.TestConstants.USER_ID;
-import static org.folio.login.support.TestConstants.USER_UUID;
 import static org.folio.login.support.TestValues.loginCredentials;
 import static org.folio.login.support.TestValues.loginCredentialsWithoutId;
 import static org.folio.login.support.TestValues.updateCredentials;
@@ -18,7 +17,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.util.UUID;
 import org.folio.login.domain.dto.CredentialsExistence;
 import org.folio.login.support.base.BaseIntegrationTest;
 import org.folio.test.extensions.KeycloakRealms;

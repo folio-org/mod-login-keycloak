@@ -5,7 +5,6 @@ import static org.codehaus.plexus.util.StringUtils.isNotEmpty;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.apache.commons.lang3.StringUtils;
 import org.folio.login.domain.dto.CredentialsExistence;
 import org.folio.login.domain.dto.LoginCredentials;
 import org.folio.login.domain.dto.UpdateCredentials;
