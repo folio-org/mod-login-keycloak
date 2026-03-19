@@ -18,7 +18,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 @RequiredArgsConstructor
 public class InvalidateCookiesFilter extends OncePerRequestFilter {
 
-  public static final int ORDER = -OrderedFilter.REQUEST_WRAPPER_FILTER_MAX_ORDER - 1;
+  public static final int ORDER = OrderedFilter.REQUEST_WRAPPER_FILTER_MAX_ORDER - 1;
 
   private final BiPredicate<HttpRequestResponseHolder, Optional<Exception>> shouldInvalidateCookies;
 
