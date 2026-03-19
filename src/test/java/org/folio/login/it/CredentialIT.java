@@ -33,7 +33,7 @@ class CredentialIT extends BaseIntegrationTest {
   @KeycloakRealms(realms = "/json/keycloak/test-realm.json")
   @WireMockStub(scripts = {"/wiremock/stubs/users-kc/create-kc-user.json"})
   void createCredentials_positive() throws Exception {
-    var credentials = loginCredentials(ADMIN_USERNAME, ADMIN_PASSWORD, UUID.randomUUID().toString());
+    var credentials = loginCredentials(ADMIN_USERNAME, ADMIN_PASSWORD, null);
     mockMvc.perform(post("/authn/credentials")
         .content(asJsonString(credentials))
         .headers(okapiHeaders()))
