@@ -1,6 +1,4 @@
 spring:
-  cache:
-    type: caffeine
   application:
     name: mod-login-keycloak
   jackson:

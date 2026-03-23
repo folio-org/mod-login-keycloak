@@ -1,7 +1,7 @@
 package org.folio.login.service;
 
 import static org.apache.commons.lang3.StringUtils.isEmpty;
-import static org.codehaus.plexus.util.StringUtils.isNotEmpty;
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
