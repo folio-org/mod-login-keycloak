@@ -334,7 +334,7 @@ class KeycloakServiceTest {
 
     keycloakService.logout(REFRESH_TOKEN);
 
-    var tokenRequestCaptor = ArgumentCaptor.forClass(MultiValueMap.class);
+    ArgumentCaptor<MultiValueMap<String, String>> tokenRequestCaptor = ArgumentCaptor.captor();
     verify(keycloakClient).logout(eq(TENANT), tokenRequestCaptor.capture());
 
     var expectedForm = new LinkedMultiValueMap<String, String>();
@@ -375,7 +375,7 @@ class KeycloakServiceTest {
     var actualAuth = keycloakService.refreshToken(refreshToken);
     assertThat(actualAuth).isEqualTo(keycloakAuth);
 
-    var captor = ArgumentCaptor.forClass(MultiValueMap.class);
+    ArgumentCaptor<MultiValueMap<String, String>> captor = ArgumentCaptor.captor();
     verify(keycloakClient).callTokenEndpoint(eq(TENANT), captor.capture(), any(), any());
 
     var actualTokenRequestPayload = captor.getValue();
