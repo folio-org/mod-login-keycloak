@@ -406,6 +406,7 @@
         <artifactId>maven-failsafe-plugin</artifactId>
         <configuration>
           <groups>integration</groups>
+          <argLine>-Djdk.internal.httpclient.disableHostnameVerification=true</argLine>
         </configuration>
       </plugin>
 
