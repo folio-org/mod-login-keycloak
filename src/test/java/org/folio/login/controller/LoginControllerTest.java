@@ -289,7 +289,7 @@ class LoginControllerTest {
         .contentType(APPLICATION_JSON)
         .header(XOkapiHeaders.TENANT, "test-tenant")
         .cookie(refreshCookie, testCookie1, testCookie2))
-      .andExpect(status().isUnprocessableEntity())
+      .andExpect(status().isUnprocessableContent())
       .andExpectAll(invalidatedCookie(refreshCookie))
       .andExpectAll(invalidatedCookie(testCookie1))
       .andExpectAll(invalidatedCookie(testCookie2));
@@ -326,7 +326,7 @@ class LoginControllerTest {
         .contentType(APPLICATION_JSON)
         .header(XOkapiHeaders.TENANT, "test-tenant")
         .cookie(refreshCookie, testCookie1, testCookie2))
-      .andExpect(status().isUnprocessableEntity())
+      .andExpect(status().isUnprocessableContent())
       .andExpectAll(invalidatedCookie(refreshCookie))
       .andExpectAll(invalidatedCookie(testCookie1))
       .andExpectAll(invalidatedCookie(testCookie2));

@@ -243,7 +243,7 @@ class ApiExceptionHandlerTest {
   void handleTokenLogoutException_positive() throws Exception {
     when(testService.getTestValue()).thenThrow(new TokenLogoutException("Failure", new RuntimeException("cause")));
     mockMvc.perform(get("/tests").queryParam("query", "cql.allRecords=1").contentType(APPLICATION_JSON))
-      .andExpect(status().isUnprocessableEntity())
+      .andExpect(status().isUnprocessableContent())
       .andExpect(jsonPath("$.total_records", is(1)))
       .andExpect(jsonPath("$.errors[0].message", is("Failure")))
       .andExpect(jsonPath("$.errors[0].type", is("TokenLogoutException")))
@@ -254,7 +254,7 @@ class ApiExceptionHandlerTest {
   void handleTokenRefreshException_positive() throws Exception {
     when(testService.getTestValue()).thenThrow(new TokenRefreshException("Failure", new RuntimeException("cause")));
     mockMvc.perform(get("/tests").queryParam("query", "cql.allRecords=1").contentType(APPLICATION_JSON))
-      .andExpect(status().isUnprocessableEntity())
+      .andExpect(status().isUnprocessableContent())
       .andExpect(jsonPath("$.total_records", is(1)))
       .andExpect(jsonPath("$.errors[0].message", is("Failure")))
       .andExpect(jsonPath("$.errors[0].type", is("TokenRefreshException")))
