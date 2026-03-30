@@ -37,12 +37,8 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import feign.FeignException;
-import feign.RetryableException;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.ws.rs.core.Form;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 import org.folio.login.domain.dto.CredentialsExistence;
 import org.folio.login.domain.model.KeycloakUser;
@@ -63,6 +59,10 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestClientException;
 
 @UnitTest
 @ExtendWith(MockitoExtension.class)
@@ -115,7 +115,7 @@ class KeycloakServiceTest {
     when(folioExecutionContext.getTenantId()).thenReturn(TENANT);
     when(realmConfigurationProvider.getRealmConfiguration()).thenReturn(realmConfiguration);
     when(keycloakClient.callTokenEndpoint(TENANT, requestData, null, null))
-      .thenThrow(RetryableException.class);
+      .thenThrow(RestClientException.class);
 
     assertThatThrownBy(() ->
       keycloakService.getTokenAuthCodeFlow(AUTH_CODE, "localhost", null, null))
@@ -131,7 +131,7 @@ class KeycloakServiceTest {
     when(folioExecutionContext.getTenantId()).thenReturn(TENANT);
     when(realmConfigurationProvider.getRealmConfiguration()).thenReturn(realmConfig);
     when(keycloakClient.callTokenEndpoint(TENANT, requestData, null, null))
-      .thenThrow(RetryableException.class);
+      .thenThrow(RestClientException.class);
 
     var credentials = loginCredentials();
     assertThatThrownBy(() -> keycloakService.getUserToken(credentials, null, null))
@@ -147,7 +147,7 @@ class KeycloakServiceTest {
     when(folioExecutionContext.getTenantId()).thenReturn(TENANT);
     when(realmConfigurationProvider.getRealmConfiguration()).thenReturn(realmConfig);
     when(keycloakClient.callTokenEndpoint(TENANT, requestData, null, null))
-      .thenThrow(FeignException.Unauthorized.class);
+      .thenThrow(HttpClientErrorException.Unauthorized.class);
 
     var credentials = loginCredentials();
     assertThatThrownBy(() -> keycloakService.getUserToken(credentials, null, null))
@@ -180,7 +180,7 @@ class KeycloakServiceTest {
   void updateCredentials_negative_keycloakError() {
     var updateCredentials = updateCredentials();
 
-    when(adminTokenService.getAdminToken(null, null)).thenThrow(RetryableException.class);
+    when(adminTokenService.getAdminToken(null, null)).thenThrow(RestClientException.class);
 
     assertThatThrownBy(() -> keycloakService.updateCredentials(null, null, updateCredentials))
       .isInstanceOf(ServiceException.class)
@@ -191,7 +191,7 @@ class KeycloakServiceTest {
   void resetPassword_negative_keycloakError() {
     var passwordResetAction = passwordResetAction();
 
-    when(adminTokenService.getAdminToken(null, null)).thenThrow(RetryableException.class);
+    when(adminTokenService.getAdminToken(null, null)).thenThrow(RestClientException.class);
 
     assertThatThrownBy(
       () -> keycloakService.resetPassword(passwordResetAction, USER_ID))
@@ -219,7 +219,7 @@ class KeycloakServiceTest {
 
   @Test
   void createAuthCredentials_negative_keycloakError() {
-    when(adminTokenService.getAdminToken(null, null)).thenThrow(RetryableException.class);
+    when(adminTokenService.getAdminToken(null, null)).thenThrow(RestClientException.class);
 
     var credentials = loginCredentials();
     assertThatThrownBy(() -> keycloakService.createAuthCredentials(credentials))
@@ -261,7 +261,7 @@ class KeycloakServiceTest {
   @Test
   void deleteCredentials_keycloakError() {
     when(folioExecutionContext.getTenantId()).thenReturn(TENANT);
-    when(adminTokenService.getAdminToken(null, null)).thenThrow(RetryableException.class);
+    when(adminTokenService.getAdminToken(null, null)).thenThrow(RestClientException.class);
 
     assertThatThrownBy(() -> keycloakService.deleteAuthCredentials(USER_ID))
       .isInstanceOf(ServiceException.class)
@@ -306,7 +306,7 @@ class KeycloakServiceTest {
   @Test
   void checkCredentialsExistence_negative_keycloakError() {
     when(folioExecutionContext.getTenantId()).thenReturn(TENANT);
-    when(adminTokenService.getAdminToken(null, null)).thenThrow(RetryableException.class);
+    when(adminTokenService.getAdminToken(null, null)).thenThrow(RestClientException.class);
 
     assertThatThrownBy(() -> keycloakService.checkCredentialExistence(USER_ID))
       .isInstanceOf(ServiceException.class)
@@ -334,15 +334,16 @@ class KeycloakServiceTest {
 
     keycloakService.logout(REFRESH_TOKEN);
 
-    var tokenRequestCaptor = ArgumentCaptor.forClass(Map.class);
+    ArgumentCaptor<MultiValueMap<String, String>> tokenRequestCaptor = ArgumentCaptor.captor();
     verify(keycloakClient).logout(eq(TENANT), tokenRequestCaptor.capture());
 
-    var expectedForm = new Form().param(OAuth2Constants.REFRESH_TOKEN, REFRESH_TOKEN);
-    expectedForm.param(OAuth2Constants.CLIENT_ID, CLIENT_ID);
-    expectedForm.param(OAuth2Constants.CLIENT_SECRET, CLIENT_SECRET);
+    var expectedForm = new LinkedMultiValueMap<String, String>();
+    expectedForm.add(OAuth2Constants.REFRESH_TOKEN, REFRESH_TOKEN);
+    expectedForm.add(OAuth2Constants.CLIENT_ID, CLIENT_ID);
+    expectedForm.add(OAuth2Constants.CLIENT_SECRET, CLIENT_SECRET);
 
     var actual = tokenRequestCaptor.getValue();
-    assertThat(actual).isEqualTo(expectedForm.asMap());
+    assertThat(actual).isEqualTo(expectedForm);
     verify(logoutEventPublisher).publishLogoutEvent(REFRESH_TOKEN);
   }
 
@@ -374,7 +375,7 @@ class KeycloakServiceTest {
     var actualAuth = keycloakService.refreshToken(refreshToken);
     assertThat(actualAuth).isEqualTo(keycloakAuth);
 
-    var captor = ArgumentCaptor.forClass(Map.class);
+    ArgumentCaptor<MultiValueMap<String, String>> captor = ArgumentCaptor.captor();
     verify(keycloakClient).callTokenEndpoint(eq(TENANT), captor.capture(), any(), any());
 
     var actualTokenRequestPayload = captor.getValue();

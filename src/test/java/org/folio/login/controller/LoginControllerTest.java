@@ -44,24 +44,25 @@ import org.folio.test.types.UnitTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpHeaders;
 import org.springframework.kafka.core.KafkaAdmin;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultMatcher;
 
 @UnitTest
-@MockBean(KafkaAdmin.class)
+@MockitoBean(types = {KafkaAdmin.class, CacheManager.class})
 @Import({ApiExceptionHandler.class, InvalidateCookiesResponseBodyAdvice.class})
 @WebMvcTest(LoginController.class)
 class LoginControllerTest {
 
   @Autowired private MockMvc mockMvc;
-  @MockBean private LoginService loginService;
-  @MockBean private TokenHeaderProperties tokenHeaderProperties;
-  @MockBean private TokenCookieHeaderManager tokenCookieHeaderManager;
+  @MockitoBean private LoginService loginService;
+  @MockitoBean private TokenHeaderProperties tokenHeaderProperties;
+  @MockitoBean private TokenCookieHeaderManager tokenCookieHeaderManager;
 
   @BeforeEach
   void setUp() {
@@ -288,7 +289,7 @@ class LoginControllerTest {
         .contentType(APPLICATION_JSON)
         .header(XOkapiHeaders.TENANT, "test-tenant")
         .cookie(refreshCookie, testCookie1, testCookie2))
-      .andExpect(status().isUnprocessableEntity())
+      .andExpect(status().isUnprocessableContent())
       .andExpectAll(invalidatedCookie(refreshCookie))
       .andExpectAll(invalidatedCookie(testCookie1))
       .andExpectAll(invalidatedCookie(testCookie2));
@@ -325,7 +326,7 @@ class LoginControllerTest {
         .contentType(APPLICATION_JSON)
         .header(XOkapiHeaders.TENANT, "test-tenant")
         .cookie(refreshCookie, testCookie1, testCookie2))
-      .andExpect(status().isUnprocessableEntity())
+      .andExpect(status().isUnprocessableContent())
       .andExpectAll(invalidatedCookie(refreshCookie))
       .andExpectAll(invalidatedCookie(testCookie1))
       .andExpectAll(invalidatedCookie(testCookie2));

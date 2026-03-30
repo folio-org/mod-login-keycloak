@@ -31,7 +31,7 @@ class TokenCookieManagerTest {
     when(properties.getSameSiteValue()).thenReturn("None");
     var result = service.createAuthorizationCookieHeader(tokenContainer);
 
-    assertThat(result).hasSize(1);
+    assertThat(result.size()).isEqualTo(1);
     assertThat(result.get(SET_COOKIE)).hasSize(2);
     assertThat(result.get(SET_COOKIE).get(0).split(" "))
       .contains(String.format("folioAccessToken=%s;", ACCESS_TOKEN), "Path=/;",

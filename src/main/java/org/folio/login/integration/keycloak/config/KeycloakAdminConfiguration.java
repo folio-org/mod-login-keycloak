@@ -2,8 +2,8 @@ package org.folio.login.integration.keycloak.config;
 
 import static jakarta.ws.rs.client.ClientBuilder.newBuilder;
 import static org.apache.commons.lang3.StringUtils.stripToNull;
-import static org.folio.common.utils.tls.FeignClientTlsUtils.buildSslContext;
 import static org.folio.common.utils.tls.Utils.IS_HOSTNAME_VERIFICATION_DISABLED;
+import static org.folio.common.utils.tls.Utils.buildSslContext;
 
 import lombok.extern.log4j.Log4j2;
 import org.apache.http.conn.ssl.DefaultHostnameVerifier;

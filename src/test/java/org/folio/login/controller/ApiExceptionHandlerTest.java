@@ -31,11 +31,12 @@ import org.folio.login.exception.TokenRefreshException;
 import org.folio.test.types.UnitTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.core.KafkaAdmin;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -47,13 +48,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @UnitTest
-@MockBean(KafkaAdmin.class)
+@MockitoBean(types = {KafkaAdmin.class, CacheManager.class})
 @WebMvcTest(ApiExceptionHandlerTest.TestController.class)
 @Import({ApiExceptionHandler.class, ApiExceptionHandlerTest.TestController.class})
 class ApiExceptionHandlerTest {
 
   @Autowired private MockMvc mockMvc;
-  @MockBean private TestService testService;
+  @MockitoBean private TestService testService;
 
   @Test
   void handleUnsupportedOperationException_positive() throws Exception {
@@ -242,7 +243,7 @@ class ApiExceptionHandlerTest {
   void handleTokenLogoutException_positive() throws Exception {
     when(testService.getTestValue()).thenThrow(new TokenLogoutException("Failure", new RuntimeException("cause")));
     mockMvc.perform(get("/tests").queryParam("query", "cql.allRecords=1").contentType(APPLICATION_JSON))
-      .andExpect(status().isUnprocessableEntity())
+      .andExpect(status().isUnprocessableContent())
       .andExpect(jsonPath("$.total_records", is(1)))
       .andExpect(jsonPath("$.errors[0].message", is("Failure")))
       .andExpect(jsonPath("$.errors[0].type", is("TokenLogoutException")))
@@ -253,7 +254,7 @@ class ApiExceptionHandlerTest {
   void handleTokenRefreshException_positive() throws Exception {
     when(testService.getTestValue()).thenThrow(new TokenRefreshException("Failure", new RuntimeException("cause")));
     mockMvc.perform(get("/tests").queryParam("query", "cql.allRecords=1").contentType(APPLICATION_JSON))
-      .andExpect(status().isUnprocessableEntity())
+      .andExpect(status().isUnprocessableContent())
       .andExpect(jsonPath("$.total_records", is(1)))
       .andExpect(jsonPath("$.errors[0].message", is("Failure")))
       .andExpect(jsonPath("$.errors[0].type", is("TokenRefreshException")))

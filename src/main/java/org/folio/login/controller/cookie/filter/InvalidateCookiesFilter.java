@@ -1,7 +1,7 @@
 package org.folio.login.controller.cookie.filter;
 
 import static org.folio.login.controller.cookie.InvalidateCookieUtils.invalidateCookies;
-import static org.springframework.boot.web.servlet.filter.OrderedFilter.REQUEST_WRAPPER_FILTER_MAX_ORDER;
+import static org.springframework.boot.servlet.filter.OrderedFilter.REQUEST_WRAPPER_FILTER_MAX_ORDER;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

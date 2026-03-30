@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>3.5.7</version>
+    <version>4.0.3</version>
     <relativePath />
   </parent>
 
@@ -24,13 +24,10 @@
     <maven.compiler.target>21</maven.compiler.target>
     <swagger-annotations.version>2.2.41</swagger-annotations.version>
     <openapi-tools.jackson-databind-nullable.version>0.2.8</openapi-tools.jackson-databind-nullable.version>
-    <folio-spring-support.version>10.0.0-SNAPSHOT</folio-spring-support.version>
+    <folio-spring-support.version>10.0.0-RC1</folio-spring-support.version>
     <folio-java-checkstyle.version>1.2.0</folio-java-checkstyle.version>
-    <applications-poc-tools.version>3.1.0-SNAPSHOT</applications-poc-tools.version>
-    <commons-lang3.version>3.17.0</commons-lang3.version>
-    <coffee-boots.version>4.0.0</coffee-boots.version>
-    <jackson-bom.version>2.17.2</jackson-bom.version>
-
+    <applications-poc-tools.version>4.0.0-SNAPSHOT</applications-poc-tools.version>
+    <commons-lang3.version>3.20.0</commons-lang3.version>
     <mod-login-keycloak.yaml-file>${project.basedir}/src/main/resources/swagger.api/mod-login-keycloak.yaml
     </mod-login-keycloak.yaml-file>
 
@@ -138,12 +135,6 @@
     </dependency>
 
     <dependency>
-      <groupId>io.github.stepio.coffee-boots</groupId>
-      <artifactId>coffee-boots</artifactId>
-      <version>${coffee-boots.version}</version>
-    </dependency>
-
-    <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-cache</artifactId>
     </dependency>
@@ -193,6 +184,12 @@
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-webmvc-test</artifactId>
       <scope>test</scope>
     </dependency>
 
@@ -409,6 +406,7 @@
         <artifactId>maven-failsafe-plugin</artifactId>
         <configuration>
           <groups>integration</groups>
+          <argLine>${argLine} -Djdk.internal.httpclient.disableHostnameVerification=true</argLine>
         </configuration>
       </plugin>
 

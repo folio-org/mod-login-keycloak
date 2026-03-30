@@ -31,6 +31,7 @@ import org.folio.login.exception.ServiceException;
 import org.folio.login.mapper.PasswordCreateActionMapper;
 import org.folio.spring.FolioExecutionContext;
 import org.folio.spring.exception.NotFoundException;
+import org.folio.test.types.UnitTest;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -38,6 +39,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+@UnitTest
 @ExtendWith(MockitoExtension.class)
 class PasswordServiceTest {
 
@@ -92,6 +94,7 @@ class PasswordServiceTest {
     when(folioExecutionContext.getUserId()).thenReturn(null);
 
     assertDoesNotThrow(() -> passwordService.createResetPasswordAction(passwordCreateAction));
+    verify(passwordCreateActionRepository).findPasswordCreateActionEntityByUserId(USER_UUID);
     verify(passwordCreateActionRepository).save(any());
   }
 

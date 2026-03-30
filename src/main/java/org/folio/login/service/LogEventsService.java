@@ -21,7 +21,7 @@ import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.collections4.MapUtils;
-import org.codehaus.plexus.util.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.folio.login.domain.dto.LogEvent;
 import org.folio.login.domain.dto.LogEventCollection;
 import org.folio.login.domain.dto.LogEventType;
@@ -186,7 +186,7 @@ public class LogEventsService {
   private static LogEventType resolveAdminEventType(AdminEventRepresentation adminEvent) {
     var resourceType = adminEvent.getResourceType();
     var resourcePath = adminEvent.getResourcePath();
-    if (USER_RESOURCE_TYPE.equals(resourceType) && StringUtils.contains(resourcePath, "/reset-password")) {
+    if (USER_RESOURCE_TYPE.equals(resourceType) && Strings.CS.contains(resourcePath, "/reset-password")) {
       return PASSWORD_RESET;
     }
     return null;

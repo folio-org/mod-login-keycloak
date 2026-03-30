@@ -1,6 +1,5 @@
 package org.folio.login.support;
 
-import static java.util.Map.entry;
 import static org.folio.login.support.TestConstants.ACCESS_TOKEN;
 import static org.folio.login.support.TestConstants.ACCESS_TOKEN_EXPIRATION_DATE;
 import static org.folio.login.support.TestConstants.CLIENT_ID;
@@ -20,7 +19,6 @@ import static org.folio.login.support.TestConstants.USER_ID;
 import static org.folio.login.support.TestConstants.USER_UUID;
 
 import jakarta.servlet.http.Cookie;
-import java.util.Map;
 import org.folio.login.domain.dto.CredentialsExistence;
 import org.folio.login.domain.dto.LoginCredentials;
 import org.folio.login.domain.dto.LoginResponse;
@@ -40,6 +38,8 @@ import org.folio.login.domain.model.UserCredentials;
 import org.folio.login.integration.users.model.User;
 import org.keycloak.OAuth2Constants;
 import org.springframework.http.ResponseCookie;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 
 public class TestValues {
 
@@ -94,42 +94,46 @@ public class TestValues {
     return KeycloakAuthentication.of(ACCESS_TOKEN, REFRESH_TOKEN, EXPIRES_IN, REFRESH_EXPIRES_IN);
   }
 
-  public static Map<String, String> loginRequest(String username, String password,
+  public static MultiValueMap<String, String> loginRequest(String username, String password,
     String clientId,
     String clientSecret) {
-    return Map.ofEntries(
-      entry("grant_type", "password"),
-      entry("username", username),
-      entry("password", password),
-      entry("client_id", clientId),
-      entry("client_secret", clientSecret));
+    var form = new LinkedMultiValueMap<String, String>();
+    form.add("grant_type", "password");
+    form.add("username", username);
+    form.add("password", password);
+    form.add("client_id", clientId);
+    form.add("client_secret", clientSecret);
+    return form;
   }
 
-  public static Map<String, String> loginRequest(String username, String password, String clientId) {
-    return Map.ofEntries(
-      entry("grant_type", "password"),
-      entry("username", username),
-      entry("password", password),
-      entry("client_id", clientId),
-      entry("client_secret", ""));
+  public static MultiValueMap<String, String> loginRequest(String username, String password, String clientId) {
+    var form = new LinkedMultiValueMap<String, String>();
+    form.add("grant_type", "password");
+    form.add("username", username);
+    form.add("password", password);
+    form.add("client_id", clientId);
+    form.add("client_secret", "");
+    return form;
   }
 
-  public static Map<String, String> loginRequestAuthCode(String code, String clientId,
+  public static MultiValueMap<String, String> loginRequestAuthCode(String code, String clientId,
     String clientSecret, String redirectUri) {
-    return Map.ofEntries(
-      entry("grant_type", "authorization_code"),
-      entry("code", code),
-      entry("redirect_uri", redirectUri),
-      entry("client_id", clientId),
-      entry("client_secret", clientSecret));
+    var form = new LinkedMultiValueMap<String, String>();
+    form.add("grant_type", "authorization_code");
+    form.add("code", code);
+    form.add("redirect_uri", redirectUri);
+    form.add("client_id", clientId);
+    form.add("client_secret", clientSecret);
+    return form;
   }
 
-  public static Map<String, String> refreshTokenRequest(String refreshToken) {
-    return Map.ofEntries(
-      entry("grant_type", OAuth2Constants.REFRESH_TOKEN),
-      entry("refresh_token", refreshToken),
-      entry("client_id", CLIENT_ID),
-      entry("client_secret", CLIENT_SECRET));
+  public static MultiValueMap<String, String> refreshTokenRequest(String refreshToken) {
+    var form = new LinkedMultiValueMap<String, String>();
+    form.add("grant_type", OAuth2Constants.REFRESH_TOKEN);
+    form.add("refresh_token", refreshToken);
+    form.add("client_id", CLIENT_ID);
+    form.add("client_secret", CLIENT_SECRET);
+    return form;
   }
 
   public static PasswordResetAction passwordResetAction() {

@@ -8,13 +8,10 @@ import static org.keycloak.OAuth2Constants.CLIENT_ID;
 import static org.keycloak.OAuth2Constants.CLIENT_SECRET;
 import static org.keycloak.OAuth2Constants.REFRESH_TOKEN;
 
-import feign.FeignException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.ws.rs.BadRequestException;
-import jakarta.ws.rs.core.Form;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.folio.common.utils.OkapiHeaders;
@@ -34,6 +31,10 @@ import org.folio.login.util.TokenRequestHelper;
 import org.folio.spring.FolioExecutionContext;
 import org.folio.spring.scope.FolioExecutionContextSetter;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestClientException;
 
 @Log4j2
 @Service
@@ -56,13 +57,14 @@ public class KeycloakService {
 
   public void logout(String refreshToken) {
     var realm = realmConfigurationProvider.getRealmConfiguration();
-    var form = new Form().param(REFRESH_TOKEN, refreshToken);
-    form.param(CLIENT_ID, realm.getClientId());
-    form.param(CLIENT_SECRET, realm.getClientSecret());
+    var form = new LinkedMultiValueMap<String, String>();
+    form.add(REFRESH_TOKEN, refreshToken);
+    form.add(CLIENT_ID, realm.getClientId());
+    form.add(CLIENT_SECRET, realm.getClientSecret());
 
     logoutEventPublisher.publishLogoutEvent(refreshToken);
     var tenantId = folioExecutionContext.getTenantId();
-    keycloakClient.logout(tenantId, form.asMap());
+    keycloakClient.logout(tenantId, form);
   }
 
   public void logoutAll() {
@@ -127,7 +129,7 @@ public class KeycloakService {
 
       var newPassword = PasswordCredential.of(false, GRANT_TYPE_PASSWORD, loginCredentials.getPassword());
       keycloakClient.updateCredentials(tenantId, keycloakUserId, newPassword, token);
-    } catch (FeignException cause) {
+    } catch (RestClientException cause) {
       throw new ServiceException("Failed to create auth credentials for a username: " + userName, cause);
     }
   }
@@ -146,7 +148,7 @@ public class KeycloakService {
         throw new EntityNotFoundException("No credentials for userId " + userId + " found");
       }
       keycloakClient.deleteUsersCredentials(tenantId, keycloakUserId, userCredentials.get(0), token);
-    } catch (FeignException cause) {
+    } catch (RestClientException cause) {
       throw new ServiceException("Failed to delete credentials for a user: " + userId, cause);
     }
   }
@@ -158,7 +160,7 @@ public class KeycloakService {
       var keycloakUserId = keycloakUserService.findKeycloakUserIdByUserId(userId, token);
       var userCredentials = keycloakClient.getUserCredentials(tenantId, keycloakUserId, token);
       return new CredentialsExistence().credentialsExist(!userCredentials.isEmpty());
-    } catch (FeignException cause) {
+    } catch (RestClientException cause) {
       throw new ServiceException("Failed to get credentials for a user: " + userId, cause);
     }
   }
@@ -172,21 +174,21 @@ public class KeycloakService {
     try {
       var token = adminTokenService.getAdminToken(null, null);
       var keycloakUserId = keycloakUserService.findKeycloakUserIdByUserId(userId, token);
-      var kcPasswordReset = PasswordCredential.of(false, GRANT_TYPE_PASSWORD,
-        newPassword);
+      var kcPasswordReset = PasswordCredential.of(false, GRANT_TYPE_PASSWORD, newPassword);
       keycloakClient.updateCredentials(tenantId, keycloakUserId, kcPasswordReset, token);
-    } catch (FeignException cause) {
+    } catch (RestClientException cause) {
       throw new ServiceException(message, cause);
     }
   }
 
-  private KeycloakAuthentication getToken(String userAgent, String forwardedFor, Map<String, String> payload) {
+  private KeycloakAuthentication getToken(String userAgent, String forwardedFor,
+    MultiValueMap<String, String> payload) {
     var tenantId = folioExecutionContext.getTenantId();
     try {
       return keycloakClient.callTokenEndpoint(tenantId, payload, userAgent, forwardedFor);
-    } catch (FeignException.Unauthorized e) {
+    } catch (HttpClientErrorException.Unauthorized e) {
       throw new UnauthorizedException("Unauthorized error", e);
-    } catch (FeignException cause) {
+    } catch (RestClientException cause) {
       throw new ServiceException("Failed to obtain a token", cause);
     }
   }

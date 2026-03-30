@@ -1,6 +1,7 @@
 package org.folio.login.service;
 
 import static org.apache.commons.lang3.StringUtils.isEmpty;
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -24,7 +25,9 @@ public class CredentialsService {
   private final FolioExecutionContext folioExecutionContext;
 
   public void createAuthCredentials(LoginCredentials loginCredentials) {
-    usersKeycloakClient.createAuthUserInfo(loginCredentials.getUserId());
+    if (isNotEmpty(loginCredentials.getUserId())) {
+      usersKeycloakClient.createAuthUserInfo(loginCredentials.getUserId());
+    }
     keycloakService.createAuthCredentials(loginCredentials);
     log.info("Password created [actorUserId: {}, targetUserId: {}]",
       folioExecutionContext.getUserId(), loginCredentials.getUserId());

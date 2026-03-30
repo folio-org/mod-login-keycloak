@@ -1,6 +1,4 @@
 spring:
-  cache:
-    type: caffeine
   application:
     name: mod-login-keycloak
   jackson:
@@ -19,10 +17,6 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
-  cloud:
-    openfeign:
-      okhttp:
-        enabled: true
   kafka:
     bootstrap-servers: ${KAFKA_HOST:kafka}:${KAFKA_PORT:9092}
     security:
@@ -43,6 +37,14 @@ spring:
         spring.json.add.type.headers: false
 
 folio:
+  exchange:
+    enabled: true
+  logging:
+    request:
+      enabled: false
+    exchange:
+      enabled: false
+      level: BASIC
   jpa:
     repository:
       base-packages: org.folio.login.domain
@@ -54,10 +56,10 @@ management:
     base-path: /admin
     exposure.include: info,health,liquibase,threaddump,heapdump,httptrace,loggers
 
-coffee-boots:
-  cache:
-    spec:
-      keycloak-configuration: maximumSize=500,expireAfterWrite=${KC_CONFIG_TTL:3600s}
+cache:
+  keycloak-configuration:
+    ttl: ${KC_CONFIG_TTL:3600s}
+    max-size: 500
 
 application:
   environment: ${ENV:folio}

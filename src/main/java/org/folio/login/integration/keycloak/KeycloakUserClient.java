@@ -1,20 +1,16 @@
 package org.folio.login.integration.keycloak;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 import java.util.List;
 import org.folio.login.domain.model.KeycloakUser;
-import org.folio.login.integration.keycloak.config.KeycloakFeignConfiguration;
-import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.service.annotation.GetExchange;
+import org.springframework.web.service.annotation.HttpExchange;
 
-@FeignClient(name = "keycloak-user-client",
-  url = "${application.keycloak.url}",
-  configuration = KeycloakFeignConfiguration.class)
+@HttpExchange
 public interface KeycloakUserClient {
 
   /**
@@ -26,16 +22,14 @@ public interface KeycloakUserClient {
    * @param briefRepresentation - is brief representation
    * @return a {@link List} with {@link KeycloakUser}
    */
-  @GetMapping(value = "/admin/realms/{realm}/users?q={attrQuery}&briefRepresentation={brief}",
-    produces = APPLICATION_JSON_VALUE)
+  @GetExchange(value = "/admin/realms/{realm}/users")
   List<KeycloakUser> findUsersWithAttrs(@RequestHeader(AUTHORIZATION) String token,
-                                        @PathVariable("realm") String realmName,
-                                        @PathVariable("attrQuery") String attrQuery,
-                                        @PathVariable("brief") boolean briefRepresentation);
+    @PathVariable("realm") String realmName,
+    @RequestParam("q") String attrQuery,
+    @RequestParam("briefRepresentation") boolean briefRepresentation);
 
-  @GetMapping(value = "/admin/realms/{realm}/users",
-    produces = APPLICATION_JSON_VALUE)
+  @GetExchange(value = "/admin/realms/{realm}/users")
   List<KeycloakUser> findUsers(@RequestHeader(AUTHORIZATION) String token,
-                               @PathVariable("realm") String realmName,
-                               @RequestParam("search") String searchTerm);
+    @PathVariable("realm") String realmName,
+    @RequestParam("search") String searchTerm);
 }
