@@ -1,12 +1,12 @@
 package org.folio.login.service;
 
 import static org.folio.common.utils.CollectionUtils.toStream;
-import static org.folio.integration.kafka.KafkaUtils.createTopic;
+import static org.folio.integration.kafka.producer.KafkaUtils.createTopic;
 import static org.folio.login.util.KafkaTopicUtils.getTopicName;
 
 import lombok.extern.log4j.Log4j2;
-import org.folio.integration.kafka.FolioKafkaProperties.KafkaTopic;
-import org.folio.integration.kafka.KafkaAdminService;
+import org.folio.integration.kafka.producer.KafkaAdminService;
+import org.folio.integration.kafka.producer.KafkaProducerProperties.KafkaTopic;
 import org.folio.login.integration.kafka.configuration.property.KafkaProperties;
 import org.folio.spring.FolioExecutionContext;
 import org.folio.spring.liquibase.FolioSpringLiquibase;

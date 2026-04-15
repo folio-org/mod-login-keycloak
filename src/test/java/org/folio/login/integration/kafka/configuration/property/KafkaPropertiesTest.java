@@ -3,7 +3,7 @@ package org.folio.login.integration.kafka.configuration.property;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
-import org.folio.integration.kafka.FolioKafkaProperties.KafkaTopic;
+import org.folio.integration.kafka.producer.KafkaProducerProperties.KafkaTopic;
 import org.folio.test.types.UnitTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

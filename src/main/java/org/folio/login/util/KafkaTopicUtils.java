@@ -1,7 +1,7 @@
 package org.folio.login.util;
 
 import lombok.experimental.UtilityClass;
-import org.folio.integration.kafka.KafkaUtils;
+import org.folio.integration.kafka.producer.KafkaUtils;
 
 @UtilityClass
 public class KafkaTopicUtils {
