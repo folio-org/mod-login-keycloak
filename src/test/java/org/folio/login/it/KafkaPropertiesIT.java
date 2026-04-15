@@ -2,7 +2,7 @@ package org.folio.login.it;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.folio.integration.kafka.FolioKafkaProperties.KafkaTopic;
+import org.folio.integration.kafka.producer.KafkaProducerProperties.KafkaTopic;
 import org.folio.login.integration.kafka.configuration.property.KafkaProperties;
 import org.folio.login.support.base.BaseIntegrationTest;
 import org.folio.test.types.IntegrationTest;

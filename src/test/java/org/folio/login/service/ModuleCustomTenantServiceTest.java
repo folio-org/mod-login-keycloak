@@ -7,8 +7,8 @@ import static org.mockito.Mockito.when;
 
 import java.util.List;
 import org.apache.kafka.clients.admin.NewTopic;
-import org.folio.integration.kafka.FolioKafkaProperties.KafkaTopic;
-import org.folio.integration.kafka.KafkaAdminService;
+import org.folio.integration.kafka.producer.KafkaAdminService;
+import org.folio.integration.kafka.producer.KafkaProducerProperties.KafkaTopic;
 import org.folio.login.integration.kafka.configuration.property.KafkaProperties;
 import org.folio.spring.FolioExecutionContext;
 import org.folio.spring.liquibase.FolioSpringLiquibase;

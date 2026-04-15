@@ -5,7 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Durations.FIVE_SECONDS;
 import static org.awaitility.Durations.ONE_HUNDRED_MILLISECONDS;
 import static org.folio.common.utils.CollectionUtils.mapItems;
-import static org.folio.integration.kafka.KafkaUtils.getTenantTopicName;
+import static org.folio.integration.kafka.producer.KafkaUtils.getTenantTopicName;
 import static org.folio.login.integration.kafka.event.LogoutEvent.Type.LOGOUT;
 import static org.folio.login.support.TestConstants.TENANT;
 import static org.folio.login.support.TestUtils.extractJwtSessionId;
