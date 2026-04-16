@@ -1,4 +1,4 @@
-## Version `v3.1.0-SNAPSHOT` (TBD)
+## Version `v4.0.0` (16.04.2026)
 * Adopt APPPOCTOOL-85 Kafka producer module split by moving from `folio-integration-kafka` to `folio-kafka-producer` (APPPOCTOOL-85)
 * Fix parameter names and typos in README curl examples (MODLOGINKC-51)
 * User can't log in due to invalid token error (MODLOGINKC-44)

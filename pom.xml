@@ -26,7 +26,7 @@
     <openapi-tools.jackson-databind-nullable.version>0.2.10</openapi-tools.jackson-databind-nullable.version>
     <folio-spring-support.version>10.0.0</folio-spring-support.version>
     <folio-java-checkstyle.version>1.2.0</folio-java-checkstyle.version>
-    <applications-poc-tools.version>4.1.0-SNAPSHOT</applications-poc-tools.version>
+    <applications-poc-tools.version>4.0.1</applications-poc-tools.version>
     <commons-lang3.version>3.20.0</commons-lang3.version>
     <mod-login-keycloak.yaml-file>${project.basedir}/src/main/resources/swagger.api/mod-login-keycloak.yaml
     </mod-login-keycloak.yaml-file>
