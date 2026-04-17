@@ -12,7 +12,7 @@
   <name>mod-login-keycloak</name>
   <groupId>org.folio</groupId>
   <artifactId>mod-login-keycloak</artifactId>
-  <version>3.1.0-SNAPSHOT</version>
+  <version>4.1.0-SNAPSHOT</version>
   <description>A login module which implements the 'login' interface, using keycloak for authentication and token
     generation
   </description>
@@ -42,7 +42,7 @@
     <openapi-generator.version>7.21.0</openapi-generator.version>
     <mapstruct-plugin.version>1.6.3</mapstruct-plugin.version>
     <folio-module-descriptor-validator.version>1.0.1</folio-module-descriptor-validator.version>
-    <argLine/>
+    <argLine />
 
     <sonar.exclusions>
       <!--
