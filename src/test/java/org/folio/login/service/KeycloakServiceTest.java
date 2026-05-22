@@ -38,6 +38,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import jakarta.persistence.EntityNotFoundException;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.UUID;
 import org.folio.login.domain.dto.CredentialsExistence;
@@ -58,11 +59,15 @@ import org.keycloak.OAuth2Constants;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
+import tools.jackson.databind.ObjectMapper;
 
 @UnitTest
 @ExtendWith(MockitoExtension.class)
@@ -75,6 +80,7 @@ class KeycloakServiceTest {
   @Mock private FolioExecutionContext folioExecutionContext;
   @Mock private RealmConfigurationProvider realmConfigurationProvider;
   @Mock private LogoutEventPublisher logoutEventPublisher;
+  @Spy private ObjectMapper objectMapper = new ObjectMapper();
   @InjectMocks private KeycloakService keycloakService;
 
   @Test
@@ -124,6 +130,23 @@ class KeycloakServiceTest {
   }
 
   @Test
+  void getTokenByAuthCodeFlow_negative_invalidGrantBadRequest() {
+    var requestData = loginRequestAuthCode(AUTH_CODE, CLIENT_ID, CLIENT_SECRET, "localhost");
+    var realmConfiguration = keycloakRealmConfiguration();
+    var invalidGrantResponse = "{\"error\":\"invalid_grant\",\"error_description\":\"Code not valid\"}";
+
+    when(folioExecutionContext.getTenantId()).thenReturn(TENANT);
+    when(realmConfigurationProvider.getRealmConfiguration()).thenReturn(realmConfiguration);
+    when(keycloakClient.callTokenEndpoint(TENANT, requestData, null, null))
+      .thenThrow(HttpClientErrorException.create(HttpStatus.BAD_REQUEST, "Bad Request", HttpHeaders.EMPTY,
+        invalidGrantResponse.getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8));
+
+    assertThatThrownBy(() -> keycloakService.getTokenAuthCodeFlow(AUTH_CODE, "localhost", null, null))
+      .isInstanceOf(ServiceException.class)
+      .hasMessage("Failed to obtain a token");
+  }
+
+  @Test
   void getUserToken_negative_KeycloakError() {
     var requestData = loginRequest(USERNAME, PASSWORD, CLIENT_ID, CLIENT_SECRET);
     var realmConfig = keycloakRealmConfiguration();
@@ -153,6 +176,42 @@ class KeycloakServiceTest {
     assertThatThrownBy(() -> keycloakService.getUserToken(credentials, null, null))
       .isInstanceOf(UnauthorizedException.class)
       .hasMessage("Unauthorized error");
+  }
+
+  @Test
+  void getUserToken_negative_invalidGrantBadRequest() {
+    var requestData = loginRequest(USERNAME, PASSWORD, CLIENT_ID, CLIENT_SECRET);
+    var realmConfig = keycloakRealmConfiguration();
+    var invalidGrantResponse = "{\"error\":\"invalid_grant\",\"error_description\":\"Invalid user credentials\"}";
+
+    when(folioExecutionContext.getTenantId()).thenReturn(TENANT);
+    when(realmConfigurationProvider.getRealmConfiguration()).thenReturn(realmConfig);
+    when(keycloakClient.callTokenEndpoint(TENANT, requestData, null, null))
+      .thenThrow(HttpClientErrorException.create(HttpStatus.BAD_REQUEST, "Bad Request", HttpHeaders.EMPTY,
+        invalidGrantResponse.getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8));
+
+    var credentials = loginCredentials();
+    assertThatThrownBy(() -> keycloakService.getUserToken(credentials, null, null))
+      .isInstanceOf(UnauthorizedException.class)
+      .hasMessage("Unauthorized error");
+  }
+
+  @Test
+  void getUserToken_negative_badRequestWithoutInvalidGrant() {
+    var requestData = loginRequest(USERNAME, PASSWORD, CLIENT_ID, CLIENT_SECRET);
+    var realmConfig = keycloakRealmConfiguration();
+    var badRequestResponse = "{\"error\":\"invalid_request\",\"error_description\":\"Missing parameter\"}";
+
+    when(folioExecutionContext.getTenantId()).thenReturn(TENANT);
+    when(realmConfigurationProvider.getRealmConfiguration()).thenReturn(realmConfig);
+    when(keycloakClient.callTokenEndpoint(TENANT, requestData, null, null))
+      .thenThrow(HttpClientErrorException.create(HttpStatus.BAD_REQUEST, "Bad Request", HttpHeaders.EMPTY,
+        badRequestResponse.getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8));
+
+    var credentials = loginCredentials();
+    assertThatThrownBy(() -> keycloakService.getUserToken(credentials, null, null))
+      .isInstanceOf(ServiceException.class)
+      .hasMessage("Failed to obtain a token");
   }
 
   @Test
@@ -380,5 +439,22 @@ class KeycloakServiceTest {
 
     var actualTokenRequestPayload = captor.getValue();
     assertThat(actualTokenRequestPayload).isEqualTo(requestData);
+  }
+
+  @Test
+  void refreshToken_negative_invalidGrantBadRequest() {
+    var refreshToken = generateJwtToken("http://localhost:8081", TENANT);
+    var invalidGrantResponse = "{\"error\":\"invalid_grant\",\"error_description\":\"Invalid refresh token\"}";
+    var realmConfiguration = keycloakRealmConfiguration();
+
+    when(folioExecutionContext.getTenantId()).thenReturn(TENANT);
+    when(realmConfigurationProvider.getRealmConfiguration()).thenReturn(realmConfiguration);
+    when(keycloakClient.callTokenEndpoint(any(), any(), any(), any()))
+      .thenThrow(HttpClientErrorException.create(HttpStatus.BAD_REQUEST, "Bad Request", HttpHeaders.EMPTY,
+        invalidGrantResponse.getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8));
+
+    assertThatThrownBy(() -> keycloakService.refreshToken(refreshToken))
+      .isInstanceOf(ServiceException.class)
+      .hasMessage("Failed to obtain a token");
   }
 }
