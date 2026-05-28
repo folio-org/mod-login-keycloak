@@ -1,3 +1,6 @@
+## Version `v3.0.5` (28.05.2026)
+* Preserve 401 Unauthorized for invalid login attempts after upgrading to 26.6.2 (MODLOGINKC-71)
+
 ## Version `v3.0.4` (12.12.2025)
 * bump applications-poc-tools to v3.0.9
 * Register JacksonProvider in ResteasyClient Keycloak for TLS connections (KEYCLOAK-90)
