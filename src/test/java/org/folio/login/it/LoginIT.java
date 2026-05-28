@@ -16,6 +16,7 @@ import static org.folio.login.support.TestConstants.USER_ID;
 import static org.folio.login.support.TestKafkaUtils.assertLogoutEvents;
 import static org.folio.login.support.TestKafkaUtils.logoutAllEvent;
 import static org.folio.login.support.TestKafkaUtils.logoutTopic;
+import static org.folio.login.support.TestValues.invalidLoginCredentials;
 import static org.folio.login.support.TestValues.loginCredentials;
 import static org.folio.login.support.TestValues.requestCookie;
 import static org.folio.login.support.TestValues.requestCookie1;
@@ -102,6 +103,38 @@ class LoginIT extends BaseIntegrationTest {
       .andExpect(header().doesNotExist(XOkapiHeaders.TOKEN))
       .andExpect(cookie().httpOnly(FOLIO_ACCESS_TOKEN, true))
       .andExpect(cookie().httpOnly(FOLIO_REFRESH_TOKEN, true));
+  }
+
+  @Test
+  @KeycloakRealms(realms = "/json/keycloak/test-realm.json")
+  void login_negative_invalidCredentials() throws Exception {
+    mockMvc.perform(post("/authn/login")
+        .content(asJsonString(invalidLoginCredentials()))
+        .header(CONTENT_TYPE, APPLICATION_JSON)
+        .header(XOkapiHeaders.USER_ID, USER_ID)
+        .header(XOkapiHeaders.URL, OKAPI_URL)
+        .header(XOkapiHeaders.TENANT, TENANT))
+      .andExpect(status().isUnauthorized())
+      .andExpect(jsonPath("$.total_records", is(1)))
+      .andExpect(jsonPath("$.errors[0].message", is("Unauthorized error")))
+      .andExpect(jsonPath("$.errors[0].type", is("UnauthorizedException")))
+      .andExpect(jsonPath("$.errors[0].code", is("unauthorized_error")));
+  }
+
+  @Test
+  @KeycloakRealms(realms = "/json/keycloak/test-realm.json")
+  void loginWithExpiry_negative_invalidCredentials() throws Exception {
+    mockMvc.perform(post("/authn/login-with-expiry")
+        .content(asJsonString(invalidLoginCredentials()))
+        .header(CONTENT_TYPE, APPLICATION_JSON)
+        .header(XOkapiHeaders.USER_ID, USER_ID)
+        .header(XOkapiHeaders.URL, OKAPI_URL)
+        .header(XOkapiHeaders.TENANT, TENANT))
+      .andExpect(status().isUnauthorized())
+      .andExpect(jsonPath("$.total_records", is(1)))
+      .andExpect(jsonPath("$.errors[0].message", is("Unauthorized error")))
+      .andExpect(jsonPath("$.errors[0].type", is("UnauthorizedException")))
+      .andExpect(jsonPath("$.errors[0].code", is("unauthorized_error")));
   }
 
   @Test

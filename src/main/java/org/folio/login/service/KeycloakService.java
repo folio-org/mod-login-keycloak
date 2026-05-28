@@ -8,6 +8,7 @@ import static org.keycloak.OAuth2Constants.CLIENT_ID;
 import static org.keycloak.OAuth2Constants.CLIENT_SECRET;
 import static org.keycloak.OAuth2Constants.REFRESH_TOKEN;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.FeignException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.ws.rs.BadRequestException;
@@ -33,6 +34,7 @@ import org.folio.login.integration.keycloak.KeycloakClient;
 import org.folio.login.util.TokenRequestHelper;
 import org.folio.spring.FolioExecutionContext;
 import org.folio.spring.scope.FolioExecutionContextSetter;
+import org.keycloak.representations.idm.OAuth2ErrorRepresentation;
 import org.springframework.stereotype.Service;
 
 @Log4j2
@@ -41,17 +43,20 @@ import org.springframework.stereotype.Service;
 public class KeycloakService {
 
   private static final String GRANT_TYPE_PASSWORD = "password";
+  private static final String INVALID_GRANT = "invalid_grant";
+
   private final AdminTokenService adminTokenService;
   private final KeycloakUserService keycloakUserService;
   private final KeycloakClient keycloakClient;
   private final FolioExecutionContext folioExecutionContext;
   private final RealmConfigurationProvider realmConfigurationProvider;
   private final LogoutEventPublisher logoutEventPublisher;
+  private final ObjectMapper objectMapper;
 
   public KeycloakAuthentication getUserToken(LoginCredentials credentials, String userAgent, String forwardedFor) {
     var realmConfiguration = realmConfigurationProvider.getRealmConfiguration();
     var requestData = TokenRequestHelper.preparePasswordRequestBody(credentials, realmConfiguration);
-    return getToken(userAgent, forwardedFor, requestData);
+    return getToken(userAgent, forwardedFor, requestData, TokenRequestType.PASSWORD);
   }
 
   public void logout(String refreshToken) {
@@ -92,7 +97,7 @@ public class KeycloakService {
     try (var ctx = new FolioExecutionContextSetter(folioExecutionContext.getFolioModuleMetadata(), headers)) {
       var realmConfiguration = realmConfigurationProvider.getRealmConfiguration();
       var requestData = prepareRefreshRequestBody(refreshToken, realmConfiguration);
-      return getToken(null, null, requestData);
+      return getToken(null, null, requestData, TokenRequestType.REFRESH_TOKEN);
     }
   }
 
@@ -100,7 +105,7 @@ public class KeycloakService {
     String forwardedFor) {
     var realmConfiguration = realmConfigurationProvider.getRealmConfiguration();
     var requestData = prepareCodeRequestBody(code, redirectUri, realmConfiguration);
-    return getToken(userAgent, forwardedFor, requestData);
+    return getToken(userAgent, forwardedFor, requestData, TokenRequestType.AUTHORIZATION_CODE);
   }
 
   @SuppressWarnings("unused")
@@ -180,14 +185,39 @@ public class KeycloakService {
     }
   }
 
-  private KeycloakAuthentication getToken(String userAgent, String forwardedFor, Map<String, String> payload) {
+  private KeycloakAuthentication getToken(String userAgent, String forwardedFor, Map<String, String> payload,
+    TokenRequestType requestType) {
     var tenantId = folioExecutionContext.getTenantId();
     try {
       return keycloakClient.callTokenEndpoint(tenantId, payload, userAgent, forwardedFor);
     } catch (FeignException.Unauthorized e) {
       throw new UnauthorizedException("Unauthorized error", e);
     } catch (FeignException cause) {
+      if (requestType == TokenRequestType.PASSWORD && isInvalidGrant(cause)) {
+        throw new UnauthorizedException("Unauthorized error", cause);
+      }
       throw new ServiceException("Failed to obtain a token", cause);
     }
+  }
+
+  private boolean isInvalidGrant(FeignException cause) {
+    var responseBody = cause.contentUTF8();
+    if (responseBody == null || responseBody.isBlank()) {
+      return false;
+    }
+
+    try {
+      var payload = objectMapper.readValue(responseBody, OAuth2ErrorRepresentation.class);
+      return INVALID_GRANT.equals(payload.getError());
+    } catch (Exception e) {
+      log.warn("Failed to parse token error response body", e);
+      return false;
+    }
+  }
+
+  private enum TokenRequestType {
+    PASSWORD,
+    AUTHORIZATION_CODE,
+    REFRESH_TOKEN
   }
 }
