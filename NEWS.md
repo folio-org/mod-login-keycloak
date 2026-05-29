@@ -1,5 +1,5 @@
-## Version `v4.1.0` (IN PROGRESS)
-* Delete the Log4j configuration so the logging settings are automatically inherited from `folio-spring-base`. (EUREKA-889)
+## Version `v4.0.1` (29.05.2026)
+* Delete the Log4j configuration so the logging settings are automatically inherited from `folio-spring-base`. (MODLOGINKC-67)
 
 ## Version `v4.0.0` (16.04.2026)
 * Adopt APPPOCTOOL-85 Kafka producer module split by moving from `folio-integration-kafka` to `folio-kafka-producer` (APPPOCTOOL-85)
