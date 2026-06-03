@@ -1,6 +1,8 @@
 ## Version `v4.1.0` (IN PROGRESS)
 * Delete the Log4j configuration so the logging settings are automatically inherited from `folio-spring-base`. (EUREKA-889)
 * Preserve 401 Unauthorized for invalid login attempts after upgrading from Keycloak 26.5.7 to 26.6.2 (MODLOGINKC-71)
+* Upgrade dependencies for Kafka 4.2 compatibility in mod-login-keycloak (MODLOGINKC-70)
+---
 
 ## Version `v4.0.0` (16.04.2026)
 * Adopt APPPOCTOOL-85 Kafka producer module split by moving from `folio-integration-kafka` to `folio-kafka-producer` (APPPOCTOOL-85)
