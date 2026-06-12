@@ -30,11 +30,13 @@ import org.folio.login.integration.keycloak.KeycloakClient;
 import org.folio.login.util.TokenRequestHelper;
 import org.folio.spring.FolioExecutionContext;
 import org.folio.spring.scope.FolioExecutionContextSetter;
+import org.keycloak.representations.idm.OAuth2ErrorRepresentation;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
+import tools.jackson.databind.ObjectMapper;
 
 @Log4j2
 @Service
@@ -42,17 +44,20 @@ import org.springframework.web.client.RestClientException;
 public class KeycloakService {
 
   private static final String GRANT_TYPE_PASSWORD = "password";
+  private static final String INVALID_GRANT = "invalid_grant";
+
   private final AdminTokenService adminTokenService;
   private final KeycloakUserService keycloakUserService;
   private final KeycloakClient keycloakClient;
   private final FolioExecutionContext folioExecutionContext;
   private final RealmConfigurationProvider realmConfigurationProvider;
   private final LogoutEventPublisher logoutEventPublisher;
+  private final ObjectMapper objectMapper;
 
   public KeycloakAuthentication getUserToken(LoginCredentials credentials, String userAgent, String forwardedFor) {
     var realmConfiguration = realmConfigurationProvider.getRealmConfiguration();
     var requestData = TokenRequestHelper.preparePasswordRequestBody(credentials, realmConfiguration);
-    return getToken(userAgent, forwardedFor, requestData);
+    return getToken(userAgent, forwardedFor, requestData, TokenRequestType.PASSWORD);
   }
 
   public void logout(String refreshToken) {
@@ -94,7 +99,7 @@ public class KeycloakService {
     try (var ctx = new FolioExecutionContextSetter(folioExecutionContext.getFolioModuleMetadata(), headers)) {
       var realmConfiguration = realmConfigurationProvider.getRealmConfiguration();
       var requestData = prepareRefreshRequestBody(refreshToken, realmConfiguration);
-      return getToken(null, null, requestData);
+      return getToken(null, null, requestData, TokenRequestType.REFRESH_TOKEN);
     }
   }
 
@@ -102,7 +107,7 @@ public class KeycloakService {
     String forwardedFor) {
     var realmConfiguration = realmConfigurationProvider.getRealmConfiguration();
     var requestData = prepareCodeRequestBody(code, redirectUri, realmConfiguration);
-    return getToken(userAgent, forwardedFor, requestData);
+    return getToken(userAgent, forwardedFor, requestData, TokenRequestType.AUTHORIZATION_CODE);
   }
 
   @SuppressWarnings("unused")
@@ -182,14 +187,37 @@ public class KeycloakService {
   }
 
   private KeycloakAuthentication getToken(String userAgent, String forwardedFor,
-    MultiValueMap<String, String> payload) {
+    MultiValueMap<String, String> payload, TokenRequestType requestType) {
     var tenantId = folioExecutionContext.getTenantId();
     try {
       return keycloakClient.callTokenEndpoint(tenantId, payload, userAgent, forwardedFor);
     } catch (HttpClientErrorException.Unauthorized e) {
       throw new UnauthorizedException("Unauthorized error", e);
     } catch (RestClientException cause) {
+      if (requestType == TokenRequestType.PASSWORD && isInvalidGrant(cause)) {
+        throw new UnauthorizedException("Unauthorized error", cause);
+      }
       throw new ServiceException("Failed to obtain a token", cause);
     }
+  }
+
+  private boolean isInvalidGrant(Throwable cause) {
+    if (!(cause instanceof HttpClientErrorException.BadRequest badRequest)) {
+      return false;
+    }
+
+    try {
+      var payload = objectMapper.readValue(badRequest.getResponseBodyAsString(), OAuth2ErrorRepresentation.class);
+      return INVALID_GRANT.equals(payload.getError());
+    } catch (Exception e) {
+      log.warn("Failed to parse token error response body", e);
+      return false;
+    }
+  }
+
+  private enum TokenRequestType {
+    PASSWORD,
+    AUTHORIZATION_CODE,
+    REFRESH_TOKEN
   }
 }
