@@ -23,7 +23,7 @@
     <maven.compiler.source>21</maven.compiler.source>
     <maven.compiler.target>21</maven.compiler.target>
     <swagger-annotations.version>2.2.52</swagger-annotations.version>
-    <openapi-tools.jackson-databind-nullable.version>0.2.10</openapi-tools.jackson-databind-nullable.version>
+    <openapi-tools.jackson-databind-nullable.version>0.2.11</openapi-tools.jackson-databind-nullable.version>
     <folio-spring-support.version>10.0.0</folio-spring-support.version>
     <folio-java-checkstyle.version>1.2.0</folio-java-checkstyle.version>
     <applications-poc-tools.version>4.1.0-SNAPSHOT</applications-poc-tools.version>
@@ -38,7 +38,7 @@
     <testcontainer.version>1.21.4</testcontainer.version>
 
     <!-- Plugins versions -->
-    <maven-checkstyle.version>13.7.0</maven-checkstyle.version>
+    <maven-checkstyle.version>13.8.0</maven-checkstyle.version>
     <maven-checkstyle-plugin.version>3.6.0</maven-checkstyle-plugin.version>
     <copy-rename-maven-plugin.version>1.0.1</copy-rename-maven-plugin.version>
     <maven-release-plugin.version>3.3.1</maven-release-plugin.version>
