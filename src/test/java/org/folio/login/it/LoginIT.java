@@ -21,6 +21,7 @@ import static org.folio.login.support.TestValues.loginCredentials;
 import static org.folio.login.support.TestValues.requestCookie;
 import static org.folio.login.support.TestValues.requestCookie1;
 import static org.folio.login.support.TestValues.requestCookie2;
+import static org.folio.test.TestConstants.OKAPI_AUTH_TOKEN;
 import static org.folio.test.TestUtils.asJsonString;
 import static org.folio.test.TestUtils.parseResponse;
 import static org.hamcrest.Matchers.containsString;
@@ -233,6 +234,7 @@ class LoginIT extends BaseIntegrationTest {
 
     mockMvc.perform(post("/authn/logout-all")
         .header(CONTENT_TYPE, APPLICATION_JSON)
+        .header(XOkapiHeaders.TOKEN, OKAPI_AUTH_TOKEN)
         .header(XOkapiHeaders.USER_ID, USER_ID)
         .header(XOkapiHeaders.URL, OKAPI_URL)
         .header(XOkapiHeaders.TENANT, TENANT)
@@ -296,6 +298,7 @@ class LoginIT extends BaseIntegrationTest {
 
     mockMvc.perform(post("/authn/logout-all")
         .header(CONTENT_TYPE, APPLICATION_JSON)
+        .header(XOkapiHeaders.TOKEN, OKAPI_AUTH_TOKEN)
         .header(XOkapiHeaders.USER_ID, USER_ID)
         .header(XOkapiHeaders.URL, OKAPI_URL)
         .header(XOkapiHeaders.TENANT, TENANT)
@@ -321,6 +324,7 @@ class LoginIT extends BaseIntegrationTest {
 
     mockMvc.perform(post("/authn/logout-all")
         .header(CONTENT_TYPE, APPLICATION_JSON)
+        .header(XOkapiHeaders.TOKEN, OKAPI_AUTH_TOKEN)
         .header(XOkapiHeaders.USER_ID, USER_ID)
         .header(XOkapiHeaders.URL, OKAPI_URL)
         .cookie(refreshCookie, accessCookie, testCookie1, testCookie2))
