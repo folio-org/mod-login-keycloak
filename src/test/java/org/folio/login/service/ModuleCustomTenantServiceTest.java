@@ -120,6 +120,7 @@ class ModuleCustomTenantServiceTest {
     when(context.getTenantId()).thenReturn("testtenant");
     when(kafkaProperties.getTenantTopics()).thenReturn(List.of(kafkaTopic));
     when(kafkaProperties.isProducerTenantCollection()).thenReturn(true);
+    when(kafkaProperties.getTenantCollectionQualifier()).thenReturn("ALL");
 
     var tenantAttributes = new TenantAttributes();
     moduleCustomTenantService.afterTenantUpdate(tenantAttributes);

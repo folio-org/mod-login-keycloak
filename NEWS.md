@@ -3,6 +3,8 @@
 * Preserve 401 Unauthorized for invalid login attempts after upgrading from Keycloak 26.5.7 to 26.6.2 (MODLOGINKC-71)
 * Upgrade dependencies for Kafka 4.2 compatibility in mod-login-keycloak (MODLOGINKC-70)
 * Update mod-login-keycloak logout-all descriptor to require an access token (MODLOGINKC-74)
+* Accept a tenant collection name (e.g. `ALL`) in `KAFKA_PRODUCER_TENANT_COLLECTION`, as other FOLIO modules do (MODLOGINKC-81)
+  - Default is now empty (per-tenant topics, as before); `true` means `ALL`; invalid values fail startup
 ---
 
 ## Version `v4.0.0` (16.04.2026)

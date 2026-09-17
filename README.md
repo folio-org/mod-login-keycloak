@@ -132,7 +132,7 @@ Kafka all configuration properties: https://kafka.apache.org/documentation/#conf
 | KAFKA_SSL_KEYSTORE_LOCATION          | -             | Kafka keystore location                                                                           |
 | KAFKA_SSL_TRUSTSTORE_PASSWORD        | -             | Kafka truststore password                                                                         |
 | KAFKA_SSL_TRUSTSTORE_LOCATION        | -             | Kafka truststore location                                                                         |
-| KAFKA_PRODUCER_TENANT_COLLECTION     | false         | If true, logout events are sent to a single shared topic (ALL). If false, per-tenant topics used |
+| KAFKA_PRODUCER_TENANT_COLLECTION     | -             | Tenant collection name for logout topics, e.g. `ALL`; must match `[A-Z][A-Z0-9]{0,30}`. If unset, empty or `false`, per-tenant topics are used. `true` is supported for backward compatibility and means `ALL`. Any other value fails the module startup. |
 | KAFKA_LOGOUT_TOPIC_PARTITIONS        | 1             | Number of partitions for logout topic                                                             |
 | KAFKA_LOGOUT_TOPIC_REPLICATION_FACTOR| -             | Replication factor for logout topic                                                               |
 
