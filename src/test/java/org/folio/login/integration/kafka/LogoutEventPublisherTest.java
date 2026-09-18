@@ -87,6 +87,7 @@ class LogoutEventPublisherTest {
     var userId = UUID.randomUUID();
     when(context.getUserId()).thenReturn(userId);
     when(kafkaProperties.isProducerTenantCollection()).thenReturn(true);
+    when(kafkaProperties.getTenantCollectionQualifier()).thenReturn("ALL");
 
     logoutEventPublisher.publishLogoutEvent(TOKEN);
 
@@ -102,6 +103,7 @@ class LogoutEventPublisherTest {
     var userId = UUID.randomUUID();
     when(context.getUserId()).thenReturn(userId);
     when(kafkaProperties.isProducerTenantCollection()).thenReturn(true);
+    when(kafkaProperties.getTenantCollectionQualifier()).thenReturn("ALL");
 
     var keycloakUserId = UUID.randomUUID();
     logoutEventPublisher.publishLogoutAllEvent(keycloakUserId.toString());
