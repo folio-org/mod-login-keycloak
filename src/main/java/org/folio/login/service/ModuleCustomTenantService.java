@@ -38,8 +38,7 @@ public class ModuleCustomTenantService extends TenantService {
   }
 
   private void createTenantTopics(KafkaTopic tenantTopic) {
-    var topicName =
-      getTopicName(tenantTopic.getName(), context.getTenantId(), kafkaProperties.isProducerTenantCollection());
+    var topicName = getTopicName(tenantTopic.getName(), context.getTenantId(), kafkaProperties);
     var topic = createTopic(topicName, tenantTopic.getNumPartitions(), tenantTopic.getReplicationFactor());
     kafkaAdminService.createTopic(topic);
 

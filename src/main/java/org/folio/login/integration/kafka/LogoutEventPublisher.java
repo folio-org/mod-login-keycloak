@@ -46,8 +46,7 @@ public class LogoutEventPublisher {
   }
 
   private String getTopicName() {
-    return KafkaTopicUtils.getTopicName(TOPIC_NAME, context.getTenantId(),
-      kafkaProperties.isProducerTenantCollection());
+    return KafkaTopicUtils.getTopicName(TOPIC_NAME, context.getTenantId(), kafkaProperties);
   }
 
   private String getMessageKey() {
