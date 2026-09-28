@@ -1,3 +1,6 @@
+## Version `v4.0.2` (28.09.2026)
+* Align KAFKA_PRODUCER_TENANT_COLLECTION with the string value used by other FOLIO modules. (MODLOGINKC-81)
+
 ## Version `v4.0.1` (29.05.2026)
 * Delete the Log4j configuration so the logging settings are automatically inherited from `folio-spring-base`. (MODLOGINKC-67)
 * Preserve 401 Unauthorized for invalid login attempts after upgrading from Keycloak 26.5.7 to 26.6.2 (MODLOGINKC-71)
