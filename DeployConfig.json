@@ -1,0 +1,342 @@
+{
+  "_disclaimer": "Default values are calibrated against a reference bugfest environment. See ADR-0013 (Module configuration management) for the governance model behind this file. Resource values and JVM limits must be adjusted to the target host capacity.",
+  "description": "mod-login-keycloak configuration template",
+  "moduleDefaults": {
+    "resources": [
+      {
+        "name": "cpu",
+        "value": "128",
+        "description": "CPU request/limit for the mod-login-keycloak container"
+      },
+      {
+        "name": "memory",
+        "value": "1024",
+        "description": "Memory hard limit for the mod-login-keycloak container in MiB"
+      },
+      {
+        "name": "memoryReservation",
+        "value": "896",
+        "description": "Memory reservation (soft limit) for the mod-login-keycloak container in MiB"
+      }
+    ],
+    "java": [
+      {
+        "name": "xmx",
+        "value": "512m",
+        "description": "Maximum Java heap size"
+      },
+      {
+        "name": "MaxMetaspaceSize",
+        "value": "256m",
+        "description": "Maximum Java metaspace size"
+      },
+      {
+        "name": "MetaspaceSize",
+        "value": "88m",
+        "description": "Initial Java metaspace size"
+      }
+    ],
+    "deployment": {
+      "isHaSupported": true,
+      "replicasRecommendedCount": 2,
+      "description": "mod-login-keycloak keeps no session state: credentials and login attempt counters live in Keycloak, password actions in PostgreSQL, and the Keycloak admin token and client configuration caches are rebuilt on demand. Replicas can run side by side behind a load balancer; two are recommended because every user login goes through the module."
+    },
+    "EnvVars": [
+      {
+        "name": "DB_HOST",
+        "value": null,
+        "description": "PostgreSQL database host",
+        "type": "DB",
+        "essential": true
+      },
+      {
+        "name": "DB_PORT",
+        "value": "5432",
+        "description": "PostgreSQL database port",
+        "type": "DB",
+        "essential": true
+      },
+      {
+        "name": "DB_USERNAME",
+        "value": null,
+        "description": "PostgreSQL database username (sourced from secret store)",
+        "type": "DB",
+        "essential": true
+      },
+      {
+        "name": "DB_PASSWORD",
+        "value": null,
+        "description": "PostgreSQL database password (sourced from secret store)",
+        "type": "DB",
+        "essential": true
+      },
+      {
+        "name": "DB_DATABASE",
+        "value": null,
+        "description": "PostgreSQL database name holding the mod-login-keycloak schemas",
+        "type": "DB",
+        "essential": true
+      },
+      {
+        "name": "DB_MAXSHAREDPOOLSIZE",
+        "value": null,
+        "description": "Maximum number of connections in the database connection pool. The pool library default (10) applies when unset. DB_MAXPOOLSIZE, used by other FOLIO modules, is not read by this module",
+        "type": "DB",
+        "essential": false
+      },
+      {
+        "name": "DB_MINSHAREDPOOLSIZE",
+        "value": "0",
+        "description": "Minimum number of idle connections the pool tries to maintain",
+        "type": "DB",
+        "essential": false
+      },
+      {
+        "name": "DB_QUERYTIMEOUT",
+        "value": null,
+        "description": "Statement timeout in milliseconds applied to every database connection; no timeout is set when unset",
+        "type": "DB",
+        "essential": false
+      },
+      {
+        "name": "DB_CONNECTIONRELEASEDELAY",
+        "value": "60000",
+        "description": "Time in milliseconds after which an idle database connection is closed",
+        "type": "DB",
+        "essential": false
+      },
+      {
+        "name": "DB_MAX_LIFETIME",
+        "value": "1800000",
+        "description": "Maximum lifetime in milliseconds of a database connection (30 minutes by default); 0 means unlimited",
+        "type": "DB",
+        "essential": false
+      },
+      {
+        "name": "DB_CHARSET",
+        "value": "UTF-8",
+        "description": "Character encoding of database connections",
+        "type": "DB",
+        "essential": false
+      },
+      {
+        "name": "KAFKA_HOST",
+        "value": null,
+        "description": "Kafka broker host. Used to publish logout events",
+        "type": "KAFKA",
+        "essential": true
+      },
+      {
+        "name": "KAFKA_PORT",
+        "value": "9092",
+        "description": "Kafka broker port",
+        "type": "KAFKA",
+        "essential": true
+      },
+      {
+        "name": "KAFKA_SECURITY_PROTOCOL",
+        "value": "PLAINTEXT",
+        "description": "Security protocol used to communicate with Kafka brokers (PLAINTEXT or SSL)",
+        "type": "KAFKA",
+        "essential": false
+      },
+      {
+        "name": "ENV",
+        "value": null,
+        "description": "Logical deployment name, used as the Kafka topic prefix; must be unique across all environments sharing the same Kafka cluster and match the value used by the other modules. Falls back to 'folio' when unset",
+        "type": "KAFKA",
+        "essential": false
+      },
+      {
+        "name": "KAFKA_PRODUCER_TENANT_COLLECTION",
+        "value": "ALL",
+        "description": "Tenant collection name for the logout topic; must match [A-Z][A-Z0-9]{0,30}. ALL is the value used by the other FOLIO modules. When unset, empty or false, per-tenant topics are used; true means ALL. Any other value fails the module startup",
+        "type": "KAFKA",
+        "essential": false
+      },
+      {
+        "name": "KAFKA_LOGOUT_TOPIC_PARTITIONS",
+        "value": "2",
+        "description": "Number of partitions of the logout topic created at startup",
+        "type": "KAFKA",
+        "essential": false
+      },
+      {
+        "name": "KAFKA_LOGOUT_TOPIC_REPLICATION_FACTOR",
+        "value": "2",
+        "description": "Replication factor of the logout topic; the broker default applies when unset",
+        "type": "KAFKA",
+        "essential": false
+      },
+      {
+        "name": "SERVER_PORT",
+        "value": "8082",
+        "description": "HTTP port the module listens on. The module defaults to 8081, which the co-located sidecar uses, so it is moved to 8082 and the sidecar MODULE_URL must point at it",
+        "type": "CONFIG",
+        "essential": true
+      },
+      {
+        "name": "JAVA_OPTS",
+        "value": null,
+        "description": "Additional JVM options for the mod-login-keycloak process (heap sizing, GC, agent flags, etc.)",
+        "type": "CONFIG",
+        "essential": true
+      },
+      {
+        "name": "SECRET_STORE_TYPE",
+        "value": null,
+        "description": "Secure store backend holding the per-tenant Keycloak client secrets. Supported values: EPHEMERAL, AWS_SSM, VAULT, FSSP. There is no default",
+        "type": "CONFIG",
+        "essential": true
+      },
+      {
+        "name": "SECURE_STORE_ENV",
+        "value": null,
+        "description": "First segment of the secure store key, for example prod or test. Defaults to the value of ENV, with fallback to 'folio'",
+        "type": "CONFIG",
+        "essential": false
+      },
+      {
+        "name": "SECRET_STORE_AWS_SSM_REGION",
+        "value": null,
+        "description": "AWS region of the SSM client. Applies when SECRET_STORE_TYPE=AWS_SSM; when unset the AWS default region provider chain is used",
+        "type": "CONFIG",
+        "essential": false
+      },
+      {
+        "name": "SECRET_STORE_AWS_SSM_USE_IAM",
+        "value": "true",
+        "description": "Use the IAM role of the running task for SSM authorization instead of explicit credentials. Applies when SECRET_STORE_TYPE=AWS_SSM",
+        "type": "CONFIG",
+        "essential": false
+      },
+      {
+        "name": "KC_URL",
+        "value": "http://keycloak:8080",
+        "description": "Base URL of Keycloak, used for login, token and credential operations",
+        "type": "KC",
+        "essential": true
+      },
+      {
+        "name": "KC_ADMIN_PASSWORD",
+        "value": null,
+        "description": "Password of the Keycloak master realm admin user, used to obtain the admin token (sourced from secret store). There is no default",
+        "type": "KC",
+        "essential": true
+      },
+      {
+        "name": "KC_LOGIN_CLIENT_SUFFIX",
+        "value": "-application",
+        "description": "Suffix appended to the tenant name to derive the Keycloak login client ID (e.g. diku-application). Must match the value used by mgr-tenants and the module sidecars",
+        "type": "KC",
+        "essential": false
+      },
+      {
+        "name": "KC_CONFIG_TTL",
+        "value": "3600s",
+        "description": "Time-to-live of the cached Keycloak client configuration and client credentials (Spring Duration syntax)",
+        "type": "CACHE",
+        "essential": false
+      },
+      {
+        "name": "KC_ADMIN_TOKEN_CACHE_REFRESH_PRIOR_EXPIRATION_SEC",
+        "value": "25",
+        "description": "Seconds before expiry at which the cached Keycloak admin token is refreshed",
+        "type": "CACHE",
+        "essential": false
+      },
+      {
+        "name": "X_OKAPI_TOKEN_HEADER_ENABLED",
+        "value": "true",
+        "description": "When true, the login endpoints also return the access token in the x-okapi-token response header, for clients that still read it",
+        "type": "FUNCTIONAL",
+        "essential": false
+      },
+      {
+        "name": "LOGIN_COOKIE_SAMESITE",
+        "value": "NONE",
+        "description": "SameSite attribute of the login cookies (NONE, LAX or STRICT)",
+        "type": "FUNCTIONAL",
+        "essential": false
+      }
+    ]
+  },
+  "sidecarDefaults": {
+    "resources": [
+      {
+        "name": "cpu",
+        "value": "64",
+        "description": "CPU request/limit for the sidecar container"
+      },
+      {
+        "name": "memory",
+        "value": "1024",
+        "description": "Memory hard limit for the sidecar container in MiB"
+      },
+      {
+        "name": "memoryReservation",
+        "value": "512",
+        "description": "Memory reservation (soft limit) for the sidecar container in MiB"
+      }
+    ],
+    "java": [
+      {
+        "name": "xms",
+        "value": "128m",
+        "description": "Initial Java heap size"
+      },
+      {
+        "name": "xmx",
+        "value": "256m",
+        "description": "Maximum Java heap size"
+      },
+      {
+        "name": "MaxMetaspaceSize",
+        "value": "96m",
+        "description": "Maximum Java metaspace size"
+      },
+      {
+        "name": "UseZGC",
+        "value": "true",
+        "description": "Use ZGC low-pause collector"
+      }
+    ],
+    "EnvVars": [
+      {
+        "name": "ENV",
+        "value": null,
+        "description": "Deployment environment identifier",
+        "type": "CONFIG",
+        "essential": false
+      },
+      {
+        "name": "JAVA_OPTS",
+        "value": null,
+        "description": "Additional JVM options for the sidecar process",
+        "type": "CONFIG",
+        "essential": false
+      },
+      {
+        "name": "MODULE_NAME",
+        "value": "mod-login-keycloak",
+        "description": "Name of the backend module the sidecar fronts",
+        "type": "CONFIG",
+        "essential": true
+      },
+      {
+        "name": "MODULE_URL",
+        "value": null,
+        "description": "Internal URL (host:port) at which the mod-login-keycloak backend container is reachable from its sidecar; must use the port set in the module SERVER_PORT",
+        "type": "CONFIG",
+        "essential": true
+      },
+      {
+        "name": "MODULE_VERSION",
+        "value": null,
+        "description": "Version of the mod-login-keycloak module deployed alongside this sidecar",
+        "type": "CONFIG",
+        "essential": true
+      }
+    ]
+  }
+}
