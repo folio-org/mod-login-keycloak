@@ -1,3 +1,6 @@
+## Version `v4.0.3` (15.10.2026)
+* Add DeployConfig.json to mod-login-keycloak (ADR-0013 Configuration Management) ([MODLOGINKC-76](https://folio-org.atlassian.net/browse/MODLOGINKC-76))
+
 ## Version `v4.0.2` (28.09.2026)
 * Align KAFKA_PRODUCER_TENANT_COLLECTION with the string value used by other FOLIO modules. (MODLOGINKC-81)
 
