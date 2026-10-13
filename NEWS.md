@@ -5,6 +5,7 @@
 * Update mod-login-keycloak logout-all descriptor to require an access token (MODLOGINKC-74)
 * Accept a tenant collection name (e.g. `ALL`) in `KAFKA_PRODUCER_TENANT_COLLECTION`, as other FOLIO modules do (MODLOGINKC-81)
   - Default is now empty (per-tenant topics, as before); `true` means `ALL`; invalid values fail startup
+* Add DeployConfig.json to mod-login-keycloak (ADR-0013 Configuration Management) ([MODLOGINKC-76](https://folio-org.atlassian.net/browse/MODLOGINKC-76))
 ---
 
 ## Version `v4.0.0` (16.04.2026)
