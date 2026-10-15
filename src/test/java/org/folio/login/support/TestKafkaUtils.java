@@ -44,14 +44,14 @@ public class TestKafkaUtils {
       var consumerRecords = getEvents(logoutTopic(), LogoutEvent.class);
       var entitlementEvents = mapItems(consumerRecords, ConsumerRecord::value);
       assertThat(entitlementEvents).containsAll(events);
-      assertThat(consumerRecords).allSatisfy(record -> assertTenantHeaders(record, TENANT));
+      assertThat(consumerRecords).allSatisfy(consumerRecord -> assertTenantHeaders(consumerRecord, TENANT));
     });
   }
 
-  public static void assertTenantHeaders(ConsumerRecord<?, ?> record, String tenant) {
-    assertThat(record.headers().headers("x-okapi-tenant")).singleElement()
+  public static void assertTenantHeaders(ConsumerRecord<?, ?> consumerRecord, String tenant) {
+    assertThat(consumerRecord.headers().headers("x-okapi-tenant")).singleElement()
       .satisfies(header -> assertThat(header.value()).isEqualTo(tenant.getBytes(UTF_8)));
-    assertThat(record.headers().headers("folio.tenantId")).singleElement()
+    assertThat(consumerRecord.headers().headers("folio.tenantId")).singleElement()
       .satisfies(header -> assertThat(header.value()).isEqualTo(tenant.getBytes(UTF_8)));
   }
 

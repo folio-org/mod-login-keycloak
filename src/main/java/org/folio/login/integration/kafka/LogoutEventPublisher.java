@@ -64,8 +64,8 @@ public class LogoutEventPublisher {
     List<Header> kafkaHeaders = List.of(
       new RecordHeader(OkapiHeaders.TENANT, tenantBytes),
       new RecordHeader("folio.tenantId", tenantBytes));
-    var record = new ProducerRecord<>(getTopicName(), null, getMessageKey(), body, kafkaHeaders);
-    kafkaTemplate.send(record);
+    var producerRecord = new ProducerRecord<>(getTopicName(), null, getMessageKey(), body, kafkaHeaders);
+    kafkaTemplate.send(producerRecord);
     log.debug("Sent event to topic: {}", this::getTopicName);
   }
 }

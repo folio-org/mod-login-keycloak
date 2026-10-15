@@ -135,13 +135,13 @@ class LogoutEventPublisherTest {
 
   private void assertPublishedRecord(String topic, String key, LogoutEvent event, String tenantId) {
     verify(kafkaTemplate).send(recordCaptor.capture());
-    var record = recordCaptor.getValue();
-    assertThat(record.topic()).isEqualTo(topic);
-    assertThat(record.key()).isEqualTo(key);
-    assertThat(record.value()).isEqualTo(event);
-    assertThat(record.headers().headers("x-okapi-tenant")).singleElement()
+    var producerRecord = recordCaptor.getValue();
+    assertThat(producerRecord.topic()).isEqualTo(topic);
+    assertThat(producerRecord.key()).isEqualTo(key);
+    assertThat(producerRecord.value()).isEqualTo(event);
+    assertThat(producerRecord.headers().headers("x-okapi-tenant")).singleElement()
       .satisfies(header -> assertThat(header.value()).isEqualTo(tenantId.getBytes(UTF_8)));
-    assertThat(record.headers().headers("folio.tenantId")).singleElement()
+    assertThat(producerRecord.headers().headers("folio.tenantId")).singleElement()
       .satisfies(header -> assertThat(header.value()).isEqualTo(tenantId.getBytes(UTF_8)));
   }
 }

@@ -59,11 +59,11 @@ class LogoutEventPublisherIT extends BaseIntegrationTest {
 
     await().atMost(FIVE_SECONDS).pollInterval(ONE_HUNDRED_MILLISECONDS).untilAsserted(() -> {
       var records = getEvents(topic, LogoutEvent.class).stream()
-        .filter(record -> userId.equals(record.key()))
+        .filter(consumerRecord -> userId.equals(consumerRecord.key()))
         .toList();
       assertThat(records).extracting(ConsumerRecord::value)
         .containsExactly(logoutEvent(userId, REFRESH_TOKEN), logoutAllEvent(userId, KEYCLOAK_USER_ID));
-      assertThat(records).allSatisfy(record -> assertTenantHeaders(record, tenant));
+      assertThat(records).allSatisfy(consumerRecord -> assertTenantHeaders(consumerRecord, tenant));
     });
   }
 }
