@@ -1,10 +1,16 @@
 package org.folio.login.integration.kafka;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.folio.login.integration.kafka.event.LogoutEvent.Type.LOGOUT;
 import static org.folio.login.integration.kafka.event.LogoutEvent.Type.LOGOUT_ALL;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.common.header.Header;
+import org.apache.kafka.common.header.internals.RecordHeader;
+import org.folio.common.utils.OkapiHeaders;
 import org.folio.login.exception.TokenParsingException;
 import org.folio.login.integration.kafka.configuration.property.KafkaProperties;
 import org.folio.login.integration.kafka.event.LogoutEvent;
@@ -54,7 +60,12 @@ public class LogoutEventPublisher {
   }
 
   private void send(LogoutEvent body) {
-    kafkaTemplate.send(getTopicName(), getMessageKey(), body);
+    var tenantBytes = context.getTenantId().getBytes(UTF_8);
+    List<Header> kafkaHeaders = List.of(
+      new RecordHeader(OkapiHeaders.TENANT, tenantBytes),
+      new RecordHeader("folio.tenantId", tenantBytes));
+    var producerRecord = new ProducerRecord<>(getTopicName(), null, getMessageKey(), body, kafkaHeaders);
+    kafkaTemplate.send(producerRecord);
     log.debug("Sent event to topic: {}", this::getTopicName);
   }
 }

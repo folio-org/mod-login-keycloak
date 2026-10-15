@@ -1,5 +1,6 @@
 package org.folio.login.support;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Durations.FIVE_SECONDS;
@@ -43,7 +44,15 @@ public class TestKafkaUtils {
       var consumerRecords = getEvents(logoutTopic(), LogoutEvent.class);
       var entitlementEvents = mapItems(consumerRecords, ConsumerRecord::value);
       assertThat(entitlementEvents).containsAll(events);
+      assertThat(consumerRecords).allSatisfy(consumerRecord -> assertTenantHeaders(consumerRecord, TENANT));
     });
+  }
+
+  public static void assertTenantHeaders(ConsumerRecord<?, ?> consumerRecord, String tenant) {
+    assertThat(consumerRecord.headers().headers("x-okapi-tenant")).singleElement()
+      .satisfies(header -> assertThat(header.value()).isEqualTo(tenant.getBytes(UTF_8)));
+    assertThat(consumerRecord.headers().headers("folio.tenantId")).singleElement()
+      .satisfies(header -> assertThat(header.value()).isEqualTo(tenant.getBytes(UTF_8)));
   }
 
   private static ConditionFactory await() {

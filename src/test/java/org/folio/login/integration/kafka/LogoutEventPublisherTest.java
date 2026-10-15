@@ -1,5 +1,7 @@
 package org.folio.login.integration.kafka;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.folio.login.integration.kafka.event.LogoutEvent.Type.LOGOUT;
 import static org.folio.login.integration.kafka.event.LogoutEvent.Type.LOGOUT_ALL;
@@ -7,6 +9,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.UUID;
+import org.apache.kafka.clients.producer.ProducerRecord;
 import org.folio.login.exception.TokenParsingException;
 import org.folio.login.integration.kafka.configuration.property.KafkaProperties;
 import org.folio.login.integration.kafka.event.LogoutEvent;
@@ -14,6 +17,10 @@ import org.folio.spring.FolioExecutionContext;
 import org.folio.test.types.UnitTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -35,6 +42,8 @@ class LogoutEventPublisherTest {
   @Mock private FolioExecutionContext context;
   @Mock private KafkaProperties kafkaProperties;
 
+  @Captor private ArgumentCaptor<ProducerRecord<String, LogoutEvent>> recordCaptor;
+
   @Test
   void publishLogoutEvent_positive() {
     var userId = UUID.randomUUID();
@@ -49,7 +58,7 @@ class LogoutEventPublisherTest {
     var expectedMessageKey = userId.toString();
     var expectedTopicName = String.format("folio.%s.mod-login-keycloak.logout", tenantId);
 
-    verify(kafkaTemplate).send(expectedTopicName, expectedMessageKey, expectedEvent);
+    assertPublishedRecord(expectedTopicName, expectedMessageKey, expectedEvent, tenantId);
   }
 
   @Test
@@ -79,31 +88,35 @@ class LogoutEventPublisherTest {
     var expectedMessageKey = userId.toString();
     var expectedTopicName = String.format("folio.%s.mod-login-keycloak.logout", tenantId);
 
-    verify(kafkaTemplate).send(expectedTopicName, expectedMessageKey, expectedEvent);
+    assertPublishedRecord(expectedTopicName, expectedMessageKey, expectedEvent, tenantId);
   }
 
-  @Test
-  void publishLogoutEvent_withTenantCollection_positive() {
+  @ParameterizedTest
+  @CsvSource({"ALL, testtenant", "COLLECTIONA, othertenant"})
+  void publishLogoutEvent_positive_withTenantCollection(String collection, String tenantId) {
     var userId = UUID.randomUUID();
+    when(context.getTenantId()).thenReturn(tenantId);
     when(context.getUserId()).thenReturn(userId);
     when(kafkaProperties.isProducerTenantCollection()).thenReturn(true);
-    when(kafkaProperties.getTenantCollectionQualifier()).thenReturn("ALL");
+    when(kafkaProperties.getTenantCollectionQualifier()).thenReturn(collection);
 
     logoutEventPublisher.publishLogoutEvent(TOKEN);
 
     var expectedEvent = LogoutEvent.builder().userId(userId.toString()).sessionId(SESSION_ID).type(LOGOUT).build();
     var expectedMessageKey = userId.toString();
-    var expectedTopicName = "folio.ALL.mod-login-keycloak.logout";
+    var expectedTopicName = "folio." + collection + ".mod-login-keycloak.logout";
 
-    verify(kafkaTemplate).send(expectedTopicName, expectedMessageKey, expectedEvent);
+    assertPublishedRecord(expectedTopicName, expectedMessageKey, expectedEvent, tenantId);
   }
 
-  @Test
-  void publishLogoutAllEvent_withTenantCollection_positive() {
+  @ParameterizedTest
+  @CsvSource({"ALL, testtenant", "COLLECTIONA, othertenant"})
+  void publishLogoutAllEvent_positive_withTenantCollection(String collection, String tenantId) {
     var userId = UUID.randomUUID();
+    when(context.getTenantId()).thenReturn(tenantId);
     when(context.getUserId()).thenReturn(userId);
     when(kafkaProperties.isProducerTenantCollection()).thenReturn(true);
-    when(kafkaProperties.getTenantCollectionQualifier()).thenReturn("ALL");
+    when(kafkaProperties.getTenantCollectionQualifier()).thenReturn(collection);
 
     var keycloakUserId = UUID.randomUUID();
     logoutEventPublisher.publishLogoutAllEvent(keycloakUserId.toString());
@@ -115,8 +128,20 @@ class LogoutEventPublisherTest {
         .type(LOGOUT_ALL)
         .build();
     var expectedMessageKey = userId.toString();
-    var expectedTopicName = "folio.ALL.mod-login-keycloak.logout";
+    var expectedTopicName = "folio." + collection + ".mod-login-keycloak.logout";
 
-    verify(kafkaTemplate).send(expectedTopicName, expectedMessageKey, expectedEvent);
+    assertPublishedRecord(expectedTopicName, expectedMessageKey, expectedEvent, tenantId);
+  }
+
+  private void assertPublishedRecord(String topic, String key, LogoutEvent event, String tenantId) {
+    verify(kafkaTemplate).send(recordCaptor.capture());
+    var producerRecord = recordCaptor.getValue();
+    assertThat(producerRecord.topic()).isEqualTo(topic);
+    assertThat(producerRecord.key()).isEqualTo(key);
+    assertThat(producerRecord.value()).isEqualTo(event);
+    assertThat(producerRecord.headers().headers("x-okapi-tenant")).singleElement()
+      .satisfies(header -> assertThat(header.value()).isEqualTo(tenantId.getBytes(UTF_8)));
+    assertThat(producerRecord.headers().headers("folio.tenantId")).singleElement()
+      .satisfies(header -> assertThat(header.value()).isEqualTo(tenantId.getBytes(UTF_8)));
   }
 }
