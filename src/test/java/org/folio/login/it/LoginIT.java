@@ -15,6 +15,7 @@ import static org.folio.login.support.TestConstants.USERNAME;
 import static org.folio.login.support.TestConstants.USER_ID;
 import static org.folio.login.support.TestKafkaUtils.assertLogoutEvents;
 import static org.folio.login.support.TestKafkaUtils.logoutAllEvent;
+import static org.folio.login.support.TestKafkaUtils.logoutEvent;
 import static org.folio.login.support.TestKafkaUtils.logoutTopic;
 import static org.folio.login.support.TestValues.invalidLoginCredentials;
 import static org.folio.login.support.TestValues.loginCredentials;
@@ -192,6 +193,8 @@ class LoginIT extends BaseIntegrationTest {
     doLogout(secondLoginTokens);
     assertThat(loadKcUserSessions()).isEmpty();
 
+    assertLogoutEvents(logoutEvent(USER_ID, firstLoginTokens.getRefreshToken()),
+      logoutEvent(USER_ID, secondLoginTokens.getRefreshToken()));
     verify(keycloakService, times(2)).logout(firstLoginTokens.getRefreshToken());
     verify(keycloakService).logout(secondLoginTokens.getRefreshToken());
   }

@@ -6,6 +6,7 @@
 * Accept a tenant collection name (e.g. `ALL`) in `KAFKA_PRODUCER_TENANT_COLLECTION`, as other FOLIO modules do (MODLOGINKC-81)
   - Default is now empty (per-tenant topics, as before); `true` means `ALL`; invalid values fail startup
 * Add DeployConfig.json to mod-login-keycloak (ADR-0013 Configuration Management) ([MODLOGINKC-76](https://folio-org.atlassian.net/browse/MODLOGINKC-76))
+* Add `x-okapi-tenant` and `folio.tenantId` Kafka headers to logout and logout-all events for tenant-aware consumers (MODLOGINKC-82)
 ---
 
 ## Version `v4.0.0` (16.04.2026)
