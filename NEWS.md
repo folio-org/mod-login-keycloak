@@ -1,3 +1,6 @@
+## Version `v4.0.4` (20.10.2026)
+* Trillium CSP#1 - Upgrade to SpringBoot 4.1 ([MODLOGINKC-86](https://folio-org.atlassian.net/browse/MODLOGINKC-86))
+
 ## Version `v4.0.3` (15.10.2026)
 * Add DeployConfig.json to mod-login-keycloak (ADR-0013 Configuration Management) ([MODLOGINKC-76](https://folio-org.atlassian.net/browse/MODLOGINKC-76))
 
