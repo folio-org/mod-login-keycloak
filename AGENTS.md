@@ -1,6 +1,6 @@
 # mod-login-keycloak
 
-FOLIO authentication module using Keycloak as identity provider — handles authentication, token management, credential operations, and password reset. PostgreSQL for password-reset persistence.
+FOLIO authentication module using Keycloak as identity provider; it handles authentication, token management, credential operations, and password reset. PostgreSQL for password-reset persistence.
 
 ## Build & Test
 
@@ -9,29 +9,29 @@ mvn clean package              # build JAR
 mvn clean verify               # build + all tests
 mvn test                       # unit tests (@UnitTest, surefire)
 mvn test -Dtest='*Credential*' # unit tests matching pattern
-mvn verify -Dit.test=ClassName # single integration test (@IntegrationTest, failsafe; needs Docker)
+mvn verify -Dit.test=CredentialIT#createCredentials_positive -Dtest=SkipSurefire -Dsurefire.failIfNoSpecifiedTests=false  # single IT, skips unit tests (@IntegrationTest, failsafe; needs Docker)
 mvn checkstyle:check
 ```
 
 Integration tests use Testcontainers (Keycloak, Postgres, Kafka, WireMock).
 
-## Architecture
+## Style
 
-**Three-tier service layer**:
-1. **KeycloakService** — low-level Keycloak ops via `KeycloakClient` (Feign): tokens, credential CRUD, users. Uses `AdminTokenService` (cached). Wraps `FeignException` in `ServiceException`; propagates `NotFoundException`.
-2. **CredentialsService / PasswordService** — business logic. CredentialsService catches `NotFoundException` → `credentialsExist=false`; PasswordService lets it propagate (user must exist). Both coordinate Keycloak + `UsersKeycloakClient` + DB.
-3. **LoginService** — high-level flows (login, logout, token refresh); coordinates LoginAttemptsService + LogEventsService; publishes Kafka logout events.
+Match the repository's existing style: use maintained implementations and tests as templates for new code, and keep the structure, naming, and conventions of neighboring files. Mockito is never lenient, stub only what a test uses, and name tests `methodName_positive` / `methodName_negative` (plus `_scenario` when needed).
 
-**Integrations**: `KeycloakClient` (Feign → Keycloak REST), `UsersKeycloakClient` (mod-users-keycloak), secure store (AWS-SSM/Vault/FSSP via `KC_CONFIG_STORE_TYPE`), Kafka logout events (per-tenant or consolidated via `KAFKA_PRODUCER_TENANT_COLLECTION`), Postgres.
+## Pitfalls
 
-## Conventions
-
-- **Exceptions**: `NotFoundException` (folio-spring, missing Keycloak resource), `ServiceException` (infra/Feign), `RequestValidationException` (business), `EntityNotFoundException` (JPA).
-- **Config**: OpenAPI spec `src/main/resources/swagger.api/mod-login-keycloak.yaml`; env vars in `README.md`; secure store uses `SECURE_STORE_ENV` (not `ENV`) for key prefix. Realm config via `RealmConfigurationProvider`; client secrets cached (`KC_CONFIG_TTL`, default 3600s).
-- **PR process**: update `NEWS.md` with JIRA key; PR template = Purpose / Approach (Summary 2-3 sentences + bullet Implementation Details) / Pre-Review Checklist; tests + checkstyle must pass.
+- `KeycloakService` is the base service: it talks to Keycloak through `@HttpExchange` clients (no Feign in this module) and publishes the Kafka logout events. `LoginService`, `CredentialsService`, and `PasswordService` call it; `LoginAttemptsService` and `LogEventsService` are separate services called by their own controllers.
+- `CredentialsService` treats a missing Keycloak user as `credentialsExist=false`, while `PasswordService` lets `NotFoundException` propagate (the user must exist). Keep this difference when touching either flow.
+- Secure store: type comes from `SECRET_STORE_TYPE`, and the key prefix environment from `SECURE_STORE_ENV` (falls back to `ENV`, then `folio`).
+- Kafka logout events are per-tenant or consolidated, selected by `KAFKA_PRODUCER_TENANT_COLLECTION`.
+- In the test realm, the regular `USER_ID` (`TestConstants`) has password credentials and `ADMIN_USER_ID` does not. Check `TestConstants`/`TestValues` before writing credential tests.
 
 ## Testing
 
-- **Unit** (`@UnitTest`, in `service/`, `controller/`): Mockito `@ExtendWith(MockitoExtension.class)`; never lenient; stub only what's used; verify only unmocked; `verifyNoMoreInteractions()` in `@AfterEach`; name `methodName_scenario_expectedBehavior`. Guide: `doc/ai/UnitTesting.md`.
-- **Integration** (`@IntegrationTest`, in `it/`): extend `BaseIntegrationTest`; `@KeycloakRealms` loads realm from `src/test/resources/json/keycloak/test-realm.json`; `@WireMockStub` (stubs in `src/test/resources/wiremock/stubs/`); Testcontainers auto-start.
-- **Test data**: `TestConstants.java` (USER_ID, ADMIN_USER_ID, TENANT), `TestValues.java` factories. In test realm, `USER_ID 99999999-...` has password credentials; `ADMIN_USER_ID 11111111-...` does not.
+- Unit tests (`@UnitTest`) live in the package of the class under test; controller tests use `@WebMvcTest`.
+- Integration tests (`@IntegrationTest`) extend `BaseIntegrationTest`; `@KeycloakRealms` loads the realm from `src/test/resources/json/keycloak/test-realm.json`, `@WireMockStub` loads stubs from `src/test/resources/wiremock/stubs/`.
+
+## PR process
+
+Update `NEWS.md` with the JIRA key. Fill in `.github/PULL_REQUEST_TEMPLATE.md` (Purpose / Approach / Pre-Review Checklist); tests and checkstyle must pass.
