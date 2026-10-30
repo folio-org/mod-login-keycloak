@@ -7,6 +7,7 @@
   - Default is now empty (per-tenant topics, as before); `true` means `ALL`; invalid values fail startup
 * Add DeployConfig.json to mod-login-keycloak (ADR-0013 Configuration Management) ([MODLOGINKC-76](https://folio-org.atlassian.net/browse/MODLOGINKC-76))
 * Add `x-okapi-tenant` and `folio.tenantId` Kafka headers to logout and logout-all events for tenant-aware consumers (MODLOGINKC-82)
+* Declare the logout event in `producesEvents` of the module descriptor so the Kafka dependency can be validated (MODLOGINKC-87)
 ---
 
 ## Version `v4.0.0` (16.04.2026)

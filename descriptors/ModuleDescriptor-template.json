@@ -201,6 +201,9 @@
       "version" : "2.0"
     }
   ],
+  "producesEvents" : [
+    { "event" : "mod-login-keycloak.logout.v1" }
+  ],
   "permissionSets" : [
     {
       "permissionName" : "login.item.post",
