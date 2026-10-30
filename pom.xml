@@ -44,7 +44,7 @@
     <maven-release-plugin.version>3.3.1</maven-release-plugin.version>
     <openapi-generator.version>7.22.0</openapi-generator.version>
     <mapstruct-plugin.version>1.6.3</mapstruct-plugin.version>
-    <folio-module-descriptor-validator.version>1.0.1</folio-module-descriptor-validator.version>
+    <folio-module-descriptor-validator.version>1.0.2-SNAPSHOT</folio-module-descriptor-validator.version>
     <argLine />
 
     <sonar.exclusions>
@@ -501,9 +501,6 @@
             </goals>
           </execution>
         </executions>
-        <configuration>
-          <failOnInvalidDescriptor>false</failOnInvalidDescriptor>
-        </configuration>
       </plugin>
     </plugins>
   </build>
