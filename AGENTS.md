@@ -1,6 +1,6 @@
 # mod-login-keycloak
 
-FOLIO authentication module using Keycloak as identity provider — handles authentication, token management, credential operations, and password reset. PostgreSQL for password-reset persistence. Java, Spring Boot, PostgreSQL/Liquibase, Kafka, Keycloak.
+FOLIO authentication module using Keycloak as identity provider — handles authentication, token management, credential operations, and password reset. Java, Spring Boot, Keycloak, Kafka (logout events), PostgreSQL/Liquibase (password-reset persistence).
 
 ## Build & Test
 
@@ -14,6 +14,15 @@ mvn checkstyle:check
 ```
 
 Integration tests use Testcontainers (Keycloak, Postgres, Kafka, WireMock).
+
+## Architecture
+
+**Service layer**:
+1. **KeycloakService** — low-level Keycloak ops via `KeycloakClient` (`@HttpExchange`): tokens, credential CRUD, users. Uses `AdminTokenService` (cached). Wraps `RestClientException` in `ServiceException`; propagates `NotFoundException`. Publishes Kafka logout events (`LogoutEventPublisher`).
+2. **CredentialsService / PasswordService** — business logic. CredentialsService catches `NotFoundException` → `credentialsExist=false`; PasswordService lets it propagate (user must exist).
+3. **LoginService** — high-level flows (login, logout, token refresh). `LoginAttemptsService` and `LogEventsService` back their own endpoints.
+
+**Integrations**: `KeycloakClient` (Keycloak REST), `UsersKeycloakClient` (mod-users-keycloak), secure store (AWS-SSM/Vault/FSSP via `SECRET_STORE_TYPE`), Kafka logout events (per-tenant or consolidated via `KAFKA_PRODUCER_TENANT_COLLECTION`), Postgres.
 
 ## Conventions
 
