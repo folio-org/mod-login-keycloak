@@ -32,6 +32,6 @@ Integration tests use Testcontainers (Keycloak, Postgres, Kafka, WireMock).
 
 ## Testing
 
-- **Unit** (`@UnitTest`, in `service/`, `controller/`): Mockito `@ExtendWith(MockitoExtension.class)`; never lenient; stub only what's used; verify only unmocked; `verifyNoMoreInteractions()` in `@AfterEach`; name `methodName_scenario_expectedBehavior`. Guide: https://github.com/folio-org/folio-eureka-ai-dev/blob/master/docs/testing/unit-testing.md
+- **Unit** (`@UnitTest`, in `service/`, `controller/`): Mockito `@ExtendWith(MockitoExtension.class)`; never lenient; stub only what's used; verify only unmocked; `verifyNoMoreInteractions()` in `@AfterEach`; name `methodName_scenario_expectedBehavior`.
 - **Integration** (`@IntegrationTest`, in `it/`): extend `BaseIntegrationTest`; `@KeycloakRealms` loads realm from `src/test/resources/json/keycloak/test-realm.json`; `@WireMockStub` (stubs in `src/test/resources/wiremock/stubs/`); Testcontainers auto-start.
 - **Test data**: `TestConstants.java` (USER_ID, ADMIN_USER_ID, TENANT), `TestValues.java` factories. In test realm, `USER_ID 99999999-...` has password credentials; `ADMIN_USER_ID 11111111-...` does not.
