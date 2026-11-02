@@ -1,6 +1,6 @@
 # mod-login-keycloak
 
-FOLIO authentication module using Keycloak as identity provider — handles authentication, token management, credential operations, and password reset. PostgreSQL for password-reset persistence.
+FOLIO authentication module using Keycloak as identity provider — handles authentication, token management, credential operations, and password reset. PostgreSQL for password-reset persistence. Java, Spring Boot, PostgreSQL/Liquibase, Kafka, Keycloak.
 
 ## Build & Test
 
