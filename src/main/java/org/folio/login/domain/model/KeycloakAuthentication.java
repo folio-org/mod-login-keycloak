@@ -22,7 +22,6 @@ public class KeycloakAuthentication {
   @JsonProperty("refresh_token")
   private String refreshToken;
 
-
   /**
    * Access token expiration age.
    */
